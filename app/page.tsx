@@ -30,6 +30,21 @@ const posts:Post[] = [
   {id:7,weather:"rainy",name:"静かな夜",handle:"@quiet_night",avatar:"🌙",time:"4時間前",body:"返信を見て少しへこんだ。今は返さないでおく。",replies:"9",reposts:"3",likes:"61",views:"514"},
   {id:8,weather:"storm",name:"トレンドを追う人",handle:"@trend_watch",avatar:"⚡",time:"18分前",body:"例の件、切り取られた動画だけが広がってるけど、前後まで見るとだいぶ印象が違う。断定する前に元動画を見たほうがいい。",replies:"18",reposts:"11",likes:"143",views:"926"},
   {id:9,weather:"storm",name:"ひと休み",handle:"@take_it_easy",avatar:"🛡️",time:"22分前",body:"タイムラインの空気がかなり荒れてる。気になって見続けてしまうけど、今日はここまでにしようかな。",replies:"7",reposts:"4",likes:"82",views:"603"},
+  {id:10,weather:"sunny",name:"朝ごはん記録",handle:"@toast_morning",avatar:"🍳",time:"34分前",body:"目玉焼きが今日はきれいに焼けた。パンも焦がさなかったので、それだけでいい朝。",replies:"1",reposts:"0",likes:"24",views:"118"},
+  {id:11,weather:"sunny",name:"フィルム散歩",handle:"@film_walk",avatar:"📷",time:"1時間前",body:"商店街の花屋さんで、店先の鉢に猫が丸くなっていた。お店の人に聞いたら毎日同じ時間に来るらしい。写真を一枚撮らせてもらった。",replies:"4",reposts:"2",likes:"73",views:"405"},
+  {id:12,weather:"sunny",name:"ひなたの台所",handle:"@hinata_kitchen",avatar:"🍙",time:"3時間前",body:"余っていた野菜を全部入れてスープにした。味付けは適当だったのに、家族がおかわりしてくれた。次も同じ味にできる自信はない。",replies:"3",reposts:"1",likes:"51",views:"277"},
+  {id:13,weather:"sunny",name:"週末ランナー",handle:"@slow_run_day",avatar:"👟",time:"6時間前",body:"久しぶりに5km走れた。速くはなかったけれど、川沿いの風が気持ちよくて最後まで歩かなかった。",replies:"6",reposts:"0",likes:"88",views:"462"},
+  {id:14,weather:"cloudy",name:"午後三時",handle:"@three_pm_note",avatar:"☕",time:"47分前",body:"予定を詰めすぎたかもしれない。明日の約束をひとつ来週に移してもらった。",replies:"2",reposts:"0",likes:"19",views:"136"},
+  {id:15,weather:"cloudy",name:"まどぎわ",handle:"@window_side",avatar:"🪴",time:"2時間前",body:"返信しようと思って文章を何度も書き直して、結局まだ送れていない。考えすぎているだけだと思うけど、もう少し時間を置く。",replies:"5",reposts:"1",likes:"38",views:"249"},
+  {id:16,weather:"cloudy",name:"通勤メモ",handle:"@train_memo",avatar:"🚃",time:"4時間前",body:"電車が少し遅れていた。ホームは混んでいたけど、前にいた人が落とした手袋を別の人が拾って渡していて、空気が少しやわらいだ。",replies:"2",reposts:"1",likes:"46",views:"318"},
+  {id:17,weather:"cloudy",name:"ことばを探す",handle:"@words_between",avatar:"✏️",time:"7時間前",body:"嬉しいとも悲しいとも言い切れない日だった。こういう日のことを説明できる言葉があるなら知りたい。",replies:"7",reposts:"2",likes:"64",views:"391"},
+  {id:18,weather:"rainy",name:"深夜の机",handle:"@late_desk",avatar:"💻",time:"28分前",body:"今日中に終わらせたかった作業がまだ残っている。焦るほど手が止まるので、一度お茶を入れてくる。",replies:"3",reposts:"0",likes:"27",views:"174"},
+  {id:19,weather:"rainy",name:"青い傘",handle:"@blue_umbrella",avatar:"☂️",time:"1時間前",body:"楽しみにしていた予定が急になくなった。仕方ないことだと分かっているけど、今日はちょっと残念なままでいる。",replies:"5",reposts:"1",likes:"43",views:"286"},
+  {id:20,weather:"rainy",name:"眠れない夜",handle:"@still_awake",avatar:"🛏️",time:"3時間前",body:"早く寝ようとすると余計にいろいろ思い出す。明日のことは明日考えればいいのに、頭だけが先に走っている。",replies:"8",reposts:"2",likes:"69",views:"437"},
+  {id:21,weather:"rainy",name:"小さな休憩",handle:"@pause_today",avatar:"🫖",time:"5時間前",body:"誰かと比べて落ち込んで、そんな自分にも疲れた。今日はできたことを一つだけ数えて終わりにする。洗濯はした。",replies:"6",reposts:"1",likes:"58",views:"354"},
+  {id:22,weather:"storm",name:"一次情報を読む",handle:"@source_first",avatar:"🔎",time:"9分前",body:"画像一枚だけで断定する投稿が急に増えている。元の発表を確認したら条件がかなり省かれていた。拡散する前にリンク先まで見てほしい。",replies:"14",reposts:"9",likes:"97",views:"781"},
+  {id:23,weather:"storm",name:"配信ウォッチ",handle:"@stream_check",avatar:"📺",time:"13分前",body:"配信者の発言が炎上しているけど、切り抜きと本編で受ける印象が違う。批判するにしても、見ていない内容まで決めつけるのは違うと思う。",replies:"21",reposts:"8",likes:"112",views:"894"},
+  {id:24,weather:"storm",name:"静観します",handle:"@wait_and_see",avatar:"🧊",time:"31分前",body:"情報が数分ごとに変わっていて、今は何が正しいのか分からない。新しい投稿を追うのをやめて、公式の説明を待つ。",replies:"10",reposts:"5",likes:"76",views:"566"},
 ];
 
 const followers = [
