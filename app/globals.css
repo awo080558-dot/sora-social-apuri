@@ -142,3 +142,6 @@
 
 /* 自分の日記を作成し、一覧の見出し直下に表示 */
 .exchange-page+.new-post{display:grid!important}.my-diary-summary{margin:-5px 0 12px;padding:13px;border:1px solid #111;border-radius:13px;background:#fff}.my-diary-summary header{display:flex;align-items:center;justify-content:space-between}.my-diary-summary header strong{font-size:11px}.my-diary-summary header span,.my-diary-summary>small{font-size:8px;color:#666}.my-diary-summary p{display:-webkit-box;overflow:hidden;margin:10px 0;font-size:9px;line-height:1.55;-webkit-line-clamp:3;-webkit-box-orient:vertical}.diary-create-modal textarea{min-height:260px;line-height:1.65}.diary-compose-meta{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-top:1px solid #ddd}.diary-compose-meta span,.diary-compose-meta strong{font-size:8px}.diary-create-modal .analysis-preview svg{width:25px;height:25px}
+
+/* 日記一覧の天気マークは静止表示 */
+.exchange-page .exchange-row .diary-emotion,.exchange-page .exchange-row .diary-emotion svg,.exchange-page .exchange-row .diary-emotion b:after{animation:none!important;transform:none!important}
