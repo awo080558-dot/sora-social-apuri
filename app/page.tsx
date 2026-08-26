@@ -22,12 +22,12 @@ const weatherInfo = {
 
 const posts:Post[] = [
   {id:1,weather:"sunny",name:"夜更かしの猫",handle:"@digi_walker_01",avatar:"🌌",time:"5時間前",body:"帰り道、雲の切れ間から月がすごくきれいに見えた。急いで撮ったから少しブレたけど、今日いちばん嬉しかった瞬間かも。",replies:"3",reposts:"1",likes:"42",views:"386"},
-  {id:2,weather:"sunny",name:"デジタル・ノマド",handle:"@digi_inoma_2",avatar:"🎮",time:"5時間前",body:"82歳のおじいちゃんがスマホデビュー。最初に送ってきたのが、筋肉ムキムキのウサギのスタンプだった。どこで見つけたの（笑）",replies:"8",reposts:"5",likes:"126",views:"814"},
+  {id:2,weather:"sunny",name:"デジタル・ノマド",handle:"@digi_inoma_2",avatar:"🎮",time:"5時間前",body:"82歳のおじいちゃんがスマホデビュー。最初に送ってきたのが、筋肉ムキムキのウサギのスタンプだった。どこで見つけたの（笑） 電話しか使わないと言っていたのに、今日は朝から写真も送ってきた。覚えるの早すぎる。",replies:"8",reposts:"5",likes:"126",views:"814"},
   {id:3,weather:"sunny",name:"ハナコ＠読書垢",handle:"@flower_book_log",avatar:"🐶",time:"5時間前",body:"散歩の途中で気になってた本屋さんに寄れた。店員さんのおすすめがどれも良くて、結局3冊も買ってしまった。週末が楽しみ。",replies:"2",reposts:"0",likes:"57",views:"293"},
-  {id:4,weather:"cloudy",name:"考えごとの午後",handle:"@gray_afternoon",avatar:"🏙️",time:"2時間前",body:"朝から予定がずれて、なんとなく調子が出ない日。今日は早めに切り上げて、明日の自分に任せることにする。",replies:"4",reposts:"1",likes:"35",views:"241"},
-  {id:5,weather:"cloudy",name:"ニュースを読む人",handle:"@news_reader",avatar:"📰",time:"3時間前",body:"話題の記事、見出しだけだとかなり印象が違う。反対側の意見も読んでから考えたいな。",replies:"12",reposts:"7",likes:"89",views:"672"},
+  {id:4,weather:"cloudy",name:"考えごとの午後",handle:"@gray_afternoon",avatar:"🏙️",time:"2時間前",body:"今日は早めに切り上げる。",replies:"4",reposts:"1",likes:"35",views:"241"},
+  {id:5,weather:"cloudy",name:"ニュースを読む人",handle:"@news_reader",avatar:"📰",time:"3時間前",body:"話題の記事、見出しだけだとかなり印象が違う。本文を最後まで読んだら、最初に想像していた話とは少し違っていた。引用されている部分だけが広がっているけど、反対側の意見も読んでから考えたい。急いで結論を出さなくてもいい気がする。",replies:"12",reposts:"7",likes:"89",views:"672"},
   {id:6,weather:"rainy",name:"雨宿り",handle:"@take_a_break",avatar:"🌧️",time:"1時間前",body:"ちょっと疲れた。何を見ても悪いほうに考えてしまうので、今日はもうスマホを置く。温かいもの飲んで寝よう。",replies:"6",reposts:"2",likes:"74",views:"468"},
-  {id:7,weather:"rainy",name:"静かな夜",handle:"@quiet_night",avatar:"🌙",time:"4時間前",body:"軽い気持ちで書いたことなのに、思ったよりきつい返信が来てへこんでる。すぐ返さず、少し落ち着こう。",replies:"9",reposts:"3",likes:"61",views:"514"},
+  {id:7,weather:"rainy",name:"静かな夜",handle:"@quiet_night",avatar:"🌙",time:"4時間前",body:"返信を見て少しへこんだ。今は返さないでおく。",replies:"9",reposts:"3",likes:"61",views:"514"},
   {id:8,weather:"storm",name:"トレンドを追う人",handle:"@trend_watch",avatar:"⚡",time:"18分前",body:"例の件、切り取られた動画だけが広がってるけど、前後まで見るとだいぶ印象が違う。断定する前に元動画を見たほうがいい。",replies:"18",reposts:"11",likes:"143",views:"926"},
   {id:9,weather:"storm",name:"ひと休み",handle:"@take_it_easy",avatar:"🛡️",time:"22分前",body:"タイムラインの空気がかなり荒れてる。気になって見続けてしまうけど、今日はここまでにしようかな。",replies:"7",reposts:"4",likes:"82",views:"603"},
 ];
