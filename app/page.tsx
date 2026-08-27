@@ -168,7 +168,6 @@ export default function HomePage(){
     </nav></>}
 
     {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather}`}>
-      <div className={`forecast-note ${weather}`}><span>{info.symbol}</span><div><strong>タイムライン予報：{info.label}</strong><p>{info.message}</p></div></div>
       {feed.map(post=><article className="sora-post" key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
