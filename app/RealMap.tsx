@@ -13,8 +13,8 @@ const areaTrendWeather=(name:string)=>{
 const mapWeatherSvg=(weather:string)=>{
   if(weather==="sunny")return '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>';
   if(weather==="cloudy")return '<svg viewBox="0 0 24 24"><path d="M17.5 19H7a5 5 0 1 1 1.9-9.63A6 6 0 0 1 20 12.5 3.5 3.5 0 0 1 17.5 19Z"/></svg>';
-  if(weather==="rainy")return '<svg viewBox="0 0 24 24"><path class="map-cloud-fill" d="M17.5 15H7a5 5 0 1 1 1.9-9.63A6 6 0 0 1 20 8.5 3.5 3.5 0 0 1 17.5 15Z"/><path class="map-rain-lines" d="M8 18v3M12 17v3M16 18v3"/></svg>';
-  return '<svg viewBox="0 0 24 24"><path class="map-cloud-fill" d="M17.5 14H7a5 5 0 1 1 1.9-9.63A6 6 0 0 1 20 7.5 3.5 3.5 0 0 1 17.5 14Z"/><path d="m13 13-3 5h3l-1 4 5-7h-3l1-2Z"/></svg>';
+  if(weather==="rainy")return '<svg viewBox="0 0 24 24"><path class="map-cloud-fill" d="M17.5 19H7a5 5 0 1 1 1.9-9.63A6 6 0 0 1 20 12.5 3.5 3.5 0 0 1 17.5 19Z"/></svg>';
+  return '<svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>';
 };
 
 export function RealMap({notify}:{notify:(message:string)=>void}){
