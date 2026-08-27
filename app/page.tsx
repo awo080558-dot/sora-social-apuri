@@ -190,7 +190,7 @@ export default function HomePage(){
       </div>
       <strong className="reference-date">{trendDays[trendDay].label}({trendDays[trendDay].day})</strong>
       <div className="reference-dots">{trendDays.map((_,i)=><i key={i} className={trendDay===i?"active":""}/>)}</div>
-      <div className="news-list">{dailyHeadlines.map((headline,i)=><button key={`${category}-${trendDay}-${i}`} onClick={()=>notify("記事を開きます")}>{headline}</button>)}</div>
+      <div className="news-list">{dailyHeadlines.map((headline,i)=><button key={`${category}-${trendDay}-${i}`} onClick={()=>{setQuery(headline);setSearchSubmitted(true);setKeyboardOpen(false)}}>{headline}</button>)}</div>
       </>}
       {mapMode&&<RealMap notify={notify}/>}</>}
       {keyboardOpen&&!searchSubmitted&&<div className="phone-keyboard" aria-label="日本語キーボード"><div className="keyboard-keys">{["あ","か","さ","た","な","は","ま","や","ら","小","わ","ー"].map(key=><button key={key} onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+key)}>{key}</button>)}</div><div className="keyboard-actions"><button onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v.slice(0,-1))}>⌫</button><button className="keyboard-space" onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+" ")}>空白</button><button className="keyboard-search" disabled={!query.trim()} onMouseDown={e=>e.preventDefault()} onClick={()=>{if(query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}}>検索</button></div></div>}
