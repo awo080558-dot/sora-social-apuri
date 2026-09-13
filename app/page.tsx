@@ -2,14 +2,14 @@
 
 import {
   Bell, ChartNoAxesColumnIncreasing, Cloud, CloudRain, Heart, Home,
-  MapPin, MessageCircle, Pencil, Plus, Repeat2, Search, Settings,
+  Mail, MapPin, MessageCircle, Pencil, Plus, Repeat2, Search, Send, Settings,
   Sun, Upload, UserPlus, UserRound, X, Zap
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "search" | "profile" | "userProfile" | "following" | "followers";
+type View = "timeline" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
@@ -120,6 +120,9 @@ export default function HomePage(){
   const forecastStrip=useRef<HTMLDivElement>(null);
   const [toast,setToast]=useState("");
   const [showSplash,setShowSplash]=useState(true);
+  const [activeChat,setActiveChat]=useState<number|null>(null);
+  const [messageDraft,setMessageDraft]=useState("");
+  const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
   const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
@@ -133,6 +136,13 @@ export default function HomePage(){
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
+  const conversations=[
+    {name:"夜更かしの猫",handle:"@digi_walker_01",preview:"写真ありがとう！月きれいだったね",time:"12分",avatar:1,messages:["今日の帰り、月がすごくきれいだったよ","見た！写真ありがとう。雲の間から見える感じよかったね"]},
+    {name:"ハナコ＠読書垢",handle:"@flower_book_log",preview:"その本、読み終わったら感想聞きたい",time:"1時間",avatar:3,messages:["この前話してた本、やっと買えた！","いいな。その本、読み終わったら感想聞きたい"]},
+    {name:"フィルム散歩",handle:"@film_walk",preview:"土曜日なら空いてるよ",time:"昨日",avatar:5,messages:["今度あの商店街、一緒に写真撮りに行かない？","土曜日なら空いてるよ"]},
+    {name:"朝ごはん記録",handle:"@toast_morning",preview:"レシピ送るね",time:"2日",avatar:2,messages:["前に載せてたスープ、おいしそうだった","ありがとう！あとでレシピ送るね"]},
+  ];
+  const sendMessage=(e:FormEvent)=>{e.preventDefault();if(activeChat===null||!messageDraft.trim())return;setSentMessages(v=>({...v,[activeChat]:[...(v[activeChat]||[]),messageDraft.trim()]}));setMessageDraft("")};
 
   return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
@@ -185,8 +195,10 @@ export default function HomePage(){
 
     {view==="followers"&&<div className="sub-page followers-page"><button className="profile-back" onClick={()=>setView("profile")}>← プロフィール</button><h1>フォロワー予報</h1><p className="intro">フォロワーのタイムライン状態を天気で確認できます。</p><div className="follower-summary"><span>あなたの周りの空模様</span><strong>🌤️ おおむね晴れ</strong></div>{followers.map(f=><button className="follower-row" key={f.handle} onClick={()=>openAccount(f)}><span className="follower-avatar">{f.avatar}</span><span><strong>{f.name}</strong><small>{f.handle}</small></span><em>{weatherInfo[f.weather].symbol} {weatherInfo[f.weather].label}</em></button>)}</div>}
 
+    {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row" key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
+
     <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><Plus/></button>
-    <nav className="main-nav three-items"><button className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home fill="currentColor"/></button><button className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound fill="currentColor"/></button></nav>
+    <nav className="main-nav"><button className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home fill="currentColor"/></button><button className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound fill="currentColor"/></button><button className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 
