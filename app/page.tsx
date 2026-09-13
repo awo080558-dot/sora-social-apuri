@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  Bell, BookOpen, ChartNoAxesColumnIncreasing, Cloud, CloudRain, Heart, Home,
+  Bell, ChartNoAxesColumnIncreasing, Cloud, CloudRain, Heart, Home,
   MapPin, MessageCircle, Pencil, Plus, Repeat2, Search, Settings,
   Sun, Upload, UserPlus, UserRound, X, Zap
 } from "lucide-react";
@@ -9,7 +9,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "search" | "profile" | "userProfile" | "following" | "followers" | "messages";
+type View = "timeline" | "search" | "profile" | "userProfile" | "following" | "followers";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
@@ -58,18 +58,6 @@ const followers = [
   {name:"しおり",handle:"@shiori_books",weather:"rainy" as Weather,avatar:"📚"},
   {name:"レン",handle:"@ren_music",weather:"cloudy" as Weather,avatar:"🎸"},
   {name:"なつき",handle:"@natsuki_food",weather:"sunny" as Weather,avatar:"🍰"},
-];
-const diaryEntries = [
-  {time:"今日・18:40",body:"今日は朝からずっと気持ちが落ち着かなかった。仕事はいつも通り終わったのに、帰りの電車で窓に映った顔が思ったより疲れていて驚いた。家に着いてから何か作る気力もなくて、冷蔵庫にあったスープを温めた。湯気を見ながらゆっくり飲んでいたら、少しだけ呼吸が戻った気がする。今日は無理に元気になろうとせず、早めに布団に入ることにする。"},
-  {time:"今日・16:15",body:"駅から家まで、今日はいつもと違う道を歩いた。角を曲がったところに小さなパン屋があって、閉店前だったから塩パンをひとつ買った。まだ温かくて、袋を開けた瞬間にバターの匂いがした。公園のベンチで食べていたら、近くで子どもがシャボン玉を飛ばしていて、夕方の光に色がついて見えた。何でもない寄り道だったけれど、今日を思い出すならたぶんこの時間だと思う。次は朝に行って、棚に全部のパンが並んでいるところを見てみたい。"},
-  {time:"今日・12:08",body:"午前中は机に向かっていたけれど、同じところで何度も手が止まった。やることは分かっているのに、気持ちだけが追いついてこない感じだった。いったん音楽を止めて窓を開けたら、風がカーテンを大きく揺らして、外から自転車のベルと遠くの工事の音が聞こえた。五分くらい何もせずに立っていたら、さっきより頭の中が静かになった。午後はひとつだけ終わらせれば十分ということにする。"},
-  {time:"昨日・23:31",body:"朝から小さなミスが続いた。コーヒーをこぼして、電車を一本逃して、急いで送った文章にも誤字を見つけた。ひとつずつなら笑えるのに、重なると自分のすることが全部だめなように思えてしまう。帰り道も今日の失敗を何度も思い返していた。でも家に着いて、散らかっていた机の上だけ片づけて、明日の服を用意したら少し落ち着いた。できなかったことばかり数えていたけれど、今日も一日はちゃんと終わった。明日は今日より静かな日だといい。"},
-  {time:"昨日・21:06",body:"夕方からタイムラインの空気がずっと荒れていた。最初は何が起きたのか気になって見ていたけれど、知らない人同士の強い言葉まで自分に向けられているような気分になった。画面を閉じても内容が頭に残って、何度もまた開きそうになったので、通知を全部切ってスマホを机の引き出しに入れた。お湯を沸かして、久しぶりに茶葉から紅茶を入れた。今夜はもう見ない。明日の朝、必要ならそのとき考える。"},
-  {time:"昨日・17:20",body:"いつもの店でコーヒーを頼んだら、店員さんが前に少し話した旅行のことを覚えていてくれた。店内は混んでいて忙しそうだったのに、『この前の旅行、どうでした？』と聞いてくれた。写真を一枚だけ見せたら、海の色がきれいだと言ってくれた。たった数分の会話だったけれど、自分の話を覚えている人がいることが思った以上にうれしかった。帰りにスーパーへ寄ったときまで少し機嫌がよくて、いつもは買わない花を一本だけ買った。"},
-  {time:"昨日・08:45",body:"雨が上がったので、いつもより少し遅い時間に犬の散歩へ行った。道には水たまりがいくつも残っていて、犬はそのたびに立ち止まり、端を慎重に回っていた。前は平気で飛び込んでいたのに、今日は足が濡れるのが嫌だったらしい。公園の草もまだ濡れていて、歩くたびに小さな水滴が光っていた。帰宅したら玄関で満足そうに寝転んだ。朝の予定はずれたけれど、悪くない始まりだった。"},
-  {time:"2日前",body:"読みたかった本を持って近所の喫茶店へ行った。窓際の席に座れて、今日はかなり読めそうだと思ったのに、隣の席から聞こえる会話が気になって同じページを何度も読み直してしまった。途中で諦めて本を閉じ、窓の外を走るバスや、信号待ちをしている人を眺めながらコーヒーだけ飲んだ。店内で流れていた古い曲を、帰ってから調べてプレイリストに追加した。何もしなかったような午後だけれど、予定通りにいかなかったから見つけたものもあった。"},
-  {time:"2日前",body:"三週間くらい練習していた曲が、今日初めて最後まで止まらずに弾けた。途中で危ないところが何度かあったけれど、手を止めずに戻れたのがうれしい。念のため録音して聴いてみたら、テンポは揺れているし音も少し雑だった。それでも、最初の頃に一小節ずつ練習していたことを思えばかなり進んだと思う。誰かに聴かせるのはもう少し先でいい。今日は自分の中だけで合格にする。"},
-  {time:"3日前",body:"前に失敗したプリンにもう一度挑戦した。今回は火を弱くして、途中で何度も様子を見たので、表面はきれいに固まった。型から出すときに端が少し崩れて、写真に撮れる見た目ではなくなったけれど、味はちゃんと成功していた。家族に何も説明せず出したら、黙って二個目を冷蔵庫から持ってきた。それがいちばん信用できる感想だと思う。次はカラメルをもう少し苦くしてみたい。"},
 ];
 const trendDays = [
   {label:"4月18日",short:"18",day:"木"},{label:"4月19日",short:"19",day:"金"},{label:"4月20日",short:"20",day:"土"},
@@ -125,15 +113,6 @@ export default function HomePage(){
   const [query,setQuery]=useState("");
   const [searchSubmitted,setSearchSubmitted]=useState(false);
   const [keyboardOpen,setKeyboardOpen]=useState(false);
-  const [selectedExchange,setSelectedExchange]=useState<number|null>(null);
-  const [journalDraft,setJournalDraft]=useState("");
-  const [journalReplies,setJournalReplies]=useState<string[]>([]);
-  const [diaryTurnSent,setDiaryTurnSent]=useState(false);
-  const [journalMood,setJournalMood]=useState<Weather>("sunny");
-  const [journalReaction,setJournalReaction]=useState("");
-  const [comfortDraft,setComfortDraft]=useState("");
-  const [umbrellaSent,setUmbrellaSent]=useState(false);
-  const [kindnessScore,setKindnessScore]=useState(24);
   const [category,setCategory]=useState<Category>("スポーツ");
   const [trendDay,setTrendDay]=useState(trendDays.length-1);
   const [mapMode,setMapMode]=useState(false);
@@ -154,7 +133,6 @@ export default function HomePage(){
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
-  const submitDiary=(e:FormEvent)=>{e.preventDefault();if(!journalDraft.trim())return;setJournalReplies(v=>[journalDraft.trim(),...v]);setJournalDraft("");setComposer(false);notify("日記を公開しました。天気を分析しています")};
 
   return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
@@ -207,14 +185,12 @@ export default function HomePage(){
 
     {view==="followers"&&<div className="sub-page followers-page"><button className="profile-back" onClick={()=>setView("profile")}>← プロフィール</button><h1>フォロワー予報</h1><p className="intro">フォロワーのタイムライン状態を天気で確認できます。</p><div className="follower-summary"><span>あなたの周りの空模様</span><strong>🌤️ おおむね晴れ</strong></div>{followers.map(f=><button className="follower-row" key={f.handle} onClick={()=>openAccount(f)}><span className="follower-avatar">{f.avatar}</span><span><strong>{f.name}</strong><small>{f.handle}</small></span><em>{weatherInfo[f.weather].symbol} {weatherInfo[f.weather].label}</em></button>)}</div>}
 
-    {view==="messages"&&<div className="sub-page exchange-page">{selectedExchange===null?<><header className="exchange-header"><div><small>フォロワーが書いた日記</small><h1>みんなの日記</h1></div><BookOpen/></header>{journalReplies[0]&&<article className="my-diary-summary"><header><strong>自分の日記</strong><span>今日・公開済み</span></header><p>{journalReplies[0]}</p><small>☁ 感情の天気を分析しました</small></article>}<div className="diary-week"><span>最近の日記</span><strong>10人</strong></div>{followers.slice(0,10).map((f,i)=>{const DiaryWeatherIcon=f.weather==="rainy"?Cloud:weatherInfo[f.weather].icon;return <button className="exchange-row" key={f.handle} onClick={()=>{setSelectedExchange(i);setJournalReaction("")}}><span className="follower-avatar">{f.avatar}</span><span><strong>{f.name}の日記</strong><small>{diaryEntries[i].time}</small></span><em className={`diary-emotion ${f.weather}`}><b><DiaryWeatherIcon fill={f.weather==="storm"||f.weather==="rainy"?"currentColor":"none"}/></b><small>{weatherInfo[f.weather].label}</small></em></button>})}</>:<><header className="exchange-book-head"><button onClick={()=>setSelectedExchange(null)}>←</button><div><strong>{followers[selectedExchange].name}の日記</strong><small>{weatherInfo[followers[selectedExchange].weather].label}の感情</small></div><span>{followers[selectedExchange].avatar}</span></header><div className={`diary-sky living-sky iconless-sky ${followers[selectedExchange].weather}`}><div className="sky-cloud cloud-a"/><div className="sky-cloud cloud-b"/><span className="sky-star">✦</span><div className="sky-caption"><small>日記から読み取った空</small><strong>今日の感情傾向</strong></div></div><div className="journal-book"><article className="journal-entry partner"><header><strong>{followers[selectedExchange].name}</strong><time>{diaryEntries[selectedExchange].time}</time></header><p>{diaryEntries[selectedExchange].body}</p><div className="journal-reactions text-reactions"><button className={journalReaction?"active":""} onClick={()=>{setJournalReaction("読みました");notify("読みましたを送りました")}}><small>読みました</small></button></div>{journalReaction&&<div className="care-sent"><strong>「読みました」を送りました</strong></div>}</article></div></>}</div>}
-
-    {(view!=="messages"||selectedExchange===null)&&<button className="new-post" aria-label={view==="messages"?"日記を書く":"投稿を作成"} onClick={()=>setComposer(true)}><Plus/></button>}
-    <nav className="main-nav"><button className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home fill="currentColor"/></button><button className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound fill="currentColor"/></button><button className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("messages")}}><BookOpen/></button></nav>
+    <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><Plus/></button>
+    <nav className="main-nav three-items"><button className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home fill="currentColor"/></button><button className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound fill="currentColor"/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 
-  {composer&&<div className="modal-shade">{view==="messages"?<form className="post-modal diary-create-modal" onSubmit={submitDiary}><header><button type="button" onClick={()=>setComposer(false)}><X/></button><strong>今日の日記</strong><button disabled={!journalDraft.trim()}>公開</button></header><textarea autoFocus value={journalDraft} onChange={e=>setJournalDraft(e.target.value)} placeholder="今日あったことや、今の気持ちを書く…" maxLength={1200}/><div className="diary-compose-meta"><span>{journalDraft.length}/1200</span><strong>公開範囲：フォロワー</strong></div><div className="analysis-preview"><Cloud/><p>公開後、文章から感情の傾向を読み取り、天気を自動で表示します。</p></div></form>:<form className="post-modal" onSubmit={submit}><header><button type="button" onClick={()=>setComposer(false)}><X/></button><strong>新しい投稿</strong><button disabled={!draft.trim()}>投稿</button></header><textarea autoFocus value={draft} onChange={e=>setDraft(e.target.value)} placeholder="いま、どうしていますか？" maxLength={240}/><div className="analysis-preview"><span>{info.symbol}</span><p>投稿後、AIが感情を分析して適切な天気に分類します。</p></div></form>}</div>}
+  {composer&&<div className="modal-shade"><form className="post-modal" onSubmit={submit}><header><button type="button" onClick={()=>setComposer(false)}><X/></button><strong>新しい投稿</strong><button disabled={!draft.trim()}>投稿</button></header><textarea autoFocus value={draft} onChange={e=>setDraft(e.target.value)} placeholder="いま、どうしていますか？" maxLength={240}/><div className="analysis-preview"><span>{info.symbol}</span><p>投稿後、AIが感情を分析して適切な天気に分類します。</p></div></form></div>}
   {toast&&<div className="sora-toast">{toast}</div>}
   </main>
 }

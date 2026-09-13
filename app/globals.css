@@ -145,3 +145,4 @@
 
 /* 日記一覧の天気マークは静止表示 */
 .exchange-page .exchange-row .diary-emotion,.exchange-page .exchange-row .diary-emotion svg,.exchange-page .exchange-row .diary-emotion b:after{animation:none!important;transform:none!important}
+.main-nav.three-items{grid-template-columns:repeat(3,1fr)}
