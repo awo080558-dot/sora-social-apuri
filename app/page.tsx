@@ -20,6 +20,13 @@ const weatherInfo = {
   storm: { label:"雷雨", icon:Zap, symbol:"⛈️", message:"炎上・強い表現が多い状態です。閲覧には注意してください", color:"#28233e" },
 };
 
+const timelineAnalysis:Record<Weather,{first:string;firstValue:number;second:string;secondValue:number;note:string}> = {
+  sunny:{first:"前向きな投稿",firstValue:58,second:"穏やかな表現",secondValue:27,note:"明るく落ち着いた話題が多いようです。"},
+  cloudy:{first:"迷い・不安を含む投稿",firstValue:34,second:"中立的な投稿",secondValue:41,note:"少し気がかりな話題が混ざっています。"},
+  rainy:{first:"不安・落ち込みを含む投稿",firstValue:42,second:"強い表現を含む投稿",secondValue:18,note:"無理をせず、見たい情報を選んでください。"},
+  storm:{first:"怒り・対立を含む投稿",firstValue:51,second:"強い表現を含む投稿",secondValue:36,note:"刺激の強い話題が増えています。"},
+};
+
 const posts:Post[] = [
   {id:1,weather:"sunny",name:"夜更かしの猫",handle:"@digi_walker_01",avatar:"🌌",time:"5時間前",body:"帰り道、雲の切れ間から月がすごくきれいに見えた。急いで撮ったから少しブレたけど、今日いちばん嬉しかった瞬間かも。",replies:"3",reposts:"1",likes:"42",views:"386"},
   {id:2,weather:"sunny",name:"デジタル・ノマド",handle:"@digi_inoma_2",avatar:"🎮",time:"5時間前",body:"82歳のおじいちゃんがスマホデビュー。最初に送ってきたのが、筋肉ムキムキのウサギのスタンプだった。どこで見つけたの（笑） 電話しか使わないと言っていたのに、今日は朝から写真も送ってきた。覚えるの早すぎる。",replies:"8",reposts:"5",likes:"126",views:"814"},
@@ -123,6 +130,8 @@ export default function HomePage(){
   const [activeChat,setActiveChat]=useState<number|null>(null);
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
+  const [analysisVisible,setAnalysisVisible]=useState(true);
+  const [analysisPulse,setAnalysisPulse]=useState(0);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
   const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
@@ -133,6 +142,7 @@ export default function HomePage(){
   const AccountWeatherIcon=selectedAccount?weatherInfo[selectedAccount.weather].icon:Cloud;
   useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
+  useEffect(()=>{if(!analysisVisible)return;const timer=window.setTimeout(()=>setAnalysisVisible(false),5600);return()=>window.clearTimeout(timer)},[analysisVisible,analysisPulse]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
@@ -152,7 +162,7 @@ export default function HomePage(){
     </header>
 
     <nav className="weather-tabs" aria-label="タイムラインの感情を選択">
-      {(Object.keys(weatherInfo) as Weather[]).map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeather(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
+      {(Object.keys(weatherInfo) as Weather[]).map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeather(key);setView("timeline");setAnalysisVisible(true);setAnalysisPulse(v=>v+1)}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
     </nav></>}
 
     {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather}`}>
@@ -196,6 +206,8 @@ export default function HomePage(){
     {view==="followers"&&<div className="sub-page followers-page"><button className="profile-back" onClick={()=>setView("profile")}>← プロフィール</button><h1>フォロワー予報</h1><p className="intro">フォロワーのタイムライン状態を天気で確認できます。</p><div className="follower-summary"><span>あなたの周りの空模様</span><strong>🌤️ おおむね晴れ</strong></div>{followers.map(f=><button className="follower-row" key={f.handle} onClick={()=>openAccount(f)}><span className="follower-avatar">{f.avatar}</span><span><strong>{f.name}</strong><small>{f.handle}</small></span><em>{weatherInfo[f.weather].symbol} {weatherInfo[f.weather].label}</em></button>)}</div>}
 
     {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row" key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
+
+    {view==="timeline"&&analysisVisible&&<aside key={`${weather}-${analysisPulse}`} className={`cloud-analysis ${weather}`} aria-live="polite"><button onClick={()=>setAnalysisVisible(false)} aria-label="分析を閉じる">×</button><small>{info.label}のタイムライン傾向</small><strong>{timelineAnalysis[weather].first}<b>{timelineAnalysis[weather].firstValue}%</b></strong><strong>{timelineAnalysis[weather].second}<b>{timelineAnalysis[weather].secondValue}%</b></strong><p>{timelineAnalysis[weather].note}</p></aside>}
 
     <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><Plus/></button>
     <nav className="main-nav"><button className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home fill="currentColor"/></button><button className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound fill="currentColor"/></button><button className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
