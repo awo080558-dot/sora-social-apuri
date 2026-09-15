@@ -130,7 +130,7 @@ export default function HomePage(){
   const [activeChat,setActiveChat]=useState<number|null>(null);
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
-  const [analysisVisible,setAnalysisVisible]=useState(true);
+  const [analysisVisible,setAnalysisVisible]=useState(false);
   const [analysisPulse,setAnalysisPulse]=useState(0);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
@@ -142,7 +142,7 @@ export default function HomePage(){
   const AccountWeatherIcon=selectedAccount?weatherInfo[selectedAccount.weather].icon:Cloud;
   useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
-  useEffect(()=>{if(!analysisVisible)return;const timer=window.setTimeout(()=>setAnalysisVisible(false),5600);return()=>window.clearTimeout(timer)},[analysisVisible,analysisPulse]);
+  useEffect(()=>{if(!analysisVisible)return;const timer=window.setTimeout(()=>setAnalysisVisible(false),3000);return()=>window.clearTimeout(timer)},[analysisVisible,analysisPulse]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
