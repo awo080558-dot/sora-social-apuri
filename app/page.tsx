@@ -154,7 +154,7 @@ export default function HomePage(){
   ];
   const sendMessage=(e:FormEvent)=>{e.preventDefault();if(activeChat===null||!messageDraft.trim())return;setSentMessages(v=>({...v,[activeChat]:[...(v[activeChat]||[]),messageDraft.trim()]}));setMessageDraft("")};
 
-  return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
+  return <main className="sora-stage"><svg className="glass-filter-defs" aria-hidden="true"><defs><filter id="post-glass-refraction" x="-12%" y="-12%" width="124%" height="124%" colorInterpolationFilters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.016" numOctaves="2" seed="11" result="glassNoise"/><feGaussianBlur in="glassNoise" stdDeviation="4" result="frostedNoise"/><feDisplacementMap in="SourceGraphic" in2="frostedNoise" scale="32" xChannelSelector="R" yChannelSelector="B"/></filter></defs></svg><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
       <button aria-label="通知" onClick={()=>notify("新しい通知はありません")}><Bell fill="currentColor"/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
