@@ -13,103 +13,6 @@ type View = "timeline" | "search" | "messages" | "profile" | "userProfile" | "fo
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
-const glassBackgrounds: Record<Weather,string> = {
-  sunny:"/weather-sunny-user.png",
-  cloudy:"/weather-cloudy-photo.png",
-  rainy:"/weather-rainy-photo.png",
-  storm:"/weather-storm-photo.png"
-};
-
-function RefractionGlass({weather}:{weather:Weather}){
-  const canvasRef=useRef<HTMLCanvasElement>(null);
-  useEffect(()=>{
-    const canvas=canvasRef.current;
-    const card=canvas?.parentElement;
-    const stage=card?.closest(".sora-app") as HTMLElement|null;
-    if(!canvas||!card||!stage)return;
-    const gl=canvas.getContext("webgl",{alpha:true,antialias:true,premultipliedAlpha:true});
-    if(!gl)return;
-    const vertex=`attribute vec2 p; varying vec2 uv; void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
-    const fragment=`precision mediump float;
-      varying vec2 uv;
-      uniform sampler2D image;
-      uniform vec2 cardSize;
-      uniform vec2 cardOrigin;
-      uniform vec2 stageSize;
-      uniform vec2 textureSize;
-
-      vec2 coverUv(vec2 point){
-        float imageRatio=textureSize.x/textureSize.y;
-        float stageRatio=stageSize.x/stageSize.y;
-        vec2 scale=stageRatio>imageRatio?vec2(1.,imageRatio/stageRatio):vec2(stageRatio/imageRatio,1.);
-        return (point/stageSize-.5)*scale+.5;
-      }
-
-      void main(){
-        vec2 local=vec2(uv.x,1.-uv.y);
-        vec2 centered=local-.5;
-        vec2 edgeDistance=.5-abs(centered);
-        float edge=min(edgeDistance.x,edgeDistance.y);
-        float rim=1.-smoothstep(.018,.185,edge);
-        float corner=pow(clamp(length(centered*vec2(1.,cardSize.y/cardSize.x))*1.72,0.,1.),2.2);
-        vec2 normal=normalize(centered+vec2(.0001));
-        vec2 surface=vec2(sin(local.y*17.+local.x*5.),cos(local.x*14.-local.y*4.))*0.18;
-        vec2 bend=(normal*(rim*.82+corner*.22)+surface*rim)*vec2(.026,.019);
-        vec2 base=coverUv(cardOrigin+local*cardSize);
-        vec2 texel=1./textureSize;
-        vec2 refracted=base+bend;
-        vec3 soft=texture2D(image,refracted).rgb*.42;
-        soft+=texture2D(image,refracted+vec2(texel.x*4.,0.)).rgb*.145;
-        soft+=texture2D(image,refracted-vec2(texel.x*4.,0.)).rgb*.145;
-        soft+=texture2D(image,refracted+vec2(0.,texel.y*4.)).rgb*.145;
-        soft+=texture2D(image,refracted-vec2(0.,texel.y*4.)).rgb*.145;
-        float dispersion=.0038*(rim*.8+corner*.2);
-        float red=texture2D(image,refracted+normal*dispersion).r;
-        float blue=texture2D(image,refracted-normal*dispersion).b;
-        vec3 glass=mix(soft,vec3(red,soft.g,blue),.52);
-        vec2 lightDir=normalize(vec2(-1.,1.));
-        float light=pow(max(dot(normal,lightDir),0.),3.)*rim*.8;
-        float shade=pow(max(dot(normal,-lightDir),0.),2.)*rim*.18;
-        glass+=light;
-        glass-=shade;
-        gl_FragColor=vec4(glass,.78);
-      }`;
-    const compile=(type:number,source:string)=>{const shader=gl.createShader(type);if(!shader)return null;gl.shaderSource(shader,source);gl.compileShader(shader);return gl.getShaderParameter(shader,gl.COMPILE_STATUS)?shader:null};
-    const vs=compile(gl.VERTEX_SHADER,vertex),fs=compile(gl.FRAGMENT_SHADER,fragment);
-    if(!vs||!fs)return;
-    const program=gl.createProgram();
-    if(!program)return;
-    gl.attachShader(program,vs);gl.attachShader(program,fs);gl.linkProgram(program);
-    if(!gl.getProgramParameter(program,gl.LINK_STATUS))return;
-    gl.useProgram(program);
-    const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
-    const position=gl.getAttribLocation(program,"p");gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);
-    const texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,texture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-    let loaded=false,visible=true,frame=0;
-    const image=new Image();
-    const draw=()=>{
-      frame=0;if(!loaded||!visible)return;
-      const cardRect=card.getBoundingClientRect(),stageRect=stage.getBoundingClientRect();
-      const ratio=Math.min(window.devicePixelRatio||1,2);
-      const width=Math.max(1,Math.round(cardRect.width*ratio)),height=Math.max(1,Math.round(cardRect.height*ratio));
-      if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
-      gl.viewport(0,0,width,height);gl.useProgram(program);
-      gl.uniform2f(gl.getUniformLocation(program,"cardSize"),cardRect.width,cardRect.height);
-      gl.uniform2f(gl.getUniformLocation(program,"cardOrigin"),cardRect.left-stageRect.left,cardRect.top-stageRect.top);
-      gl.uniform2f(gl.getUniformLocation(program,"stageSize"),stageRect.width,stageRect.height);
-      gl.uniform2f(gl.getUniformLocation(program,"textureSize"),image.naturalWidth,image.naturalHeight);
-      gl.drawArrays(gl.TRIANGLES,0,6);
-    };
-    const schedule=()=>{if(!frame)frame=requestAnimationFrame(draw)};
-    image.onload=()=>{loaded=true;gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);schedule()};
-    image.src=glassBackgrounds[weather];
-    const observer=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??true;if(visible)schedule()},{root:stage,rootMargin:"120px"});
-    observer.observe(card);stage.addEventListener("scroll",schedule,{passive:true});window.addEventListener("resize",schedule,{passive:true});
-    return()=>{observer.disconnect();stage.removeEventListener("scroll",schedule);window.removeEventListener("resize",schedule);if(frame)cancelAnimationFrame(frame);gl.deleteTexture(texture);gl.deleteBuffer(buffer);gl.deleteProgram(program);gl.deleteShader(vs);gl.deleteShader(fs)};
-  },[weather]);
-  return <canvas ref={canvasRef} className="post-refraction-canvas" aria-hidden="true"/>;
-}
-
 const weatherInfo = {
   sunny: { label:"晴れ", icon:Sun, symbol:"🌤️", message:"明るく前向きな投稿が多いタイムラインです", color:"#f6b900" },
   cloudy: { label:"曇り", icon:Cloud, symbol:"☁️", message:"落ち着いた話題と少し不安な投稿が混在しています", color:"#78909c" },
@@ -251,7 +154,7 @@ export default function HomePage(){
   ];
   const sendMessage=(e:FormEvent)=>{e.preventDefault();if(activeChat===null||!messageDraft.trim())return;setSentMessages(v=>({...v,[activeChat]:[...(v[activeChat]||[]),messageDraft.trim()]}));setMessageDraft("")};
 
-  return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
+  return <main className="sora-stage"><svg className="glass-filter-defs" aria-hidden="true"><defs><filter id="post-glass-refraction" x="-12%" y="-12%" width="124%" height="124%" colorInterpolationFilters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.016" numOctaves="2" seed="11" result="glassNoise"/><feGaussianBlur in="glassNoise" stdDeviation="4" result="frostedNoise"/><feDisplacementMap in="SourceGraphic" in2="frostedNoise" scale="32" xChannelSelector="R" yChannelSelector="B"/></filter></defs></svg><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
       <button aria-label="通知" onClick={()=>notify("新しい通知はありません")}><Bell fill="currentColor"/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
@@ -263,7 +166,7 @@ export default function HomePage(){
     </nav></>}
 
     {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather}`}>
-      {feed.map(post=><article className="sora-post" key={post.id}><RefractionGlass weather={weather}/>
+      {feed.map(post=><article className="sora-post" key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
         <div className="metric-row">
