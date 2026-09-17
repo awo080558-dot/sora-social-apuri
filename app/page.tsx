@@ -141,6 +141,14 @@ export default function HomePage(){
     {name:"ハナコ＠読書垢",handle:"@flower_book_log",preview:"その本、読み終わったら感想聞きたい",time:"1時間",avatar:3,messages:["この前話してた本、やっと買えた！","いいな。その本、読み終わったら感想聞きたい"]},
     {name:"フィルム散歩",handle:"@film_walk",preview:"土曜日なら空いてるよ",time:"昨日",avatar:5,messages:["今度あの商店街、一緒に写真撮りに行かない？","土曜日なら空いてるよ"]},
     {name:"朝ごはん記録",handle:"@toast_morning",preview:"レシピ送るね",time:"2日",avatar:2,messages:["前に載せてたスープ、おいしそうだった","ありがとう！あとでレシピ送るね"]},
+    {name:"海辺のソーダ",handle:"@umi_soda",preview:"あのカフェ、窓側の席がよかったよ",time:"3日",avatar:4,messages:["海沿いでゆっくりできる店知らない？","あのカフェ、窓側の席がよかったよ"]},
+    {name:"ねこまる",handle:"@nekomaru_days",preview:"動画見た！最後の顔かわいすぎる",time:"4日",avatar:6,messages:["うちの猫、箱に入ろうとして失敗してた笑","動画見た！最後の顔かわいすぎる"]},
+    {name:"珈琲と雨音",handle:"@coffee_rain",preview:"深煎りなら駅前のお店がおすすめ",time:"5日",avatar:1,messages:["苦めのコーヒーが飲める店を探してる","深煎りなら駅前のお店がおすすめ"]},
+    {name:"放課後ゲーム部",handle:"@after5_game",preview:"今夜9時からなら参加できる！",time:"6日",avatar:3,messages:["今日みんなで協力モードやらない？","今夜9時からなら参加できる！"]},
+    {name:"小さな植物園",handle:"@green_room88",preview:"新しい葉が出たら写真見せて",time:"1週間",avatar:5,messages:["教えてもらった通り鉢を替えてみたよ","いい感じ！新しい葉が出たら写真見せて"]},
+    {name:"週末パン屋めぐり",handle:"@bread_trip",preview:"午前中なら焼きたてが多いみたい",time:"1週間",avatar:2,messages:["気になってたパン屋、今度行ってみる","午前中なら焼きたてが多いみたい"]},
+    {name:"夜のラジオ",handle:"@midnight_radio",preview:"その曲、次の配信で流すね",time:"2週間",avatar:4,messages:["この前紹介してた曲、すごくよかった","ありがとう。その曲、次の配信でも流すね"]},
+    {name:"ゆるラン日記",handle:"@slow_run_log",preview:"無理せず同じペースで走ろう",time:"2週間",avatar:6,messages:["今週末、川沿いを軽く走らない？","いいね。無理せず同じペースで走ろう"]},
   ];
   const sendMessage=(e:FormEvent)=>{e.preventDefault();if(activeChat===null||!messageDraft.trim())return;setSentMessages(v=>({...v,[activeChat]:[...(v[activeChat]||[]),messageDraft.trim()]}));setMessageDraft("")};
 
