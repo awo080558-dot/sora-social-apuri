@@ -5,7 +5,7 @@ import {
   Mail, MapPin, MessageCircle, Pencil, Repeat2, Search, Send, Settings,
   Sun, Upload, UserPlus, UserRound, X, Zap
 } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
@@ -19,6 +19,7 @@ const weatherInfo = {
   rainy: { label:"雨", icon:CloudRain, symbol:"🌧️", message:"ネガティブな投稿が増えています。無理せず閲覧してください", color:"#367cd8" },
   storm: { label:"雷雨", icon:Zap, symbol:"⛈️", message:"炎上・強い表現が多い状態です。閲覧には注意してください", color:"#28233e" },
 };
+const weatherOrder:Weather[] = ["sunny","cloudy","rainy","storm"];
 
 const posts:Post[] = [
   {id:1,weather:"sunny",name:"夜更かしの猫",handle:"@digi_walker_01",avatar:"🌌",time:"5時間前",body:"帰り道、雲の切れ間から月がすごくきれいに見えた。急いで撮ったから少しブレたけど、今日いちばん嬉しかった瞬間かも。",replies:"3",reposts:"1",likes:"42",views:"386"},
@@ -124,6 +125,9 @@ export default function HomePage(){
   const [activeChat,setActiveChat]=useState<number|null>(null);
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
+  const horizontalGesture=useRef<{x:number;y:number}|null>(null);
+  const gestureSwitched=useRef(false);
+  const lastWheelSwitch=useRef(0);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
   const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
@@ -135,6 +139,29 @@ export default function HomePage(){
   useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
+  const shiftWeather=(step:number)=>setWeather(current=>{
+    const index=weatherOrder.indexOf(current);
+    return weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length];
+  });
+  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureSwitched.current=false};
+  const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
+    const start=horizontalGesture.current;
+    if(!start||gestureSwitched.current)return;
+    const dx=e.clientX-start.x;
+    const dy=e.clientY-start.y;
+    if(Math.abs(dx)>54&&Math.abs(dx)>Math.abs(dy)*1.35){
+      gestureSwitched.current=true;
+      shiftWeather(dx<0?1:-1);
+    }
+  };
+  const endWeatherSwipe=()=>{horizontalGesture.current=null;gestureSwitched.current=false};
+  const wheelWeather=(e:WheelEvent<HTMLDivElement>)=>{
+    if(Math.abs(e.deltaX)<34||Math.abs(e.deltaX)<Math.abs(e.deltaY)*1.25)return;
+    const now=Date.now();
+    if(now-lastWheelSwitch.current<520)return;
+    lastWheelSwitch.current=now;
+    shiftWeather(e.deltaX>0?1:-1);
+  };
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
   const conversations=[
@@ -161,10 +188,10 @@ export default function HomePage(){
     </header>
 
     <nav className="weather-tabs" aria-label="タイムラインの感情を選択">
-      {(Object.keys(weatherInfo) as Weather[]).map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeather(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
+      {weatherOrder.map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeather(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
     </nav></>}
 
-    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather}`}>
+    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather}`} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
       {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
