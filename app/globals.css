@@ -202,20 +202,50 @@
 
 /* 天気タイムラインを横に送る感覚で切り替える */
 .timeline-area.weather-bg.slide-next{
-  animation:weather-slide-next .46s cubic-bezier(.2,.8,.22,1) both;
+  animation:weather-slide-next .58s cubic-bezier(.18,.86,.18,1) both;
 }
 .timeline-area.weather-bg.slide-prev{
-  animation:weather-slide-prev .46s cubic-bezier(.2,.8,.22,1) both;
+  animation:weather-slide-prev .58s cubic-bezier(.18,.86,.18,1) both;
+}
+.timeline-area.weather-bg.weather-outgoing{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  pointer-events:none;
+  scrollbar-width:none;
+}
+.timeline-area.weather-bg.weather-outgoing::-webkit-scrollbar{display:none}
+.timeline-area.weather-bg.weather-outgoing>.region-post-in,
+.timeline-area.weather-bg.slide-next>.region-post-in,
+.timeline-area.weather-bg.slide-prev>.region-post-in{
+  opacity:1;
+  animation:none;
+}
+.timeline-area.weather-bg.exit-next{
+  animation:weather-exit-next .58s cubic-bezier(.55,0,.82,.28) both;
+}
+.timeline-area.weather-bg.exit-prev{
+  animation:weather-exit-prev .58s cubic-bezier(.55,0,.82,.28) both;
 }
 @keyframes weather-slide-next{
-  from{opacity:.78;transform:translateX(54px);filter:saturate(.9) brightness(.98)}
+  from{opacity:.92;transform:translateX(100%);filter:saturate(.92) brightness(.98)}
   to{opacity:1;transform:translateX(0);filter:none}
 }
 @keyframes weather-slide-prev{
-  from{opacity:.78;transform:translateX(-54px);filter:saturate(.9) brightness(.98)}
+  from{opacity:.92;transform:translateX(-100%);filter:saturate(.92) brightness(.98)}
   to{opacity:1;transform:translateX(0);filter:none}
+}
+@keyframes weather-exit-next{
+  from{opacity:1;transform:translateX(0);filter:none}
+  to{opacity:.92;transform:translateX(-112%);filter:saturate(.88) brightness(.96)}
+}
+@keyframes weather-exit-prev{
+  from{opacity:1;transform:translateX(0);filter:none}
+  to{opacity:.92;transform:translateX(112%);filter:saturate(.88) brightness(.96)}
 }
 @media (prefers-reduced-motion:reduce){
   .timeline-area.weather-bg.slide-next,
-  .timeline-area.weather-bg.slide-prev{animation:none}
+  .timeline-area.weather-bg.slide-prev,
+  .timeline-area.weather-bg.exit-next,
+  .timeline-area.weather-bg.exit-prev{animation:none}
 }

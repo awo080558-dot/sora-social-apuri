@@ -127,10 +127,14 @@ export default function HomePage(){
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
   const [weatherSlide,setWeatherSlide]=useState<WeatherSlide>("none");
+  const [exitingWeather,setExitingWeather]=useState<Weather|null>(null);
+  const [exitingSlide,setExitingSlide]=useState<WeatherSlide>("none");
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureSwitched=useRef(false);
   const lastWheelSwitch=useRef(0);
+  const exitTimer=useRef<number|null>(null);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
+  const exitingFeed=useMemo(()=>exitingWeather?posts.filter(p=>p.weather===exitingWeather):[],[exitingWeather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
   const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
   const hasExactSearchResults=exactSearchResults.length>0;
@@ -140,20 +144,32 @@ export default function HomePage(){
   const AccountWeatherIcon=selectedAccount?weatherInfo[selectedAccount.weather].icon:Cloud;
   useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
+  useEffect(()=>()=>{if(exitTimer.current!==null)window.clearTimeout(exitTimer.current)},[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
+  const changeWeather=(next:Weather,direction:Exclude<WeatherSlide,"none">)=>{
+    if(weather===next)return;
+    if(exitTimer.current!==null)window.clearTimeout(exitTimer.current);
+    setExitingWeather(weather);
+    setExitingSlide(direction);
+    setWeatherSlide(direction);
+    setWeather(next);
+    exitTimer.current=window.setTimeout(()=>{
+      setExitingWeather(null);
+      setExitingSlide("none");
+      exitTimer.current=null;
+    },620);
+  };
   const setWeatherWithSlide=(next:Weather)=>{
     if(weather===next)return;
     const currentIndex=weatherOrder.indexOf(weather);
     const nextIndex=weatherOrder.indexOf(next);
     const forward=(nextIndex-currentIndex+weatherOrder.length)%weatherOrder.length;
     const backward=(currentIndex-nextIndex+weatherOrder.length)%weatherOrder.length;
-    setWeatherSlide(forward<=backward?"next":"prev");
-    setWeather(next);
+    changeWeather(next,forward<=backward?"next":"prev");
   };
   const shiftWeather=(step:number)=>{
     const index=weatherOrder.indexOf(weather);
-    setWeatherSlide(step>0?"next":"prev");
-    setWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length]);
+    changeWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length],step>0?"next":"prev");
   };
   const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureSwitched.current=false};
   const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
@@ -202,6 +218,20 @@ export default function HomePage(){
     <nav className="weather-tabs" aria-label="タイムラインの感情を選択">
       {weatherOrder.map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeatherWithSlide(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
     </nav></>}
+
+    {view==="timeline"&&exitingWeather&&<div aria-hidden="true" className={`timeline-area weather-bg ${exitingWeather} weather-outgoing exit-${exitingSlide}`}>
+      {exitingFeed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={`exit-${post.id}`}>
+        <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} tabIndex={-1} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
+        <p>{post.body}</p>
+        <div className="metric-row">
+          <button tabIndex={-1}><MessageCircle/><span>{post.replies}</span></button>
+          <button tabIndex={-1}><Repeat2/><span>{post.reposts}</span></button>
+          <button tabIndex={-1} className={`like-button ${liked.includes(post.id)?"liked":""}`}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{post.likes}</span></button>
+          <button tabIndex={-1}><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
+          <button tabIndex={-1} className="share"><Upload/></button>
+        </div>
+      </article>)}
+    </div>}
 
     {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} slide-${weatherSlide}`} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
       {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
