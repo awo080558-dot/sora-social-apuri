@@ -130,12 +130,15 @@ export default function HomePage(){
   const [exitingWeather,setExitingWeather]=useState<Weather|null>(null);
   const [exitingSlide,setExitingSlide]=useState<WeatherSlide>("none");
   const [dragOffset,setDragOffset]=useState(0);
+  const [dragWidth,setDragWidth]=useState(390);
+  const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureDragging=useRef(false);
   const lastWheelSwitch=useRef(0);
   const exitTimer=useRef<number|null>(null);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const exitingFeed=useMemo(()=>exitingWeather?posts.filter(p=>p.weather===exitingWeather):[],[exitingWeather]);
+  const dragPreviewFeed=useMemo(()=>dragPreviewWeather?posts.filter(p=>p.weather===dragPreviewWeather):[],[dragPreviewWeather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
   const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
   const hasExactSearchResults=exactSearchResults.length>0;
@@ -172,7 +175,11 @@ export default function HomePage(){
     const index=weatherOrder.indexOf(weather);
     changeWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length],step>0?"next":"prev");
   };
-  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureDragging.current=false;setDragOffset(0)};
+  const adjacentWeather=(step:number)=>{
+    const index=weatherOrder.indexOf(weather);
+    return weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length];
+  };
+  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureDragging.current=false;setDragOffset(0);setDragPreviewWeather(null)};
   const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
     if(!start)return;
@@ -184,8 +191,11 @@ export default function HomePage(){
     }
     if(gestureDragging.current){
       const width=e.currentTarget.clientWidth||390;
+      setDragWidth(width);
       const limit=width*.78;
-      setDragOffset(Math.max(-limit,Math.min(limit,dx)));
+      const nextOffset=Math.max(-limit,Math.min(limit,dx));
+      setDragOffset(nextOffset);
+      setDragPreviewWeather(adjacentWeather(nextOffset<0?1:-1));
     }
   };
   const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
@@ -195,6 +205,7 @@ export default function HomePage(){
     horizontalGesture.current=null;
     gestureDragging.current=false;
     setDragOffset(0);
+    setDragPreviewWeather(null);
     if(shouldSwitch)shiftWeather(dx<0?1:-1);
   };
   const wheelWeather=(e:WheelEvent<HTMLDivElement>)=>{
@@ -235,6 +246,20 @@ export default function HomePage(){
 
     {view==="timeline"&&exitingWeather&&<div aria-hidden="true" className={`timeline-area weather-bg ${exitingWeather} weather-outgoing exit-${exitingSlide}`}>
       {exitingFeed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={`exit-${post.id}`}>
+        <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} tabIndex={-1} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
+        <p>{post.body}</p>
+        <div className="metric-row">
+          <button tabIndex={-1}><MessageCircle/><span>{post.replies}</span></button>
+          <button tabIndex={-1}><Repeat2/><span>{post.reposts}</span></button>
+          <button tabIndex={-1} className={`like-button ${liked.includes(post.id)?"liked":""}`}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{post.likes}</span></button>
+          <button tabIndex={-1}><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
+          <button tabIndex={-1} className="share"><Upload/></button>
+        </div>
+      </article>)}
+    </div>}
+
+    {view==="timeline"&&dragPreviewWeather&&dragOffset!==0&&<div aria-hidden="true" className={`timeline-area weather-bg ${dragPreviewWeather} weather-adjacent-preview ${dragOffset<0?"from-right":"from-left"}`} style={{transform:`translateX(${dragOffset+(dragOffset<0?dragWidth:-dragWidth)}px)`}}>
+      {dragPreviewFeed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={`preview-${post.id}`}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} tabIndex={-1} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
         <div className="metric-row">
