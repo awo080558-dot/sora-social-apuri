@@ -2,7 +2,7 @@
 
 import {
   Bell, ChartNoAxesColumnIncreasing, Cloud, CloudRain, Heart, Home,
-  Mail, MapPin, MessageCircle, Pencil, Plus, Repeat2, Search, Send, Settings,
+  Mail, MapPin, MessageCircle, Pencil, Repeat2, Search, Send, Settings,
   Sun, Upload, UserPlus, UserRound, X, Zap
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -208,7 +208,7 @@ export default function HomePage(){
 
     {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row region-post-in" style={{animationDelay:`${i*85}ms`}} key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
 
-    <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><Plus/></button>
+    <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>
     <nav className="main-nav"><button className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home fill="currentColor"/></button><button className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound fill="currentColor"/></button><button className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
