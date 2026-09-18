@@ -199,3 +199,23 @@
 }
 .profile-avatar{border:4px solid #fff!important}
 .profile-cover{height:103px!important;margin:15px 11px 0!important;border-radius:10px 10px 0 0!important;background-image:url('/tasogare-cover.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+
+/* 天気タイムラインを横に送る感覚で切り替える */
+.timeline-area.weather-bg.slide-next{
+  animation:weather-slide-next .46s cubic-bezier(.2,.8,.22,1) both;
+}
+.timeline-area.weather-bg.slide-prev{
+  animation:weather-slide-prev .46s cubic-bezier(.2,.8,.22,1) both;
+}
+@keyframes weather-slide-next{
+  from{opacity:.78;transform:translateX(54px);filter:saturate(.9) brightness(.98)}
+  to{opacity:1;transform:translateX(0);filter:none}
+}
+@keyframes weather-slide-prev{
+  from{opacity:.78;transform:translateX(-54px);filter:saturate(.9) brightness(.98)}
+  to{opacity:1;transform:translateX(0);filter:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .timeline-area.weather-bg.slide-next,
+  .timeline-area.weather-bg.slide-prev{animation:none}
+}

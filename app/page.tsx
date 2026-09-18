@@ -11,6 +11,7 @@ import { RealMap } from "./RealMap";
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
 type View = "timeline" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
+type WeatherSlide = "none" | "next" | "prev";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
 const weatherInfo = {
@@ -125,6 +126,7 @@ export default function HomePage(){
   const [activeChat,setActiveChat]=useState<number|null>(null);
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
+  const [weatherSlide,setWeatherSlide]=useState<WeatherSlide>("none");
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureSwitched=useRef(false);
   const lastWheelSwitch=useRef(0);
@@ -139,10 +141,20 @@ export default function HomePage(){
   useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
-  const shiftWeather=(step:number)=>setWeather(current=>{
-    const index=weatherOrder.indexOf(current);
-    return weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length];
-  });
+  const setWeatherWithSlide=(next:Weather)=>{
+    if(weather===next)return;
+    const currentIndex=weatherOrder.indexOf(weather);
+    const nextIndex=weatherOrder.indexOf(next);
+    const forward=(nextIndex-currentIndex+weatherOrder.length)%weatherOrder.length;
+    const backward=(currentIndex-nextIndex+weatherOrder.length)%weatherOrder.length;
+    setWeatherSlide(forward<=backward?"next":"prev");
+    setWeather(next);
+  };
+  const shiftWeather=(step:number)=>{
+    const index=weatherOrder.indexOf(weather);
+    setWeatherSlide(step>0?"next":"prev");
+    setWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length]);
+  };
   const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureSwitched.current=false};
   const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
@@ -188,10 +200,10 @@ export default function HomePage(){
     </header>
 
     <nav className="weather-tabs" aria-label="タイムラインの感情を選択">
-      {weatherOrder.map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeather(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
+      {weatherOrder.map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeatherWithSlide(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
     </nav></>}
 
-    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather}`} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
+    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} slide-${weatherSlide}`} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
       {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
