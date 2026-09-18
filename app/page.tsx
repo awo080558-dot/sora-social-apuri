@@ -129,8 +129,9 @@ export default function HomePage(){
   const [weatherSlide,setWeatherSlide]=useState<WeatherSlide>("none");
   const [exitingWeather,setExitingWeather]=useState<Weather|null>(null);
   const [exitingSlide,setExitingSlide]=useState<WeatherSlide>("none");
+  const [dragOffset,setDragOffset]=useState(0);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
-  const gestureSwitched=useRef(false);
+  const gestureDragging=useRef(false);
   const lastWheelSwitch=useRef(0);
   const exitTimer=useRef<number|null>(null);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
@@ -171,18 +172,31 @@ export default function HomePage(){
     const index=weatherOrder.indexOf(weather);
     changeWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length],step>0?"next":"prev");
   };
-  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureSwitched.current=false};
+  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureDragging.current=false;setDragOffset(0)};
   const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
-    if(!start||gestureSwitched.current)return;
+    if(!start)return;
     const dx=e.clientX-start.x;
     const dy=e.clientY-start.y;
-    if(Math.abs(dx)>54&&Math.abs(dx)>Math.abs(dy)*1.35){
-      gestureSwitched.current=true;
-      shiftWeather(dx<0?1:-1);
+    if(!gestureDragging.current&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.25){
+      gestureDragging.current=true;
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    }
+    if(gestureDragging.current){
+      const width=e.currentTarget.clientWidth||390;
+      const limit=width*.78;
+      setDragOffset(Math.max(-limit,Math.min(limit,dx)));
     }
   };
-  const endWeatherSwipe=()=>{horizontalGesture.current=null;gestureSwitched.current=false};
+  const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
+    const start=horizontalGesture.current;
+    const dx=start?e.clientX-start.x:dragOffset;
+    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>72;
+    horizontalGesture.current=null;
+    gestureDragging.current=false;
+    setDragOffset(0);
+    if(shouldSwitch)shiftWeather(dx<0?1:-1);
+  };
   const wheelWeather=(e:WheelEvent<HTMLDivElement>)=>{
     if(Math.abs(e.deltaX)<34||Math.abs(e.deltaX)<Math.abs(e.deltaY)*1.25)return;
     const now=Date.now();
@@ -233,7 +247,7 @@ export default function HomePage(){
       </article>)}
     </div>}
 
-    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} slide-${weatherSlide}`} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
+    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} slide-${weatherSlide} ${dragOffset!==0?"is-dragging":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
       {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>

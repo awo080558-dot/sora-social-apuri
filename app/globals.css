@@ -207,6 +207,12 @@
 .timeline-area.weather-bg.slide-prev{
   animation:weather-slide-prev .58s cubic-bezier(.18,.86,.18,1) both;
 }
+.timeline-area.weather-bg.is-dragging{
+  animation:none!important;
+  transition:none!important;
+  touch-action:pan-y;
+  cursor:grabbing;
+}
 .timeline-area.weather-bg.weather-outgoing{
   position:absolute;
   z-index:3;
