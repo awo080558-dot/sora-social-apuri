@@ -178,5 +178,5 @@
 /* タイムラインの下部ナビも他画面と同じデザインに統一 */
 .sora-app:has(>.timeline-area)>.main-nav{height:106px;border:1px solid #bbb;border-radius:40px 40px 0 0;padding:19px 18px 31px}.sora-app:has(>.timeline-area)>.main-nav svg{width:31px;height:31px}
 
-/* 投稿追加ボタン：半透明の青い円と黒い吹き出し */
-.new-post{width:82px;height:82px;border:1px solid #ffffff70;background:rgba(103,157,255,.48);color:#000;box-shadow:inset 0 0 20px #ffffff24;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}.new-post svg{width:55px;height:55px;fill:#000;stroke:#000;stroke-width:1.8}
+/* 投稿追加ボタン：参照画像と同じ青紫の円＋黒い吹き出し */
+.new-post{width:82px;height:82px;border:0;background:linear-gradient(155deg,#afd2ff 0%,#c9c8ff 100%);color:#000;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}.new-post svg{display:none}.new-post:before{content:"";position:absolute;left:25px;top:25px;width:44px;height:36px;border-radius:18px 18px 17px 17px;background:#000}.new-post:after{content:"";position:absolute;left:18px;top:49px;width:0;height:0;border-top:19px solid #000;border-right:24px solid transparent;transform:rotate(-8deg)}
