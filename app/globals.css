@@ -185,3 +185,4 @@
 
 /* 黄昏のプロフィール画像を全表示箇所で統一 */
 .profile-avatar,.profile-post-avatar{background-image:url('/tasogare-avatar.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.profile-avatar{border:4px solid #fff!important}
