@@ -150,30 +150,22 @@ export default function HomePage(){
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   useEffect(()=>()=>{if(exitTimer.current!==null)window.clearTimeout(exitTimer.current)},[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
-  const changeWeather=(next:Weather,direction:Exclude<WeatherSlide,"none">)=>{
+  const changeWeather=(next:Weather)=>{
     if(weather===next)return;
     if(exitTimer.current!==null)window.clearTimeout(exitTimer.current);
-    setExitingWeather(weather);
-    setExitingSlide(direction);
-    setWeatherSlide(direction);
+    setExitingWeather(null);
+    setExitingSlide("none");
+    setWeatherSlide("none");
     setWeather(next);
-    exitTimer.current=window.setTimeout(()=>{
-      setExitingWeather(null);
-      setExitingSlide("none");
-      exitTimer.current=null;
-    },620);
+    exitTimer.current=null;
   };
   const setWeatherWithSlide=(next:Weather)=>{
     if(weather===next)return;
-    const currentIndex=weatherOrder.indexOf(weather);
-    const nextIndex=weatherOrder.indexOf(next);
-    const forward=(nextIndex-currentIndex+weatherOrder.length)%weatherOrder.length;
-    const backward=(currentIndex-nextIndex+weatherOrder.length)%weatherOrder.length;
-    changeWeather(next,forward<=backward?"next":"prev");
+    changeWeather(next);
   };
   const shiftWeather=(step:number)=>{
     const index=weatherOrder.indexOf(weather);
-    changeWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length],step>0?"next":"prev");
+    changeWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length]);
   };
   const adjacentWeather=(step:number)=>{
     const index=weatherOrder.indexOf(weather);
