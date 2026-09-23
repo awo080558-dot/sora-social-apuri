@@ -151,13 +151,17 @@ export default function HomePage(){
     if(weather===next)return;
     changeWeather(next);
   };
-  const shiftWeather=(step:number)=>{
+  const weatherAtStep=(step:number)=>{
     const index=weatherOrder.indexOf(weather);
-    changeWeather(weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length]);
+    const nextIndex=index+step;
+    return nextIndex<0||nextIndex>=weatherOrder.length?null:weatherOrder[nextIndex];
+  };
+  const shiftWeather=(step:number)=>{
+    const next=weatherAtStep(step);
+    if(next)changeWeather(next);
   };
   const adjacentWeather=(step:number)=>{
-    const index=weatherOrder.indexOf(weather);
-    return weatherOrder[(index+step+weatherOrder.length)%weatherOrder.length];
+    return weatherAtStep(step);
   };
   const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureDragging.current=false;setDragOffset(0);setDragPreviewWeather(null)};
   const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
