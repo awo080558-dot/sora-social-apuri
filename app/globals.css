@@ -169,6 +169,27 @@
 .sora-app:has(>.timeline-area)>.sora-header:after,.sora-app:has(>.timeline-area)>.weather-tabs:before{display:none!important}
 .theme-cloudy:has(>.timeline-area)>.sora-header,.theme-cloudy:has(>.timeline-area)>.weather-tabs,.theme-rainy:has(>.timeline-area)>.sora-header,.theme-rainy:has(>.timeline-area)>.weather-tabs,.theme-storm:has(>.timeline-area)>.sora-header,.theme-storm:has(>.timeline-area)>.weather-tabs{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 
+/* 上部を窓枠のように見せる */
+.sora-app:has(>.timeline-area)>.sora-header,
+.sora-app:has(>.timeline-area)>.weather-tabs{
+  left:10px;
+  right:10px;
+  background:linear-gradient(180deg,rgba(255,255,255,.46),rgba(222,239,255,.24))!important;
+  border-left:1px solid rgba(255,255,255,.62);
+  border-right:1px solid rgba(255,255,255,.62);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(53,97,135,.16),0 8px 18px rgba(18,48,83,.14)!important;
+}
+.sora-app:has(>.timeline-area)>.sora-header{
+  top:10px;
+  height:78px;
+  border-top:1px solid rgba(255,255,255,.72);
+  border-radius:18px 18px 0 0;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs{
+  border-radius:0 0 18px 18px;
+  border-bottom:1px solid rgba(255,255,255,.72)!important;
+}
+
 /* フォロワー／フォロー一覧 */
 .follower-directory{padding:24px 25px 118px}.follower-back{display:block;width:42px;height:48px;margin:0 0 8px;border:0;background:none;color:#050505;font-size:52px;font-family:Arial,sans-serif;font-weight:300;line-height:38px;text-align:left}.follower-weather-summary{height:58px;display:flex;align-items:center;justify-content:flex-start;gap:18px;padding:0 9px;border-bottom:1px solid #c9c9c9}.follower-weather-summary span{display:flex;align-items:center;gap:4px;color:#080808}.follower-weather-summary svg{width:27px;height:27px;stroke-width:2.4}.follower-weather-summary b{font-size:13px}.follower-tabs{height:43px;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #eee;box-shadow:0 -1px 4px #00000013}.follower-tabs button{position:relative;border:0;background:#fff;font-size:15px;font-weight:700}.follower-tabs button.active:after{content:"";position:absolute;left:26%;right:26%;bottom:0;height:2px;background:#4f7dff}.follower-list{padding-top:14px}.follower-card{min-height:93px;display:flex;align-items:center;gap:10px}.follower-identity{min-width:0;flex:1;display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;text-align:left}.follower-identity>span:last-child{min-width:0;display:flex;flex-direction:column;gap:3px}.follower-identity strong{font-size:11px;color:#0b0b0b}.follower-identity small{font-size:9px;color:#111}.follower-photo{position:relative;width:61px;height:61px;flex:0 0 61px;border-radius:50%;background-color:#e8ebef}.follower-weather-badge{position:absolute;right:-5px;bottom:-4px;width:28px;height:25px;display:grid;place-items:center;border-radius:50%;background:#fff;color:#000}.follower-weather-badge svg{width:27px;height:27px;stroke:#000;stroke-width:2.5}.follower-weather-badge.sunny svg,.follower-weather-badge.storm svg{fill:#000}.follow-pill{min-width:85px;height:38px;padding:0 12px;border:0;border-radius:22px;background:linear-gradient(135deg,#2790ff,#6859f5);color:#fff;font-size:10px;font-weight:700}.follow-pill.following{background:linear-gradient(135deg,#397fff,#5d58ed)}
 .follower-weather-badge{background:transparent;border-radius:0}
@@ -197,21 +218,6 @@
   background-attachment:scroll;
   background-position:center top;
 }
-.sora-app:has(>.timeline-area):before,
-.sora-app:has(>.timeline-area):after{
-  content:"";
-  position:absolute;
-  z-index:6;
-  top:145px;
-  bottom:106px;
-  width:5px;
-  pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.2) 42%,rgba(255,255,255,.56));
-  box-shadow:0 0 13px rgba(255,255,255,.24), inset 0 0 1px rgba(255,255,255,.9);
-  opacity:.82;
-}
-.sora-app:has(>.timeline-area):before{left:0}
-.sora-app:has(>.timeline-area):after{right:0}
 .profile-avatar{border:4px solid #fff!important}
 .profile-cover{height:103px!important;margin:15px 11px 0!important;border-radius:10px 10px 0 0!important;background-image:url('/tasogare-cover.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
