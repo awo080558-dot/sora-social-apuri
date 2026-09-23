@@ -197,6 +197,21 @@
   background-attachment:scroll;
   background-position:center top;
 }
+.sora-app:has(>.timeline-area):before,
+.sora-app:has(>.timeline-area):after{
+  content:"";
+  position:absolute;
+  z-index:6;
+  top:145px;
+  bottom:106px;
+  width:5px;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.2) 42%,rgba(255,255,255,.56));
+  box-shadow:0 0 13px rgba(255,255,255,.24), inset 0 0 1px rgba(255,255,255,.9);
+  opacity:.82;
+}
+.sora-app:has(>.timeline-area):before{left:0}
+.sora-app:has(>.timeline-area):after{right:0}
 .profile-avatar{border:4px solid #fff!important}
 .profile-cover{height:103px!important;margin:15px 11px 0!important;border-radius:10px 10px 0 0!important;background-image:url('/tasogare-cover.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
