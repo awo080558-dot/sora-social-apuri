@@ -177,8 +177,9 @@ export default function HomePage(){
       const width=e.currentTarget.clientWidth||390;
       setDragWidth(width);
       const nextOffset=Math.max(-width,Math.min(width,dx));
-      setDragOffset(nextOffset);
-      setDragPreviewWeather(adjacentWeather(nextOffset<0?1:-1));
+      const preview=adjacentWeather(nextOffset<0?1:-1);
+      setDragOffset(preview?nextOffset:0);
+      setDragPreviewWeather(preview);
     }
   };
   const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
