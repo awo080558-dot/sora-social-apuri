@@ -204,10 +204,34 @@
 .timeline-area.weather-bg{
   animation:weather-soft-change .26s ease-out both;
 }
+.timeline-area.weather-bg.is-pulling{
+  position:relative;
+  z-index:3;
+  animation:none!important;
+  transition:none!important;
+  touch-action:pan-y;
+  cursor:grabbing;
+}
+.timeline-area.weather-bg.weather-adjacent-preview{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  animation:none!important;
+  transition:none!important;
+  overflow-y:hidden;
+  scrollbar-width:none;
+}
+.timeline-area.weather-bg.weather-adjacent-preview::-webkit-scrollbar{display:none}
+.timeline-area.weather-bg.weather-adjacent-preview>.region-post-in{
+  opacity:1;
+  animation:none;
+}
 @keyframes weather-soft-change{
   from{opacity:.88;filter:saturate(.94) brightness(.98)}
   to{opacity:1;filter:none}
 }
 @media (prefers-reduced-motion:reduce){
   .timeline-area.weather-bg{animation:none}
+  .timeline-area.weather-bg.is-pulling{transition:none!important}
 }
