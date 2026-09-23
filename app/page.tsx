@@ -174,7 +174,7 @@ export default function HomePage(){
       setDragWidth(width);
       const nextOffset=Math.max(-width,Math.min(width,dx));
       setDragOffset(nextOffset);
-      setDragPreviewWeather(adjacentWeather(nextOffset<0?1:-1));
+      setDragPreviewWeather(adjacentWeather(nextOffset>0?1:-1));
     }
   };
   const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
@@ -185,7 +185,7 @@ export default function HomePage(){
     gestureDragging.current=false;
     setDragOffset(0);
     setDragPreviewWeather(null);
-    if(shouldSwitch)shiftWeather(dx<0?1:-1);
+    if(shouldSwitch)shiftWeather(dx>0?1:-1);
   };
   const wheelWeather=(e:WheelEvent<HTMLDivElement>)=>{
     if(Math.abs(e.deltaX)<34||Math.abs(e.deltaX)<Math.abs(e.deltaY)*1.25)return;
