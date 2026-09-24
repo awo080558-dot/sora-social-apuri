@@ -11,10 +11,10 @@ const areaTrendWeather=(name:string)=>{
 };
 
 const mapWeatherSvg=(weather:string)=>{
-  if(weather==="sunny")return '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>';
-  if(weather==="cloudy")return '<svg viewBox="0 0 24 24"><path d="M17.5 19H7a5 5 0 1 1 1.9-9.63A6 6 0 0 1 20 12.5 3.5 3.5 0 0 1 17.5 19Z"/></svg>';
-  if(weather==="rainy")return '<svg viewBox="0 0 24 24"><path class="map-cloud-fill" d="M17.5 19H7a5 5 0 1 1 1.9-9.63A6 6 0 0 1 20 12.5 3.5 3.5 0 0 1 17.5 19Z"/></svg>';
-  return '<svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>';
+  if(weather==="sunny")return '<svg class="forecast-map-icon" viewBox="0 0 48 48"><g class="sun-rays"><rect x="22" y="1" width="4" height="9" rx="2"/><rect x="22" y="38" width="4" height="9" rx="2"/><rect x="1" y="22" width="9" height="4" rx="2"/><rect x="38" y="22" width="9" height="4" rx="2"/><rect x="7" y="7" width="8" height="4" rx="2" transform="rotate(45 11 9)"/><rect x="33" y="37" width="8" height="4" rx="2" transform="rotate(45 37 39)"/><rect x="33" y="7" width="8" height="4" rx="2" transform="rotate(135 37 9)"/><rect x="7" y="37" width="8" height="4" rx="2" transform="rotate(135 11 39)"/></g><circle class="sun-core" cx="24" cy="24" r="12"/></svg>';
+  if(weather==="cloudy")return '<svg class="forecast-map-icon" viewBox="0 0 48 48"><path class="cloud-back" d="M17 33h20a8 8 0 0 0 .4-16 12 12 0 0 0-22.7-3.3A9.8 9.8 0 0 0 17 33Z"/><path class="cloud-front" d="M10.5 36.5h27.8a7.3 7.3 0 0 0 .4-14.6 10.9 10.9 0 0 0-20.8-3.5 9.1 9.1 0 0 0-7.4 18.1Z"/></svg>';
+  if(weather==="rainy")return '<svg class="forecast-map-icon" viewBox="0 0 48 48"><path class="rain-cloud" d="M10.5 29.5h27.8a7.3 7.3 0 0 0 .4-14.6 10.9 10.9 0 0 0-20.8-3.5 9.1 9.1 0 0 0-7.4 18.1Z"/><path class="rain-drop" d="M15 34c-2.4 3.5-3.2 4.9-3.2 6a3.2 3.2 0 0 0 6.4 0c0-1.1-.8-2.5-3.2-6Z"/><path class="rain-drop" d="M25 32c-2.4 3.5-3.2 4.9-3.2 6a3.2 3.2 0 0 0 6.4 0c0-1.1-.8-2.5-3.2-6Z"/><path class="rain-drop" d="M35 34c-2.4 3.5-3.2 4.9-3.2 6a3.2 3.2 0 0 0 6.4 0c0-1.1-.8-2.5-3.2-6Z"/></svg>';
+  return '<svg class="forecast-map-icon" viewBox="0 0 48 48"><path class="storm-cloud" d="M10.5 30.5h27.8a7.3 7.3 0 0 0 .4-14.6 10.9 10.9 0 0 0-20.8-3.5 9.1 9.1 0 0 0-7.4 18.1Z"/><path class="storm-bolt" d="M25 21 16 35h7l-2 11 11-17h-7l3-8Z"/></svg>';
 };
 
 export function RealMap({notify}:{notify:(message:string)=>void}){
