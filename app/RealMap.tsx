@@ -13,7 +13,7 @@ const areaTrendWeather=(name:string)=>{
 const mapWeatherSvg=(weather:string)=>{
   if(weather==="sunny")return '<img class="forecast-map-icon weather-sun" src="/weather-sun.png" alt="">';
   if(weather==="cloudy")return '<img class="forecast-map-icon weather-cloud" src="/weather-cloud.png" alt="">';
-  if(weather==="rainy")return '<span class="forecast-map-icon weather-rain"><img class="rain-cloud-piece" src="/weather-rain-cloud.png" alt=""><img class="rain-drop-piece drop-one" src="/weather-rain-drop-one.png" alt=""><img class="rain-drop-piece drop-two" src="/weather-rain-drop-two.png" alt=""><img class="rain-drop-piece drop-three" src="/weather-rain-drop-three.png" alt=""></span>';
+  if(weather==="rainy")return '<span class="forecast-map-icon weather-rain"><img class="rain-cloud-piece" src="/weather-rain-cloud.png" alt=""><i class="rain-drop-piece drop-one"></i><i class="rain-drop-piece drop-two"></i><i class="rain-drop-piece drop-three"></i></span>';
   return '<img class="forecast-map-icon weather-storm" src="/weather-storm.png" alt="">';
 };
 
