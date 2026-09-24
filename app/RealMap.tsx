@@ -55,7 +55,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
         const marker=L.marker(bounds.getCenter(),{
           interactive:false,
           opacity:0,
-          icon:L.divIcon({className:"pref-weather-marker",html:`<span class="map-weather-icon ${trend.key}">${mapWeatherSvg(trend.key)}</span>`,iconSize:[44,44],iconAnchor:[22,22]}),
+          icon:L.divIcon({className:"pref-weather-marker",html:`<span class="map-weather-icon ${trend.key}">${mapWeatherSvg(trend.key)}</span>`,iconSize:[28,28],iconAnchor:[14,14]}),
         }).addTo(map);
         trendMarkers.push(marker);
       });
