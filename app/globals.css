@@ -232,12 +232,31 @@
 }
 .sora-app:has(>.timeline-area):before{left:0;border-radius:0 15px 15px 0}
 .sora-app:has(>.timeline-area):after{right:0;border-radius:15px 0 0 15px;transform:scaleX(-1)}
+.sora-app.window-dragging:has(>.timeline-area):before{transform:translateX(-7px)}
+.sora-app.window-dragging:has(>.timeline-area):after{transform:translateX(7px) scaleX(-1)}
+.sora-app.window-opening:has(>.timeline-area):before{animation:window-frame-open-left .62s cubic-bezier(.2,.82,.22,1) both}
+.sora-app.window-opening:has(>.timeline-area):after{animation:window-frame-open-right .62s cubic-bezier(.2,.82,.22,1) both}
 .profile-avatar{border:4px solid #fff!important}
 .profile-cover{height:103px!important;margin:15px 11px 0!important;border-radius:10px 10px 0 0!important;background-image:url('/tasogare-cover.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
 /* 天気切り替えは横流れではなく、画面全体を自然に馴染ませる */
 .timeline-area.weather-bg{
   animation:weather-soft-change .26s ease-out both;
+}
+.timeline-area.weather-bg.window-opening-view{
+  animation:weather-window-slide-open .62s cubic-bezier(.18,.82,.24,1) both;
+}
+.timeline-area.weather-bg.window-opening-view:before{
+  animation:window-sash-open .62s cubic-bezier(.18,.82,.24,1) both;
+}
+.timeline-area.weather-bg.window-opening-view:after{
+  content:"";
+  position:absolute;
+  z-index:4;
+  inset:145px 18px 106px;
+  pointer-events:none;
+  background:linear-gradient(100deg,rgba(255,255,255,.72),rgba(255,255,255,.2) 46%,rgba(196,233,255,.16));
+  animation:window-glass-clear .62s ease-out both;
 }
 .timeline-area.weather-bg.is-pulling{
   position:relative;
@@ -266,7 +285,37 @@
   from{opacity:.88;filter:saturate(.94) brightness(.98)}
   to{opacity:1;filter:none}
 }
+@keyframes weather-window-slide-open{
+  0%{opacity:.72;transform:translateX(24px) scale(.985);filter:saturate(.88) brightness(1.06)}
+  42%{opacity:1;transform:translateX(0) scale(1);filter:saturate(1.08) brightness(1.04)}
+  100%{opacity:1;transform:none;filter:none}
+}
+@keyframes window-frame-open-left{
+  0%{transform:translateX(0)}
+  35%{transform:translateX(-16px)}
+  100%{transform:translateX(0)}
+}
+@keyframes window-frame-open-right{
+  0%{transform:scaleX(-1) translateX(0)}
+  35%{transform:scaleX(-1) translateX(-16px)}
+  100%{transform:scaleX(-1) translateX(0)}
+}
+@keyframes window-sash-open{
+  0%{transform:translateY(0);filter:brightness(1)}
+  35%{transform:translateY(-10px);filter:brightness(1.16)}
+  100%{transform:translateY(0);filter:brightness(1)}
+}
+@keyframes window-glass-clear{
+  0%{opacity:.95;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  55%{opacity:.28;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+  100%{opacity:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}
+}
 @media (prefers-reduced-motion:reduce){
   .timeline-area.weather-bg{animation:none}
   .timeline-area.weather-bg.is-pulling{transition:none!important}
+  .sora-app.window-opening:has(>.timeline-area):before,
+  .sora-app.window-opening:has(>.timeline-area):after,
+  .timeline-area.weather-bg.window-opening-view,
+  .timeline-area.weather-bg.window-opening-view:before,
+  .timeline-area.weather-bg.window-opening-view:after{animation:none}
 }
