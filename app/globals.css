@@ -189,16 +189,36 @@
 /* 黄昏のプロフィール画像を全表示箇所で統一 */
 .profile-avatar,.profile-post-avatar{background-image:url('/tasogare-avatar.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
-/* 投稿カードは窓にせず、タイムライン全体を一枚の窓に見せる */
+/* 投稿カード：ガラス設定 Light -45 / 80%, Refraction 80, Depth 48, Dispersion 50, Frost 4, Spread 0 */
 .timeline-area.weather-bg>.sora-post{
+  position:relative;
+  overflow:hidden;
   border:0;
-  background:rgba(255,255,255,.46)!important;
-  box-shadow:0 2px 8px rgba(20,72,103,.16);
-  backdrop-filter:blur(6px) saturate(1.12);
-  -webkit-backdrop-filter:blur(6px) saturate(1.12);
+  background:rgba(255,255,255,.8)!important;
+  box-shadow:0 0 0 0 rgba(255,255,255,0),inset 0 1px 0 rgba(255,255,255,.8),inset -48px 48px 80px rgba(255,255,255,.22),inset 48px -48px 80px rgba(34,73,102,.12),0 16px 48px rgba(11,34,54,.22);
+  backdrop-filter:blur(4px) saturate(1.5) contrast(1.08);
+  -webkit-backdrop-filter:blur(4px) saturate(1.5) contrast(1.08);
 }
 .timeline-area.weather-bg>.sora-post:before{
-  display:none;
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(-45deg,rgba(255,255,255,.8) 0%,rgba(255,255,255,.28) 18%,transparent 38%,rgba(52,150,255,.16) 64%,rgba(255,120,194,.12) 82%,transparent 100%);
+  opacity:.8;
+  mix-blend-mode:screen;
+}
+.timeline-area.weather-bg>.sora-post:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,75,130,.12),transparent 32% 64%,rgba(24,157,255,.16));
+  opacity:.5;
+  mix-blend-mode:screen;
+  transform:none;
 }
 
 /* 投稿だけをスクロールし、天気の背景は表示領域に固定する */
