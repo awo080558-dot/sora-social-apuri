@@ -202,7 +202,7 @@
 .timeline-area.weather-bg{
   background-attachment:scroll;
   background-position:center top;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.46),inset 0 16px 28px rgba(255,255,255,.12),inset 0 -14px 24px rgba(25,74,104,.12);
+  box-shadow:inset 0 0 0 6px rgba(255,255,255,.7),inset 0 0 0 9px rgba(85,150,195,.18),inset 0 20px 34px rgba(255,255,255,.2),inset 0 -16px 28px rgba(25,74,104,.16);
 }
 .timeline-area.weather-bg:before{
   content:"";
@@ -210,12 +210,12 @@
   z-index:5;
   top:145px;
   display:block;
-  height:12px;
-  margin:-8px -2px 10px;
+  height:30px;
+  margin:-8px -1px 12px;
   pointer-events:none;
-  border-radius:0 0 12px 12px;
-  background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(217,242,255,.5) 48%,rgba(80,145,190,.18));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.94),inset 0 -1px 0 rgba(76,130,169,.2),0 8px 18px rgba(27,76,108,.18);
+  border-radius:0 0 18px 18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(230,247,255,.82) 45%,rgba(143,198,230,.42));
+  box-shadow:inset 0 2px 0 rgba(255,255,255,1),inset 0 -3px 0 rgba(91,143,180,.22),0 11px 22px rgba(22,72,105,.24);
 }
 .sora-app:has(>.timeline-area):before,
 .sora-app:has(>.timeline-area):after{
@@ -224,14 +224,14 @@
   z-index:6;
   top:145px;
   bottom:106px;
-  width:5px;
+  width:18px;
   pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.2) 42%,rgba(255,255,255,.56));
-  box-shadow:0 0 13px rgba(255,255,255,.24), inset 0 0 1px rgba(255,255,255,.9);
-  opacity:.82;
+  background:linear-gradient(90deg,rgba(255,255,255,.96),rgba(232,248,255,.7) 46%,rgba(101,166,209,.16));
+  box-shadow:0 0 18px rgba(255,255,255,.3), inset 1px 0 0 rgba(255,255,255,1), inset -2px 0 0 rgba(82,137,177,.18);
+  opacity:.94;
 }
-.sora-app:has(>.timeline-area):before{left:0}
-.sora-app:has(>.timeline-area):after{right:0}
+.sora-app:has(>.timeline-area):before{left:0;border-radius:0 15px 15px 0}
+.sora-app:has(>.timeline-area):after{right:0;border-radius:15px 0 0 15px;transform:scaleX(-1)}
 .profile-avatar{border:4px solid #fff!important}
 .profile-cover{height:103px!important;margin:15px 11px 0!important;border-radius:10px 10px 0 0!important;background-image:url('/tasogare-cover.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
