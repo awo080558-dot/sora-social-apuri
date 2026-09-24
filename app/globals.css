@@ -202,7 +202,7 @@
 .timeline-area.weather-bg{
   background-attachment:scroll;
   background-position:center top;
-  box-shadow:inset 0 0 0 6px rgba(255,255,255,.7),inset 0 0 0 9px rgba(85,150,195,.18),inset 0 20px 34px rgba(255,255,255,.2),inset 0 -16px 28px rgba(25,74,104,.16);
+  box-shadow:inset 0 0 0 5px rgba(12,13,11,.92),inset 0 0 0 8px rgba(48,50,43,.9),inset 0 20px 34px rgba(255,255,255,.12),inset 0 -18px 24px rgba(8,10,9,.38);
 }
 .timeline-area.weather-bg:before{
   content:"";
@@ -210,12 +210,27 @@
   z-index:5;
   top:145px;
   display:block;
-  height:30px;
-  margin:-8px -1px 12px;
+  height:24px;
+  margin:-8px -1px 10px;
   pointer-events:none;
-  border-radius:0 0 18px 18px;
-  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(230,247,255,.82) 45%,rgba(143,198,230,.42));
-  box-shadow:inset 0 2px 0 rgba(255,255,255,1),inset 0 -3px 0 rgba(91,143,180,.22),0 11px 22px rgba(22,72,105,.24);
+  border-radius:0 0 4px 4px;
+  background:linear-gradient(180deg,#25251f,#060705 58%,#22231d);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -2px 0 rgba(0,0,0,.9),0 10px 17px rgba(0,0,0,.25);
+}
+.timeline-area.weather-bg:after{
+  content:"";
+  position:absolute;
+  z-index:5;
+  inset:145px 0 106px;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,transparent calc(25% - 5px),rgba(7,8,6,.92) calc(25% - 5px),rgba(7,8,6,.92) calc(25% + 5px),transparent calc(25% + 5px)),
+    linear-gradient(90deg,transparent calc(50% - 6px),rgba(5,6,4,.96) calc(50% - 6px),rgba(5,6,4,.96) calc(50% + 6px),transparent calc(50% + 6px)),
+    linear-gradient(90deg,transparent calc(75% - 5px),rgba(7,8,6,.92) calc(75% - 5px),rgba(7,8,6,.92) calc(75% + 5px),transparent calc(75% + 5px)),
+    linear-gradient(180deg,transparent calc(100% - 18px),rgba(7,8,6,.92) calc(100% - 18px),rgba(7,8,6,.92) calc(100% - 9px),rgba(36,37,30,.9) calc(100% - 9px),rgba(36,37,30,.9) 100%),
+    linear-gradient(105deg,rgba(255,255,255,.18),transparent 22% 70%,rgba(255,255,255,.09));
+  box-shadow:inset 0 0 0 5px rgba(8,9,7,.94),inset 0 0 0 8px rgba(46,47,39,.88);
+  opacity:.95;
 }
 .sora-app:has(>.timeline-area):before,
 .sora-app:has(>.timeline-area):after{
@@ -224,16 +239,16 @@
   z-index:6;
   top:145px;
   bottom:106px;
-  width:18px;
+  width:21px;
   pointer-events:none;
-  background:linear-gradient(90deg,rgba(255,255,255,.96),rgba(232,248,255,.7) 46%,rgba(101,166,209,.16));
-  box-shadow:0 0 18px rgba(255,255,255,.3), inset 1px 0 0 rgba(255,255,255,1), inset -2px 0 0 rgba(82,137,177,.18);
-  opacity:.94;
+  background:linear-gradient(90deg,#050604,#22231d 38%,#0b0c09 72%,#36372e);
+  box-shadow:0 0 16px rgba(0,0,0,.25), inset 2px 0 0 rgba(255,255,255,.08), inset -2px 0 0 rgba(0,0,0,.78);
+  opacity:.98;
 }
-.sora-app:has(>.timeline-area):before{left:0;border-radius:0 15px 15px 0}
-.sora-app:has(>.timeline-area):after{right:0;border-radius:15px 0 0 15px;transform:scaleX(-1)}
-.sora-app.window-dragging:has(>.timeline-area):before{transform:translateX(-7px)}
-.sora-app.window-dragging:has(>.timeline-area):after{transform:translateX(7px) scaleX(-1)}
+.sora-app:has(>.timeline-area):before{left:0;border-radius:0 3px 3px 0}
+.sora-app:has(>.timeline-area):after{right:0;border-radius:3px 0 0 3px;transform:scaleX(-1)}
+.sora-app.window-dragging:has(>.timeline-area):before{transform:translateX(-10px)}
+.sora-app.window-dragging:has(>.timeline-area):after{transform:translateX(10px) scaleX(-1)}
 .sora-app.window-opening:has(>.timeline-area):before{animation:window-frame-open-left .62s cubic-bezier(.2,.82,.22,1) both}
 .sora-app.window-opening:has(>.timeline-area):after{animation:window-frame-open-right .62s cubic-bezier(.2,.82,.22,1) both}
 .profile-avatar{border:4px solid #fff!important}
@@ -252,11 +267,17 @@
 .timeline-area.weather-bg.window-opening-view:after{
   content:"";
   position:absolute;
-  z-index:4;
-  inset:145px 18px 106px;
+  z-index:5;
+  inset:145px 0 106px;
   pointer-events:none;
-  background:linear-gradient(100deg,rgba(255,255,255,.72),rgba(255,255,255,.2) 46%,rgba(196,233,255,.16));
-  animation:window-glass-clear .62s ease-out both;
+  background:
+    linear-gradient(90deg,transparent calc(25% - 5px),rgba(7,8,6,.92) calc(25% - 5px),rgba(7,8,6,.92) calc(25% + 5px),transparent calc(25% + 5px)),
+    linear-gradient(90deg,transparent calc(50% - 6px),rgba(5,6,4,.96) calc(50% - 6px),rgba(5,6,4,.96) calc(50% + 6px),transparent calc(50% + 6px)),
+    linear-gradient(90deg,transparent calc(75% - 5px),rgba(7,8,6,.92) calc(75% - 5px),rgba(7,8,6,.92) calc(75% + 5px),transparent calc(75% + 5px)),
+    linear-gradient(180deg,transparent calc(100% - 18px),rgba(7,8,6,.92) calc(100% - 18px),rgba(7,8,6,.92) calc(100% - 9px),rgba(36,37,30,.9) calc(100% - 9px),rgba(36,37,30,.9) 100%),
+    linear-gradient(105deg,rgba(255,255,255,.44),rgba(255,255,255,.1) 20%,transparent 48%,rgba(255,255,255,.1) 70%,transparent);
+  box-shadow:inset 0 0 0 5px rgba(8,9,7,.94),inset 0 0 0 8px rgba(46,47,39,.88);
+  animation:window-black-sash-slide .62s cubic-bezier(.18,.82,.24,1) both;
 }
 .timeline-area.weather-bg.is-pulling{
   position:relative;
@@ -302,13 +323,13 @@
 }
 @keyframes window-sash-open{
   0%{transform:translateY(0);filter:brightness(1)}
-  35%{transform:translateY(-10px);filter:brightness(1.16)}
+  35%{transform:translateY(-7px);filter:brightness(1.26)}
   100%{transform:translateY(0);filter:brightness(1)}
 }
-@keyframes window-glass-clear{
-  0%{opacity:.95;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-  55%{opacity:.28;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
-  100%{opacity:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}
+@keyframes window-black-sash-slide{
+  0%{opacity:.98;transform:translateX(0);filter:brightness(.92)}
+  35%{opacity:.86;transform:translateX(18px);filter:brightness(1.18)}
+  100%{opacity:.95;transform:translateX(0);filter:none}
 }
 @media (prefers-reduced-motion:reduce){
   .timeline-area.weather-bg{animation:none}
