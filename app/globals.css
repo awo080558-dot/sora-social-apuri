@@ -236,3 +236,72 @@
   .timeline-area.weather-bg{animation:none}
   .timeline-area.weather-bg.is-pulling{transition:none!important}
 }
+
+/* タイムライン天気タブ：検索画面と同じ天気マークを白い丸ボタンで表示 */
+.sora-app:has(>.timeline-area)>.weather-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  align-items:center;
+  padding:5px 18px 7px;
+  gap:12px;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs button{
+  width:45px;
+  height:45px;
+  margin:auto;
+  border:0;
+  border-radius:50%;
+  background:#fffffff2;
+  display:grid;
+  place-items:center;
+  box-shadow:0 4px 10px rgba(18,39,66,.18),inset 0 1px 0 #fff;
+  opacity:.72;
+  transform:scale(.92);
+  transition:opacity .2s ease,transform .2s ease,box-shadow .2s ease;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs button.active{
+  opacity:1;
+  transform:scale(1.08);
+  box-shadow:0 7px 16px rgba(18,39,66,.26),0 0 0 2px #ffffffd9,inset 0 1px 0 #fff;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs .search-weather-mark{
+  display:block;
+  width:31px;
+  height:31px;
+  object-fit:contain;
+  filter:none;
+  animation:none!important;
+  transform-origin:center;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs .search-weather-sunny{width:34px;height:34px}
+.sora-app:has(>.timeline-area)>.weather-tabs .search-weather-cloudy{width:34px;height:34px}
+.sora-app:has(>.timeline-area)>.weather-tabs .search-weather-storm{width:34px;height:34px}
+.sora-app:has(>.timeline-area)>.weather-tabs .search-weather-rain{
+  position:relative;
+  width:37px;
+  height:38px;
+  overflow:visible;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs .search-rain-cloud{
+  position:absolute;
+  left:2px;
+  top:3px;
+  width:33px;
+  height:auto;
+  animation:none!important;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs .search-rain-drop{
+  position:absolute;
+  width:7px;
+  height:auto;
+  animation:none!important;
+}
+.sora-app:has(>.timeline-area)>.weather-tabs .drop-one{left:8px;top:24px}
+.sora-app:has(>.timeline-area)>.weather-tabs .drop-two{left:17px;top:27px}
+.sora-app:has(>.timeline-area)>.weather-tabs .drop-three{left:27px;top:24px}
+.sora-app:has(>.timeline-area)>.weather-tabs button.sunny.active .search-weather-sunny{animation:forecast-sun-breathe 3.1s ease-in-out infinite!important}
+.sora-app:has(>.timeline-area)>.weather-tabs button.cloudy.active .search-weather-cloudy{animation:forecast-cloud-drift 2.8s ease-in-out infinite!important}
+.sora-app:has(>.timeline-area)>.weather-tabs button.storm.active .search-weather-storm{animation:forecast-bolt-flash 2.15s ease-in-out infinite!important}
+.sora-app:has(>.timeline-area)>.weather-tabs button.rainy.active .search-rain-drop{animation:forecast-rain-drip-image 1.05s cubic-bezier(.35,0,.2,1) infinite!important}
+.sora-app:has(>.timeline-area)>.weather-tabs button.rainy.active .drop-two{animation-delay:.16s!important}
+.sora-app:has(>.timeline-area)>.weather-tabs button.rainy.active .drop-three{animation-delay:.32s!important}
