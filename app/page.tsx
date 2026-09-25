@@ -251,16 +251,11 @@ export default function HomePage(){
 
     {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
       <section className="weather-user-strip" aria-label={`${info.label}に分類されたユーザー`} onPointerDown={e=>e.stopPropagation()} onPointerMove={e=>e.stopPropagation()} onPointerUp={e=>e.stopPropagation()}>
-        <div className="weather-user-head">
-          <strong>{info.label}のユーザー</strong>
-          <span>直近1週間の投稿傾向で分類</span>
-        </div>
         <div className="weather-user-list">
-          {weatherUsers.map((user,index)=><button key={`weather-user-${user.id}`} onClick={()=>openAccount(user)} aria-label={`${user.name}のプロフィール`}>
+          {weatherUsers.map(user=><button key={`weather-user-${user.id}`} onClick={()=>openAccount(user)} aria-label={`${user.name}のプロフィール`}>
             <span className={`photo-avatar generated-avatar avatar-${((user.id-1)%6)+1}`}/>
             <b>{user.name}</b>
             <small>{user.handle}</small>
-            <i style={{animationDelay:`${index*80}ms`}}>{weatherInfo[user.weather].symbol}</i>
           </button>)}
         </div>
       </section>
