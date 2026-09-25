@@ -255,6 +255,7 @@ export default function HomePage(){
           {weatherUsers.map(user=><button key={`weather-user-${user.id}`} onClick={()=>openAccount(user)} aria-label={`${user.name}のプロフィール`}>
             <span className={`photo-avatar generated-avatar avatar-${((user.id-1)%6)+1}`}/>
             <b>{user.name}</b>
+            <small>{user.handle}</small>
           </button>)}
         </div>
       </section>
