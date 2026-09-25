@@ -198,7 +198,7 @@
   background-attachment:scroll;
   background-position:center top;
 }
-.profile-avatar{border:0!important}
+.profile-avatar{border:4px solid #fff!important}
 .profile-cover{height:103px!important;margin:0!important;border-radius:0!important;background-image:url('/tasogare-cover.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
 /* 天気切り替えは横流れではなく、画面全体を自然に馴染ませる */
