@@ -134,11 +134,14 @@ export default function HomePage(){
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
+  const [windowReveal,setWindowReveal]=useState<{from:Weather;id:number}|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureDragging=useRef(false);
   const lastWheelSwitch=useRef(0);
+  const revealTimer=useRef<number|null>(null);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const dragPreviewFeed=useMemo(()=>dragPreviewWeather?posts.filter(p=>p.weather===dragPreviewWeather):[],[dragPreviewWeather]);
+  const windowRevealFeed=useMemo(()=>windowReveal?posts.filter(p=>p.weather===windowReveal.from).slice(0,4):[],[windowReveal]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
   const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
   const hasExactSearchResults=exactSearchResults.length>0;
@@ -148,10 +151,14 @@ export default function HomePage(){
   const AccountWeatherIcon=selectedAccount?weatherInfo[selectedAccount.weather].icon:Cloud;
   useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
+  useEffect(()=>()=>{if(revealTimer.current)window.clearTimeout(revealTimer.current)},[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const changeWeather=(next:Weather)=>{
     if(weather===next)return;
+    if(revealTimer.current)window.clearTimeout(revealTimer.current);
+    setWindowReveal({from:weather,id:Date.now()});
     setWeather(next);
+    revealTimer.current=window.setTimeout(()=>setWindowReveal(null),760);
   };
   const setWeatherWithSlide=(next:Weather)=>{
     if(weather===next)return;
@@ -248,7 +255,7 @@ export default function HomePage(){
       </article>)}
     </div>}
 
-    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
+    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""} ${windowReveal?"window-reveal-target":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
       {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
@@ -260,6 +267,22 @@ export default function HomePage(){
           <button className="share" onClick={()=>notify("共有メニュー")}><Upload/></button>
         </div>
       </article>)}
+    </div>}
+
+    {view==="timeline"&&windowReveal&&<div key={windowReveal.id} className={`weather-window-reveal ${windowReveal.from}`} aria-hidden="true">
+      <div className="window-pane window-pane-left"><div className="window-pane-feed">
+        {windowRevealFeed.map((post,index)=><article className="sora-post" key={`left-${post.id}`} style={{animationDelay:`${index*55}ms`}}>
+          <div className="post-head"><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
+          <p>{post.body}</p>
+        </article>)}
+      </div></div>
+      <div className="window-pane window-pane-right"><div className="window-pane-feed">
+        {windowRevealFeed.map((post,index)=><article className="sora-post" key={`right-${post.id}`} style={{animationDelay:`${index*55}ms`}}>
+          <div className="post-head"><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
+          <p>{post.body}</p>
+        </article>)}
+      </div></div>
+      <i className="window-center-sash"/>
     </div>}
 
     {view==="search"&&<div className="discover-page reference-discover" onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
