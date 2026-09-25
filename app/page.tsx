@@ -22,7 +22,7 @@ const weatherInfo = {
 const weatherOrder:Weather[] = ["sunny","cloudy","rainy","storm"];
 
 function SearchWeatherMark({weather}:{weather:Weather}){
-  if(weather==="rainy")return <span className="search-weather-mark search-weather-rain"><img className="search-rain-cloud" src="/weather-rain-cloud.png" alt=""/><i className="search-rain-drop drop-one"/><i className="search-rain-drop drop-two"/><i className="search-rain-drop drop-three"/></span>;
+  if(weather==="rainy")return <span className="search-weather-mark search-weather-rain"><img className="search-rain-cloud" src="/weather-rain-cloud.png" alt=""/><img className="search-rain-drop drop-one" src="/weather-rain-drop-one.png" alt=""/><img className="search-rain-drop drop-two" src="/weather-rain-drop-two.png" alt=""/><img className="search-rain-drop drop-three" src="/weather-rain-drop-three.png" alt=""/></span>;
   const src=weather==="sunny"?"/weather-sun.png":weather==="cloudy"?"/weather-cloud.png":"/weather-storm.png";
   return <img className={`search-weather-mark search-weather-${weather}`} src={src} alt=""/>;
 }
