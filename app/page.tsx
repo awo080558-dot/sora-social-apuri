@@ -5,7 +5,7 @@ import {
   Mail, MapPin, MessageCircle, Pencil, Repeat2, Search, Send, Settings,
   Sun, Upload, UserPlus, UserRound, X, Zap
 } from "lucide-react";
-import { type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
@@ -142,6 +142,9 @@ export default function HomePage(){
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const dragPreviewFeed=useMemo(()=>dragPreviewWeather?posts.filter(p=>p.weather===dragPreviewWeather):[],[dragPreviewWeather]);
   const windowRevealFeed=useMemo(()=>windowReveal?posts.filter(p=>p.weather===windowReveal.from).slice(0,4):[],[windowReveal]);
+  const windowDragProgress=dragOffset!==0?Math.min(Math.abs(dragOffset)/(dragWidth*.68),1):0;
+  const windowDragStyle=dragOffset!==0?({"--window-open":windowDragProgress,"--window-direction":dragOffset<0?1:-1} as CSSProperties):undefined;
+  const windowBackStyle=dragOffset!==0?({"--window-depth":windowDragProgress} as CSSProperties):undefined;
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
   const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
   const hasExactSearchResults=exactSearchResults.length>0;
@@ -241,7 +244,7 @@ export default function HomePage(){
       {weatherOrder.map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeatherWithSlide(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
     </nav></>}
 
-    {view==="timeline"&&dragPreviewWeather&&dragOffset!==0&&<div aria-hidden="true" className={`timeline-area weather-bg ${dragPreviewWeather} weather-adjacent-preview`} style={{transform:`translateX(${dragOffset+(dragOffset>0?-dragWidth:dragWidth)}px)`}}>
+    {view==="timeline"&&dragPreviewWeather&&dragOffset!==0&&<div aria-hidden="true" className={`timeline-area weather-bg ${dragPreviewWeather} weather-adjacent-preview`} style={windowBackStyle}>
       {dragPreviewFeed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={`preview-${post.id}`}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} tabIndex={-1} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
@@ -255,7 +258,7 @@ export default function HomePage(){
       </article>)}
     </div>}
 
-    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""} ${windowReveal?"window-reveal-target":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
+    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""} ${windowReveal?"window-reveal-target":""}`} style={windowDragStyle} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
       {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
