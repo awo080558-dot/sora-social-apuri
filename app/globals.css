@@ -239,33 +239,31 @@
 
 /* 投稿カードを空に浮く雲のように、ふわっと見せる */
 .timeline-area.weather-bg>.sora-post{
-  margin:0 2px 17px;
-  padding:20px 18px 16px;
+  margin:0 4px 24px;
+  min-height:174px;
+  padding:25px 27px 18px;
   border:0!important;
-  border-radius:34px 29px 32px 28px / 25px 35px 28px 38px;
-  clip-path:polygon(4% 6%,92% 1%,100% 16%,96% 91%,11% 100%,1% 86%,0 18%);
+  border-radius:40px 35px 43px 34px / 31px 42px 35px 45px;
   background:
     radial-gradient(circle at 16% 0%,#ffffffd8 0 18%,transparent 38%),
     radial-gradient(circle at 85% 8%,#ffffffb8 0 14%,transparent 33%),
-    linear-gradient(145deg,#ffffffc9,#eef9ffad 62%,#ffffffb8)!important;
+    linear-gradient(145deg,#ffffffcc,#eef9ffb8 62%,#ffffffb8)!important;
   box-shadow:
-    0 16px 28px rgba(30,74,111,.17),
+    0 18px 30px rgba(30,74,111,.14),
     0 3px 8px rgba(255,255,255,.34),
     inset 0 1px 0 rgba(255,255,255,.92)!important;
-  backdrop-filter:blur(11px) saturate(1.42) contrast(1.03);
-  -webkit-backdrop-filter:blur(11px) saturate(1.42) contrast(1.03);
+  backdrop-filter:blur(15px) saturate(1.36) contrast(1.02);
+  -webkit-backdrop-filter:blur(15px) saturate(1.36) contrast(1.02);
   animation:region-post-fade .48s cubic-bezier(.2,.75,.3,1) forwards,post-card-wobble-a 5.6s ease-in-out .6s infinite alternate;
 }
 .timeline-area.weather-bg>.sora-post:nth-of-type(2n){
-  border-radius:30px 36px 27px 34px / 33px 24px 37px 27px;
-  clip-path:polygon(2% 11%,88% 0,99% 10%,100% 88%,91% 98%,8% 94%,0 77%);
+  border-radius:35px 44px 34px 40px / 42px 31px 44px 34px;
   transform:translateX(2px);
   animation-name:region-post-fade,post-card-wobble-b;
   animation-duration:.48s,6.2s;
 }
 .timeline-area.weather-bg>.sora-post:nth-of-type(3n){
-  border-radius:37px 28px 35px 27px / 24px 37px 26px 34px;
-  clip-path:polygon(7% 2%,95% 7%,100% 21%,95% 96%,14% 99%,0 91%,2% 13%);
+  border-radius:44px 35px 42px 33px / 30px 45px 31px 41px;
   transform:translateX(-2px);
   animation-name:region-post-fade,post-card-wobble-c;
   animation-duration:.48s,5.9s;
@@ -276,23 +274,92 @@
     linear-gradient(112deg,transparent 4%,#ffffff52 24%,#c9f0ff2b 42%,transparent 58%,#ffffff35 76%,transparent 92%);
 }
 .timeline-area.weather-bg>.sora-post>p{
-  margin-top:15px;
-  margin-bottom:13px;
+  margin-top:25px;
+  margin-bottom:18px;
+  font-size:18px;
+  line-height:1.45;
+  color:#173653;
+}
+.timeline-area.weather-bg>.sora-post .post-head{
+  align-items:flex-start;
+}
+.timeline-area.weather-bg>.sora-post .photo-avatar{
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+}
+.timeline-area.weather-bg>.sora-post .identity{
+  margin-left:14px;
+  gap:4px;
+}
+.timeline-area.weather-bg>.sora-post .identity strong{
+  font-size:13px;
+  color:#1c3651;
+}
+.timeline-area.weather-bg>.sora-post .identity span{
+  font-size:13px;
+  color:#7290ad;
+}
+.timeline-area.weather-bg>.sora-post .post-head time{
+  display:none;
+}
+.timeline-weather-badge{
+  position:absolute;
+  z-index:2;
+  right:26px;
+  top:50px;
+  font-size:13px;
+  color:#57789b;
+}
+.timeline-area.weather-bg>.sora-post .metric-row{
+  justify-content:flex-start;
+  gap:36px;
+  color:#55789f;
+}
+.timeline-area.weather-bg>.sora-post .metric-row button{
+  font-size:14px;
+  color:#55789f;
+}
+.timeline-area.weather-bg>.sora-post .metric-row svg{
+  width:24px;
+  height:24px;
+  stroke-width:1.9;
+}
+.timeline-area.weather-bg>.sora-post .metric-row button:nth-child(2),
+.timeline-area.weather-bg>.sora-post .metric-row button:nth-child(4){
+  display:none;
+}
+.timeline-area.weather-bg>.sora-post .metric-row .like-button{
+  order:-1;
+}
+.timeline-area.weather-bg>.sora-post .metric-row .share{
+  margin-left:auto;
+  align-self:center;
+}
+.timeline-area.weather-bg>.sora-post .metric-row .share svg{
+  display:none;
+}
+.timeline-area.weather-bg>.sora-post .metric-row .share:before{
+  content:"…";
+  font-size:28px;
+  line-height:1;
+  letter-spacing:2px;
+  color:#55789f;
 }
 @keyframes post-card-wobble-a{
-  0%{border-radius:34px 29px 32px 28px / 25px 35px 28px 38px;clip-path:polygon(4% 6%,92% 1%,100% 16%,96% 91%,11% 100%,1% 86%,0 18%)}
-  50%{border-radius:30px 35px 27px 34px / 33px 27px 36px 26px;clip-path:polygon(2% 10%,95% 3%,99% 20%,98% 86%,8% 98%,0 91%,2% 15%)}
-  100%{border-radius:38px 27px 34px 31px / 28px 38px 25px 35px;clip-path:polygon(7% 3%,89% 0,100% 12%,94% 95%,14% 98%,2% 83%,0 21%)}
+  0%{border-radius:40px 35px 43px 34px / 31px 42px 35px 45px;transform:translateX(0) skewY(-.35deg)}
+  50%{border-radius:35px 44px 34px 42px / 43px 32px 45px 33px;transform:translateX(1px) skewY(.3deg)}
+  100%{border-radius:45px 33px 41px 38px / 34px 46px 31px 42px;transform:translateX(-1px) skewY(-.15deg)}
 }
 @keyframes post-card-wobble-b{
-  0%{border-radius:30px 36px 27px 34px / 33px 24px 37px 27px;clip-path:polygon(2% 11%,88% 0,99% 10%,100% 88%,91% 98%,8% 94%,0 77%)}
-  50%{border-radius:36px 28px 33px 29px / 26px 36px 28px 33px;clip-path:polygon(6% 4%,94% 6%,100% 17%,96% 94%,12% 100%,1% 88%,0 15%)}
-  100%{border-radius:28px 38px 30px 35px / 36px 25px 39px 29px;clip-path:polygon(3% 13%,90% 1%,98% 8%,100% 91%,88% 99%,6% 95%,1% 80%)}
+  0%{border-radius:35px 44px 34px 40px / 42px 31px 44px 34px;transform:translateX(2px) skewY(.25deg)}
+  50%{border-radius:43px 36px 42px 33px / 32px 44px 33px 43px;transform:translateX(0) skewY(-.3deg)}
+  100%{border-radius:33px 46px 35px 44px / 45px 30px 46px 31px;transform:translateX(3px) skewY(.1deg)}
 }
 @keyframes post-card-wobble-c{
-  0%{border-radius:37px 28px 35px 27px / 24px 37px 26px 34px;clip-path:polygon(7% 2%,95% 7%,100% 21%,95% 96%,14% 99%,0 91%,2% 13%)}
-  50%{border-radius:31px 35px 28px 37px / 35px 26px 38px 25px;clip-path:polygon(2% 8%,91% 0,99% 14%,99% 88%,9% 97%,1% 84%,0 20%)}
-  100%{border-radius:39px 27px 36px 30px / 26px 39px 24px 36px;clip-path:polygon(8% 5%,96% 3%,100% 24%,93% 98%,16% 99%,0 89%,2% 11%)}
+  0%{border-radius:44px 35px 42px 33px / 30px 45px 31px 41px;transform:translateX(-2px) skewY(-.2deg)}
+  50%{border-radius:36px 44px 34px 45px / 45px 33px 44px 31px;transform:translateX(-1px) skewY(.35deg)}
+  100%{border-radius:47px 32px 44px 36px / 33px 47px 29px 43px;transform:translateX(-3px) skewY(-.1deg)}
 }
 @media (prefers-reduced-motion:reduce){
   .timeline-area.weather-bg>.sora-post{animation:region-post-fade .48s cubic-bezier(.2,.75,.3,1) forwards}
