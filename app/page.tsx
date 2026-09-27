@@ -253,16 +253,6 @@ export default function HomePage(){
     </div>}
 
     {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
-      <section className={`sky-summary ${weather}`}>
-        <div className="sky-summary-mark"><SearchWeatherMark weather={weather}/></div>
-        <div className="sky-summary-copy">
-          <small>NOW IN SORA</small>
-          <strong>{info.label}</strong>
-          <p>{info.message}</p>
-        </div>
-        <div className="sky-summary-count"><b>{feed.length}</b><span>posts</span></div>
-        <div className="sky-swipe-hint"><i/><span>横にスワイプして空を変える</span></div>
-      </section>
       <div className="sky-feed-heading"><span>この空の声</span><i/><small>新しい順</small></div>
       {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
