@@ -236,38 +236,3 @@
   .timeline-area.weather-bg{animation:none}
   .timeline-area.weather-bg.is-pulling{transition:none!important}
 }
-
-/* 投稿カードを空に浮く雲のように、ふわっと見せる */
-.timeline-area.weather-bg>.sora-post{
-  margin:0 4px 14px;
-  padding:15px 14px 12px;
-  border:0!important;
-  border-radius:28px 31px 27px 30px / 25px 29px 31px 27px;
-  background:
-    radial-gradient(circle at 16% 0%,#ffffffd8 0 18%,transparent 38%),
-    radial-gradient(circle at 85% 8%,#ffffffb8 0 14%,transparent 33%),
-    linear-gradient(145deg,#ffffffc9,#eef9ffad 62%,#ffffffb8)!important;
-  box-shadow:
-    0 13px 24px rgba(30,74,111,.16),
-    0 3px 8px rgba(255,255,255,.34),
-    inset 0 1px 0 rgba(255,255,255,.92)!important;
-  backdrop-filter:blur(11px) saturate(1.42) contrast(1.03);
-  -webkit-backdrop-filter:blur(11px) saturate(1.42) contrast(1.03);
-}
-.timeline-area.weather-bg>.sora-post:nth-of-type(2n){
-  border-radius:31px 27px 30px 25px / 28px 31px 25px 29px;
-  transform:translateX(2px);
-}
-.timeline-area.weather-bg>.sora-post:nth-of-type(3n){
-  border-radius:25px 32px 26px 31px / 30px 25px 32px 27px;
-  transform:translateX(-2px);
-}
-.timeline-area.weather-bg>.sora-post:after{
-  opacity:.55;
-  background:
-    linear-gradient(112deg,transparent 4%,#ffffff52 24%,#c9f0ff2b 42%,transparent 58%,#ffffff35 76%,transparent 92%);
-}
-.timeline-area.weather-bg>.sora-post>p{
-  margin-top:15px;
-  margin-bottom:13px;
-}
