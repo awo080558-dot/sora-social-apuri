@@ -451,7 +451,7 @@
 .timeline-area.weather-bg>.sora-post .photo-avatar{width:43px;height:43px;flex:0 0 43px;box-shadow:0 0 0 3px rgba(255,255,255,.76),0 4px 10px rgba(31,72,101,.14)}
 .timeline-area.weather-bg>.sora-post .identity{gap:2px;margin-left:11px}.timeline-area.weather-bg>.sora-post .identity strong{font-size:11px;color:#092c46;font-weight:800}.timeline-area.weather-bg>.sora-post .identity span,.timeline-area.weather-bg>.sora-post time{font-size:8px;color:#335a75;font-weight:600}
 .timeline-area.weather-bg>.sora-post>p{margin:14px 2px 13px;font-size:11px;line-height:1.62;color:#082b45;font-weight:600;text-shadow:0 1px 0 rgba(255,255,255,.36)}
-.timeline-area.weather-bg>.sora-post .metric-row{height:32px;padding:0 9px;justify-content:space-between;gap:0;border-radius:12px;background:rgba(232,245,252,.28);color:#214f70}
+.timeline-area.weather-bg>.sora-post .metric-row{height:32px;padding:0;justify-content:space-between;gap:0;border-radius:0;background:transparent;color:#214f70}
 .timeline-area.weather-bg>.sora-post .metric-row button{display:flex!important;color:#214f70;font-size:8px;font-weight:700}.timeline-area.weather-bg>.sora-post .metric-row svg{display:block!important;width:16px;height:16px;stroke-width:2.2}.timeline-area.weather-bg>.sora-post .metric-row .share{margin-left:0}.timeline-area.weather-bg>.sora-post .metric-row .share:before{display:none}
 
 .sora-app:has(>.timeline-area)>.main-nav{
