@@ -472,3 +472,22 @@
 
 .theme-cloudy:has(>.timeline-area){--sky-ink:#2f4455}.theme-rainy:has(>.timeline-area){--sky-ink:#173d60}.theme-storm:has(>.timeline-area){--sky-ink:#263149}
 @media(prefers-reduced-motion:reduce){.sora-app:has(>.timeline-area)>.weather-tabs button,.sky-summary-mark .search-rain-drop{transition:none;animation:none}}
+
+/* 下部ナビゲーションは全画面で同じ浮遊型デザイン */
+.sora-app>.main-nav{
+  left:12px;
+  right:12px;
+  bottom:12px;
+  height:82px;
+  padding:10px 12px 11px;
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:28px;
+  background:rgba(255,255,255,.9);
+  box-shadow:0 15px 35px rgba(27,68,97,.2),inset 0 1px 0 #fff;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.sora-app>.main-nav button{gap:0;align-content:center}
+.sora-app>.main-nav svg{width:23px;height:23px;fill:none}
+.sora-app>.main-nav button.active{color:#2c73be}
+.sora-app>.main-nav button.active svg{filter:drop-shadow(0 3px 5px rgba(44,115,190,.22))}
