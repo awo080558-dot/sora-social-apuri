@@ -236,3 +236,96 @@
   .timeline-area.weather-bg{animation:none}
   .timeline-area.weather-bg.is-pulling{transition:none!important}
 }
+
+/* SORAらしいトップ：今日の空と雲の投稿 */
+.sky-summary{
+  position:relative;
+  z-index:1;
+  min-height:92px;
+  margin:0 4px 13px;
+  padding:16px 17px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  border-radius:28px;
+  background:linear-gradient(135deg,#ffffffc9,#eaf7ffab);
+  box-shadow:0 10px 24px rgba(22,70,106,.14),inset 0 1px 0 #fff;
+  backdrop-filter:blur(12px) saturate(1.25);
+  -webkit-backdrop-filter:blur(12px) saturate(1.25);
+}
+.sky-summary>span{
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#ffffffb8;
+  font-size:31px;
+  box-shadow:0 6px 16px #174c7220;
+}
+.sky-summary small{
+  display:block;
+  margin-bottom:3px;
+  font-size:8px;
+  color:#5d7892;
+  letter-spacing:.08em;
+}
+.sky-summary strong{
+  display:block;
+  font-size:13px;
+  color:#173653;
+}
+.sky-summary p{
+  margin:5px 0 0;
+  font-size:9px;
+  line-height:1.45;
+  color:#577089;
+}
+.timeline-area.weather-bg>.sora-post{
+  margin:0 4px 14px;
+  padding:16px 15px 12px;
+  border:0!important;
+  border-radius:28px 32px 28px 34px / 30px 27px 35px 30px;
+  background:
+    radial-gradient(circle at 18% 0%,#ffffffd8 0 16%,transparent 38%),
+    radial-gradient(circle at 82% 7%,#ffffffb8 0 14%,transparent 34%),
+    linear-gradient(145deg,#ffffffc2,#edf8ff9e 64%,#ffffffad)!important;
+  box-shadow:0 12px 24px rgba(22,70,106,.14),inset 0 1px 0 #ffffffd8!important;
+  backdrop-filter:blur(10px) saturate(1.28);
+  -webkit-backdrop-filter:blur(10px) saturate(1.28);
+}
+.timeline-area.weather-bg>.sora-post:nth-of-type(2n){
+  border-radius:34px 27px 33px 28px / 27px 35px 29px 34px;
+}
+.timeline-area.weather-bg>.sora-post:nth-of-type(3n){
+  border-radius:29px 35px 27px 36px / 35px 29px 36px 27px;
+}
+.timeline-area.weather-bg>.sora-post>p{
+  font-size:12px;
+  line-height:1.58;
+  color:#173653;
+}
+.timeline-area.weather-bg>.sora-post .metric-row{
+  justify-content:flex-start;
+  gap:34px;
+  color:#55789f;
+}
+.timeline-area.weather-bg>.sora-post .metric-row button{
+  color:#55789f;
+}
+.timeline-area.weather-bg>.sora-post .metric-row button:nth-child(2),
+.timeline-area.weather-bg>.sora-post .metric-row button:nth-child(4){
+  display:none;
+}
+.timeline-area.weather-bg>.sora-post .metric-row .share{
+  margin-left:auto;
+}
+.timeline-area.weather-bg>.sora-post .metric-row .share svg{
+  display:none;
+}
+.timeline-area.weather-bg>.sora-post .metric-row .share:before{
+  content:"…";
+  font-size:23px;
+  line-height:1;
+  letter-spacing:2px;
+}
