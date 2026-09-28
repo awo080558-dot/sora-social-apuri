@@ -60,12 +60,16 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
         trendMarkers.push(marker);
       });
       map.fitBounds(japan.getBounds(),{padding:[18,18],animate:false});
-      map.on("moveend zoomend",()=>{
+      const updateTrendMarkers=()=>{
         const z=map.getZoom(); setZoom(z);
+        const iconScale=Math.min(1.55,Math.max(.88,.88+(z-6)*.17));
+        map.getContainer().style.setProperty("--map-weather-scale",String(iconScale));
         const visibleBounds=map.getBounds().pad(-.08);
         trendMarkers.forEach(marker=>marker.setOpacity(z>=6&&visibleBounds.contains(marker.getLatLng())?1:0));
         if(z<=5)setArea("日本");
-      });
+      };
+      map.on("moveend zoomend",updateTrendMarkers);
+      updateTrendMarkers();
       mapInstance.current=map;
     });
     return()=>{active=false;mapInstance.current?.remove();mapInstance.current=null};

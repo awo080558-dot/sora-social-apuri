@@ -515,8 +515,9 @@
   transform:scale(1.08);
 }
 
-/* 地図上の天気アイコンを少し大きく表示 */
+/* 地図上の天気アイコンは、引いた時は控えめ・寄った時は大きく表示 */
 .pref-weather-marker .map-weather-icon{
-  transform:scale(1.16)!important;
+  transform:scale(var(--map-weather-scale,.88))!important;
   transform-origin:center center!important;
+  transition:transform .2s ease;
 }
