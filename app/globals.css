@@ -514,3 +514,9 @@
   filter:saturate(1);
   transform:scale(1.08);
 }
+
+/* 地図上の天気アイコンを少し大きく表示 */
+.pref-weather-marker .map-weather-icon{
+  transform:scale(1.16)!important;
+  transform-origin:center center!important;
+}

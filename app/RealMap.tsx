@@ -63,7 +63,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
       map.on("moveend zoomend",()=>{
         const z=map.getZoom(); setZoom(z);
         const visibleBounds=map.getBounds().pad(-.08);
-        trendMarkers.forEach(marker=>marker.setOpacity(z>=7&&visibleBounds.contains(marker.getLatLng())?1:0));
+        trendMarkers.forEach(marker=>marker.setOpacity(z>=6&&visibleBounds.contains(marker.getLatLng())?1:0));
         if(z<=5)setArea("日本");
       });
       mapInstance.current=map;
