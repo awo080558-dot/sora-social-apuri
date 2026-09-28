@@ -495,16 +495,9 @@
 
 /* 検索画面も選択中の天気と連動 */
 .reference-discover.search-weather-bg{
-  background-position:center top;
-  background-size:cover;
-  background-repeat:no-repeat;
-  transition:background-image .38s ease;
+  background:#fff;
 }
-.reference-discover.search-weather-bg.sunny{background-image:url('/weather-sunny-blended.png')}
-.reference-discover.search-weather-bg.cloudy{background-image:url('/weather-cloudy-photo.png')}
-.reference-discover.search-weather-bg.rainy{background-image:url('/weather-rainy-photo.png')}
-.reference-discover.search-weather-bg.storm{background-image:url('/weather-storm-photo.png')}
-.reference-discover.search-weather-bg .category-tabs button,.reference-discover.search-weather-bg .reference-date{color:#fff;text-shadow:0 1px 7px rgba(10,43,68,.55);font-weight:700}
+.reference-discover.search-weather-bg .category-tabs button,.reference-discover.search-weather-bg .reference-date{color:#111;text-shadow:none;font-weight:700}
 .reference-discover.search-weather-bg .reference-weather-strip button{
   border:1px solid rgba(255,255,255,.34);
   background:rgba(244,250,255,.46);
