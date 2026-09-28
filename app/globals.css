@@ -521,3 +521,14 @@
   transform-origin:center center!important;
   transition:transform .2s ease;
 }
+
+/* 地図も空を基調にしたアプリの配色へ統一 */
+.real-map-view .leaflet-map,
+.real-map-view .leaflet-map .leaflet-container{
+  background:linear-gradient(180deg,#f8fcff 0%,#eaf5fc 100%)!important;
+}
+.real-map-view .leaflet-control-zoom a{
+  color:#2f73b7!important;
+  border-color:#d6e6f2!important;
+  background:rgba(255,255,255,.94)!important;
+}
