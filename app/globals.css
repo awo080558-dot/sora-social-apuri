@@ -373,7 +373,7 @@
   border-radius:19px;
   background:rgba(244,250,255,.46);
   color:#fff;
-  box-shadow:0 6px 16px rgba(19,63,94,.12),inset 0 1px 0 rgba(255,255,255,.42);
+  box-shadow:none;
   opacity:.62;
   transform:scale(.94);
   transition:opacity .32s ease,transform .38s cubic-bezier(.2,.8,.2,1),background .32s ease,box-shadow .32s ease;
@@ -383,7 +383,7 @@
   transform:translateY(-2px) scale(1);
   background:rgba(255,255,255,.9);
   color:var(--sky-ink);
-  box-shadow:0 10px 22px rgba(19,63,94,.2),inset 0 1px 0 #fff;
+  box-shadow:none;
 }
 .sora-app:has(>.timeline-area)>.weather-tabs button>span{font-size:7px;font-weight:700;letter-spacing:.08em}
 .sora-app:has(>.timeline-area)>.weather-tabs .search-weather-mark{width:37px;height:31px;object-fit:contain;filter:none}
