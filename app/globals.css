@@ -499,17 +499,17 @@
 }
 .reference-discover.search-weather-bg .category-tabs button,.reference-discover.search-weather-bg .reference-date{color:#111;text-shadow:none;font-weight:700}
 .reference-discover.search-weather-bg .reference-weather-strip button{
-  border:1px solid rgba(255,255,255,.34);
+  border:1px solid rgba(255,255,255,.42);
   background:rgba(244,250,255,.46);
-  box-shadow:none!important;
+  box-shadow:0 3px 8px rgba(19,63,94,.07)!important;
   opacity:.62;
   filter:saturate(.78);
   transform:scale(.9);
 }
 .reference-discover.search-weather-bg .reference-weather-strip button.selected{
-  border-color:rgba(255,255,255,.8);
+  border-color:rgba(255,255,255,.72);
   background:rgba(255,255,255,.9);
-  box-shadow:none!important;
+  box-shadow:0 4px 10px rgba(19,63,94,.1)!important;
   opacity:1;
   filter:saturate(1);
   transform:scale(1.08);
