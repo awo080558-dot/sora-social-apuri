@@ -514,25 +514,3 @@
   filter:saturate(1);
   transform:scale(1.08);
 }
-
-/* 検索画面では、天気選択エリアだけを選択中の空にする */
-.reference-discover.search-weather-bg .weather-preview-panel{
-  margin:0 -13px;
-  padding:0 13px 1px;
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  transition:background-image .45s ease;
-}
-.reference-discover.search-weather-bg.sunny .weather-preview-panel{
-  background-image:linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,.58)),url('/weather-sunny-blended.png');
-}
-.reference-discover.search-weather-bg.cloudy .weather-preview-panel{
-  background-image:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.64)),url('/weather-cloudy-photo.png');
-}
-.reference-discover.search-weather-bg.rainy .weather-preview-panel{
-  background-image:linear-gradient(rgba(255,255,255,.43),rgba(255,255,255,.6)),url('/weather-rainy-photo.png');
-}
-.reference-discover.search-weather-bg.storm .weather-preview-panel{
-  background-image:linear-gradient(rgba(255,255,255,.52),rgba(255,255,255,.68)),url('/weather-storm-photo.png');
-}
