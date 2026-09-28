@@ -62,7 +62,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
       map.fitBounds(japan.getBounds(),{padding:[18,18],animate:false});
       const updateTrendMarkers=()=>{
         const z=map.getZoom(); setZoom(z);
-        const iconScale=Math.min(2,Math.max(.88,.88+(z-6)*.25));
+        const iconScale=Math.min(3.2,Math.max(.88,.88+(z-6)*.45));
         map.getContainer().style.setProperty("--map-weather-scale",String(iconScale));
         const visibleBounds=map.getBounds().pad(-.08);
         trendMarkers.forEach(marker=>marker.setOpacity(z>=6&&visibleBounds.contains(marker.getLatLng())?1:0));
