@@ -501,7 +501,7 @@
 .reference-discover.search-weather-bg .reference-weather-strip button{
   border:1px solid rgba(255,255,255,.34);
   background:rgba(244,250,255,.46);
-  box-shadow:0 6px 16px rgba(19,63,94,.12),inset 0 1px 0 rgba(255,255,255,.42);
+  box-shadow:none!important;
   opacity:.62;
   filter:saturate(.78);
   transform:scale(.9);
@@ -509,7 +509,7 @@
 .reference-discover.search-weather-bg .reference-weather-strip button.selected{
   border-color:rgba(255,255,255,.8);
   background:rgba(255,255,255,.9);
-  box-shadow:0 10px 22px rgba(19,63,94,.2),inset 0 1px 0 #fff;
+  box-shadow:none!important;
   opacity:1;
   filter:saturate(1);
   transform:scale(1.08);
