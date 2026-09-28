@@ -10,13 +10,6 @@ const areaTrendWeather=(name:string)=>{
   return trends[hash%trends.length];
 };
 
-const mapWeatherColors:Record<string,string>={
-  sunny:"#dff2ff",
-  cloudy:"#dce7ef",
-  rainy:"#bfdcf2",
-  storm:"#ccd2e8",
-};
-
 const mapWeatherSvg=(weather:string)=>{
   if(weather==="sunny")return '<img class="forecast-map-icon weather-sun" src="/weather-sun.png" alt="">';
   if(weather==="cloudy")return '<img class="forecast-map-icon weather-cloud" src="/weather-cloud.png" alt="">';
@@ -42,11 +35,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
       }).setView([37.4,137.2],5);
       const boundary=await fetch("/japan-prefectures.geojson").then(response=>response.json());
       const japan=L.geoJSON(boundary,{
-        style:feature=>{
-          const name=feature?.properties?.nam_ja||"";
-          const weather=areaTrendWeather(name).key;
-          return {fillColor:mapWeatherColors[weather],fillOpacity:.96,color:"#ffffff",weight:1.15};
-        },
+        style:{fillColor:"#c9e5c0",fillOpacity:1,color:"#ffffff",weight:.8},
         onEachFeature:(feature,layer)=>{
           layer.on("click",()=>{
             const name=feature?.properties?.nam_ja||"選択エリア";
