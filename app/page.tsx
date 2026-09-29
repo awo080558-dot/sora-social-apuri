@@ -132,6 +132,9 @@ export default function HomePage(){
   const [activeChat,setActiveChat]=useState<number|null>(null);
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
+  const [notificationTab,setNotificationTab]=useState<"all"|"posts"|"reactions">("all");
+  const [notificationWeather,setNotificationWeather]=useState<"all"|Weather>("all");
+  const [notificationsRead,setNotificationsRead]=useState(false);
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
@@ -148,6 +151,7 @@ export default function HomePage(){
   const info=weatherInfo[weather];
   const trendWeather=categoryForecasts[category][trendDay];
   const dailyHeadlines=trendStories[category][trendDay];
+  const followedPostNotices=[posts[0],posts[4],posts[6],posts[8]];
   const AccountWeatherIcon=selectedAccount?weatherInfo[selectedAccount.weather].icon:Cloud;
   const shownLikes=(post:Post)=>{
     const base=Number(post.likes);
@@ -257,7 +261,7 @@ export default function HomePage(){
 
   return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
-      <button className="header-tool" aria-label="通知" onClick={()=>setView("notifications")}><Bell/></button>
+      <button className={`header-tool notification-trigger ${notificationsRead?"":"has-unread"}`} aria-label="通知" onClick={()=>setView("notifications")}><Bell/><i/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
       <button className="header-tool" aria-label="設定" onClick={()=>notify("設定")}><Settings/></button>
     </header>
@@ -296,19 +300,22 @@ export default function HomePage(){
     </div>}
 
     {view==="notifications"&&<div className="notification-page">
-      <header className="notification-head"><button onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><span>空からのお知らせ</span><h1>今日の空模様</h1></div><Bell fill="currentColor"/></header>
-      <section className="sky-forecast-summary">
-        <div className="forecast-summary-copy"><span>NOW IN SORA</span><strong>晴れが少し多めです</strong><p>直近のタイムラインは、明るく前向きな投稿が中心。見たい気分に合わせて空を選べます。</p></div>
+      <header className="notification-head"><button className="notification-back" onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><span>SORA</span><h1>通知</h1></div><button className="mark-all-read" onClick={()=>setNotificationsRead(true)}>{notificationsRead?"既読":"すべて既読"}</button></header>
+      <nav className="notification-tabs" aria-label="通知の種類"><button className={notificationTab==="all"?"active":""} onClick={()=>setNotificationTab("all")}>すべて</button><button className={notificationTab==="posts"?"active":""} onClick={()=>setNotificationTab("posts")}>新着投稿</button><button className={notificationTab==="reactions"?"active":""} onClick={()=>setNotificationTab("reactions")}>反応</button></nav>
+      {notificationTab!=="reactions"&&<section className="notification-forecast">
+        <div><span>タイムライン予報</span><strong>晴れの投稿が多めです</strong><small>フォロー中ユーザーの新着投稿を天気で選べます</small></div>
         <div className="forecast-balance" aria-label="投稿傾向 晴れ40%、曇り20%、雨20%、雷雨20%"><i className="sunny"/><i className="cloudy"/><i className="rainy"/><i className="storm"/></div>
-        <div className="forecast-legend"><span>晴れ 40%</span><span>曇り 20%</span><span>雨 20%</span><span>雷雨 20%</span></div>
-      </section>
-      <section className="weather-notices"><div className="notice-section-title"><h2>見たい空を選ぶ</h2><span>直近30分の投稿傾向</span></div>
-        {weatherOrder.map((key,index)=>{const copies={sunny:"明るい話題や、うれしかった出来事",cloudy:"落ち着いた話題や、考えごとの投稿",rainy:"疲れや不安を含む、静かな投稿",storm:"強い言葉や議論が増えている投稿"};const counts=[12,7,4,2];return <button className={`weather-notice ${key}`} key={key} onClick={()=>{setWeatherWithSlide(key);setView("timeline")}}><span className="notice-weather-icon"><SearchWeatherMark weather={key}/></span><span className="notice-copy"><strong>{weatherInfo[key].label}のタイムライン</strong><small>{copies[key]}</small></span><span className="notice-count"><b>{counts[index]}</b><small>件</small><i>›</i></span></button>})}
-      </section>
-      <section className="reaction-notices"><div className="notice-section-title"><h2>あなたへの反応</h2><span>天気に関係なく届きます</span></div>
-        <button><span className="notice-avatar generated-avatar avatar-2"/><span><strong>デジタル・ノマドさんがいいねしました</strong><small>「帰り道、雲の切れ間から…」・12分前</small></span><Heart fill="currentColor"/></button>
-        <button><span className="notice-avatar generated-avatar avatar-3"/><span><strong>ハナコ＠読書垢さんが返信しました</strong><small>その本、私も気になっていました ・1時間前</small></span><MessageCircle fill="currentColor"/></button>
-      </section>
+        <div className="notification-weather-filter"><button className={notificationWeather==="all"?"active":""} onClick={()=>setNotificationWeather("all")}>すべて</button>{weatherOrder.map(key=><button key={key} className={`${key} ${notificationWeather===key?"active":""}`} onClick={()=>setNotificationWeather(key)} aria-label={`${weatherInfo[key].label}の投稿通知`}><SearchWeatherMark weather={key}/></button>)}</div>
+      </section>}
+      <div className="notification-feed">
+        {notificationTab!=="reactions"&&<section><h2>フォロー中の新着投稿</h2>{followedPostNotices.filter(post=>notificationWeather==="all"||post.weather===notificationWeather).map((post,index)=><button className={`notification-row post-notice ${notificationsRead?"":"unread"}`} key={`notice-${post.id}`} onClick={()=>{setWeather(post.weather);setView("timeline")}}><span className={`notice-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><span className="notification-copy"><strong>{post.name}さんが投稿しました</strong><p>{post.body}</p><small>{["5分前","18分前","36分前","1時間前"][index]} ・ <b className={post.weather}>{weatherInfo[post.weather].label}</b></small></span><span className="notice-weather-mini"><SearchWeatherMark weather={post.weather}/></span></button>)}{followedPostNotices.filter(post=>notificationWeather==="all"||post.weather===notificationWeather).length===0&&<p className="empty-notice">この天気の新着投稿はありません</p>}</section>}
+        {notificationTab!=="posts"&&<section><h2>あなたへの反応</h2>
+          <button className={`notification-row reaction-notice ${notificationsRead?"":"unread"}`}><span className="notice-avatar generated-avatar avatar-2"/><span className="notification-copy"><strong>デジタル・ノマドさんがいいねしました</strong><p>「帰り道、雲の切れ間から月が…」</p><small>12分前</small></span><Heart fill="currentColor"/></button>
+          <button className="notification-row reaction-notice"><span className="notice-avatar generated-avatar avatar-3"/><span className="notification-copy"><strong>ハナコ＠読書垢さんが返信しました</strong><p>その本、私も気になっていました</p><small>1時間前</small></span><MessageCircle fill="currentColor"/></button>
+          <button className="notification-row reaction-notice"><span className="notice-avatar generated-avatar avatar-5"/><span className="notification-copy"><strong>フィルム散歩さんがリポストしました</strong><p>「今日は空がすごくきれいだった」</p><small>3時間前</small></span><Repeat2/></button>
+          <button className="notification-row reaction-notice"><span className="notice-avatar generated-avatar avatar-4"/><span className="notification-copy"><strong>朝ごはん記録さんがフォローしました</strong><small>昨日</small></span><UserPlus/></button>
+        </section>}
+      </div>
     </div>}
 
     {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
