@@ -230,7 +230,7 @@ export default function HomePage(){
   return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
       <button className="header-tool" aria-label="通知" onClick={()=>notify("新しい通知はありません")}><Bell/></button>
-      <div className="sora-wordmark" aria-label="SORA"><strong>SORA</strong><small>みんなの空模様</small></div>
+      <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
       <button className="header-tool" aria-label="設定" onClick={()=>notify("設定")}><Settings/></button>
     </header>
 
