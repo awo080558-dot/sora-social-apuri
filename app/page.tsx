@@ -134,7 +134,7 @@ export default function HomePage(){
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
-  const horizontalGesture=useRef<{x:number;y:number}|null>(null);
+  const horizontalGesture=useRef<{x:number;y:number;time:number}|null>(null);
   const gestureDragging=useRef(false);
   const lastWheelSwitch=useRef(0);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
@@ -173,13 +173,13 @@ export default function HomePage(){
   const adjacentWeather=(step:number)=>{
     return weatherAtStep(step);
   };
-  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureDragging.current=false;setDragOffset(0);setDragPreviewWeather(null)};
+  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY,time:Date.now()};gestureDragging.current=false;setDragOffset(0);setDragPreviewWeather(null)};
   const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
     if(!start)return;
     const dx=e.clientX-start.x;
     const dy=e.clientY-start.y;
-    if(!gestureDragging.current&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.25){
+    if(!gestureDragging.current&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)*1.1){
       gestureDragging.current=true;
       e.currentTarget.setPointerCapture?.(e.pointerId);
     }
@@ -195,7 +195,10 @@ export default function HomePage(){
   const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
-    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>72;
+    const elapsed=start?Math.max(1,Date.now()-start.time):1;
+    const velocity=Math.abs(dx)/elapsed;
+    const switchDistance=Math.min(52,dragWidth*.13);
+    const shouldSwitch=gestureDragging.current&&(Math.abs(dx)>switchDistance||(Math.abs(dx)>24&&velocity>.45));
     horizontalGesture.current=null;
     gestureDragging.current=false;
     setDragOffset(0);
