@@ -159,7 +159,14 @@ export default function HomePage(){
     if(weather===next)return;
     setWeather(next);
   };
+  const resetWeatherSwipe=()=>{
+    horizontalGesture.current=null;
+    gestureDragging.current=false;
+    setDragOffset(0);
+    setDragPreviewWeather(null);
+  };
   const setWeatherWithSlide=(next:Weather)=>{
+    resetWeatherSwipe();
     if(weather===next)return;
     changeWeather(next);
   };
@@ -198,10 +205,7 @@ export default function HomePage(){
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
     const shouldSwitch=gestureDragging.current&&Math.abs(dx)>dragWidth*.38;
-    horizontalGesture.current=null;
-    gestureDragging.current=false;
-    setDragOffset(0);
-    setDragPreviewWeather(null);
+    resetWeatherSwipe();
     if(shouldSwitch)shiftWeather(dx<0?1:-1);
   };
   const wheelWeather=(e:WheelEvent<HTMLDivElement>)=>{
@@ -215,6 +219,19 @@ export default function HomePage(){
     const direction=wheelTravel.current>0?1:-1;
     wheelTravel.current=0;
     shiftWeather(direction);
+  };
+  useEffect(()=>{
+    if(view!=="timeline")resetWeatherSwipe();
+  },[view]);
+  const openSearchHome=()=>{
+    setKeyboardOpen(false);
+    setQuery("");
+    setSearchSubmitted(false);
+    setTrendSort("top");
+    setCategory("スポーツ");
+    setTrendDay(trendDays.length-1);
+    setMapMode(false);
+    setView("search");
   };
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
@@ -259,7 +276,7 @@ export default function HomePage(){
       </article>)}
     </div>}
 
-    {view==="timeline"&&<div className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
+    {view==="timeline"&&<div className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={resetWeatherSwipe} onLostPointerCapture={()=>{if(horizontalGesture.current)resetWeatherSwipe()}} onWheel={wheelWeather}>
       <div className="sky-feed-heading"><span>この空の声</span><i/><small>新しい順</small></div>
       {feed.map(post=><article className="sora-post" key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
@@ -306,7 +323,7 @@ export default function HomePage(){
     {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row region-post-in" style={{animationDelay:`${i*85}ms`}} key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
 
     <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>
-    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
+    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 
