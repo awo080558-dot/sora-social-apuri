@@ -228,8 +228,6 @@ export default function HomePage(){
     setQuery("");
     setSearchSubmitted(false);
     setTrendSort("top");
-    setCategory("スポーツ");
-    setTrendDay(trendDays.length-1);
     setMapMode(false);
     setView("search");
   };
