@@ -152,7 +152,17 @@ export default function HomePage(){
     const base=Number(post.likes);
     return Number.isFinite(base)?String(base+(liked.includes(post.id)?1:0)):post.likes;
   };
-  useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
+  useEffect(()=>{
+    if(view!=="search"||searchSubmitted||mapMode)return;
+    const frame=window.requestAnimationFrame(()=>{
+      const strip=forecastStrip.current;
+      const item=strip?.children[trendDay] as HTMLElement|undefined;
+      if(!strip||!item)return;
+      const centeredLeft=item.offsetLeft-(strip.clientWidth-item.clientWidth)/2;
+      strip.scrollTo({left:centeredLeft,behavior:"auto"});
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[trendDay,category,view,searchSubmitted,mapMode]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const changeWeather=(next:Weather)=>{
