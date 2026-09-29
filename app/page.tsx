@@ -137,6 +137,8 @@ export default function HomePage(){
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureDragging=useRef(false);
   const lastWheelSwitch=useRef(0);
+  const wheelTravel=useRef(0);
+  const wheelResetTimer=useRef<number|null>(null);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const dragPreviewFeed=useMemo(()=>dragPreviewWeather?posts.filter(p=>p.weather===dragPreviewWeather):[],[dragPreviewWeather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
@@ -195,7 +197,7 @@ export default function HomePage(){
   const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
-    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>72;
+    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>dragWidth*.38;
     horizontalGesture.current=null;
     gestureDragging.current=false;
     setDragOffset(0);
@@ -203,11 +205,16 @@ export default function HomePage(){
     if(shouldSwitch)shiftWeather(dx<0?1:-1);
   };
   const wheelWeather=(e:WheelEvent<HTMLDivElement>)=>{
-    if(Math.abs(e.deltaX)<34||Math.abs(e.deltaX)<Math.abs(e.deltaY)*1.25)return;
+    if(Math.abs(e.deltaX)<Math.abs(e.deltaY)*1.25)return;
+    wheelTravel.current+=e.deltaX;
+    if(wheelResetTimer.current!==null)window.clearTimeout(wheelResetTimer.current);
+    wheelResetTimer.current=window.setTimeout(()=>{wheelTravel.current=0},180);
     const now=Date.now();
-    if(now-lastWheelSwitch.current<520)return;
+    if(now-lastWheelSwitch.current<650||Math.abs(wheelTravel.current)<140)return;
     lastWheelSwitch.current=now;
-    shiftWeather(e.deltaX>0?1:-1);
+    const direction=wheelTravel.current>0?1:-1;
+    wheelTravel.current=0;
+    shiftWeather(direction);
   };
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
