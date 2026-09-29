@@ -9,7 +9,7 @@ import { type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo,
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers";
+type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
@@ -257,7 +257,7 @@ export default function HomePage(){
 
   return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
-      <button className="header-tool" aria-label="通知" onClick={()=>notify("新しい通知はありません")}><Bell/></button>
+      <button className="header-tool" aria-label="通知" onClick={()=>setView("notifications")}><Bell/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
       <button className="header-tool" aria-label="設定" onClick={()=>notify("設定")}><Settings/></button>
     </header>
@@ -295,6 +295,22 @@ export default function HomePage(){
       </article>)}
     </div>}
 
+    {view==="notifications"&&<div className="notification-page">
+      <header className="notification-head"><button onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><span>空からのお知らせ</span><h1>今日の空模様</h1></div><Bell fill="currentColor"/></header>
+      <section className="sky-forecast-summary">
+        <div className="forecast-summary-copy"><span>NOW IN SORA</span><strong>晴れが少し多めです</strong><p>直近のタイムラインは、明るく前向きな投稿が中心。見たい気分に合わせて空を選べます。</p></div>
+        <div className="forecast-balance" aria-label="投稿傾向 晴れ40%、曇り20%、雨20%、雷雨20%"><i className="sunny"/><i className="cloudy"/><i className="rainy"/><i className="storm"/></div>
+        <div className="forecast-legend"><span>晴れ 40%</span><span>曇り 20%</span><span>雨 20%</span><span>雷雨 20%</span></div>
+      </section>
+      <section className="weather-notices"><div className="notice-section-title"><h2>見たい空を選ぶ</h2><span>直近30分の投稿傾向</span></div>
+        {weatherOrder.map((key,index)=>{const copies={sunny:"明るい話題や、うれしかった出来事",cloudy:"落ち着いた話題や、考えごとの投稿",rainy:"疲れや不安を含む、静かな投稿",storm:"強い言葉や議論が増えている投稿"};const counts=[12,7,4,2];return <button className={`weather-notice ${key}`} key={key} onClick={()=>{setWeatherWithSlide(key);setView("timeline")}}><span className="notice-weather-icon"><SearchWeatherMark weather={key}/></span><span className="notice-copy"><strong>{weatherInfo[key].label}のタイムライン</strong><small>{copies[key]}</small></span><span className="notice-count"><b>{counts[index]}</b><small>件</small><i>›</i></span></button>})}
+      </section>
+      <section className="reaction-notices"><div className="notice-section-title"><h2>あなたへの反応</h2><span>天気に関係なく届きます</span></div>
+        <button><span className="notice-avatar generated-avatar avatar-2"/><span><strong>デジタル・ノマドさんがいいねしました</strong><small>「帰り道、雲の切れ間から…」・12分前</small></span><Heart fill="currentColor"/></button>
+        <button><span className="notice-avatar generated-avatar avatar-3"/><span><strong>ハナコ＠読書垢さんが返信しました</strong><small>その本、私も気になっていました ・1時間前</small></span><MessageCircle fill="currentColor"/></button>
+      </section>
+    </div>}
+
     {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
       {!searchSubmitted&&<div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label><button className={`view-toggle ${mapMode?"map-on":"weather-on"}`} onClick={()=>{setSearchSubmitted(false);setKeyboardOpen(false);setMapMode(v=>!v)}} aria-label={mapMode?"天気予報へ切り替え":"天気マップへ切り替え"}><span>{mapMode?<i className="toggle-map-glyph"><Map/><MapPin/></i>:<i className="toggle-weather-glyph"><Sun/><Cloud/></i>}</span></button></div>}
       {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p><div className="metric-row"><button><MessageCircle/><span>{post.replies}</span></button><button><Repeat2/><span>{post.reposts}</span></button><button className={`like-button ${liked.includes(post.id)?"liked":""}`} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button><button><Upload/></button></div></article>)}</div>:<>{!mapMode&&<><div className={`category-tabs category-${(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).indexOf(category)}`}>{(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).map(item=><button key={item} className={category===item?"active":""} onClick={()=>setCategory(item)}>{item}</button>)}</div>
@@ -327,7 +343,7 @@ export default function HomePage(){
     {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row region-post-in" style={{animationDelay:`${i*85}ms`}} key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
 
     <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>
-    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
+    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 
