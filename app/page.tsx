@@ -132,7 +132,7 @@ export default function HomePage(){
   const [activeChat,setActiveChat]=useState<number|null>(null);
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
-  const [notificationTab,setNotificationTab]=useState<"all"|"posts"|"reactions">("all");
+  const [notificationTab,setNotificationTab]=useState<"all"|"posts">("all");
   const [notificationWeather,setNotificationWeather]=useState<"all"|Weather>("all");
   const notificationsRead=false;
   const [dragOffset,setDragOffset]=useState(0);
@@ -306,15 +306,15 @@ export default function HomePage(){
 
     {view==="notifications"&&<div className="notification-page">
       <header className="notification-head"><button className="notification-back" onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><span>SORA</span><h1>通知</h1></div></header>
-      <nav className="notification-tabs" aria-label="通知の種類"><button className={notificationTab==="all"?"active":""} onClick={()=>setNotificationTab("all")}>すべて</button><button className={notificationTab==="posts"?"active":""} onClick={()=>setNotificationTab("posts")}>フィード</button><button className={notificationTab==="reactions"?"active":""} onClick={()=>setNotificationTab("reactions")}>反応</button></nav>
-      {notificationTab!=="reactions"&&<section className="notification-forecast">
+      <nav className="notification-tabs" aria-label="通知の種類"><button className={notificationTab==="all"?"active":""} onClick={()=>setNotificationTab("all")}>すべて</button><button className={notificationTab==="posts"?"active":""} onClick={()=>setNotificationTab("posts")}>ツイート</button></nav>
+      <section className="notification-forecast">
         <div><span>タイムライン予報</span><strong>晴れの投稿が多めです</strong><small>フォロー中ユーザーの新着投稿を天気で選べます</small></div>
         <div className="forecast-balance" aria-label="投稿傾向 晴れ40%、曇り20%、雨20%、雷雨20%"><i className="sunny"/><i className="cloudy"/><i className="rainy"/><i className="storm"/></div>
         <div className="notification-weather-filter"><button className={notificationWeather==="all"?"active":""} onClick={()=>setNotificationWeather("all")}>すべて</button>{weatherOrder.map(key=><button key={key} className={`${key} ${notificationWeather===key?"active":""}`} onClick={()=>setNotificationWeather(key)} aria-label={`${weatherInfo[key].label}の投稿通知`}><SearchWeatherMark weather={key}/></button>)}</div>
-      </section>}
+      </section>
       <div className="notification-feed">
-        {notificationTab!=="reactions"&&<section><h2>フィードの新着</h2>{weatherPostGroups.filter(group=>notificationWeather==="all"||group.weather===notificationWeather).map((group,index)=><button className={`notification-row post-notice grouped-post-notice region-post-in ${notificationsRead?"":"unread"}`} style={{animationDelay:`${240+index*90}ms`}} key={`notice-${group.weather}`} onClick={()=>{setWeather(group.weather);setView("timeline")}}><span className="notice-avatar-stack">{group.avatars.map((avatar,index)=><i className={`generated-avatar avatar-${avatar}`} key={`${group.weather}-${index}`}/>)}</span><span className="notification-copy"><strong>{group.name}さんと他{group.others}人の新しい投稿があります</strong><small>{group.time} ・ <b className={group.weather}>{weatherInfo[group.weather].label}</b></small></span><span className="notice-weather-mini"><SearchWeatherMark weather={group.weather}/></span></button>)}{weatherPostGroups.filter(group=>notificationWeather==="all"||group.weather===notificationWeather).length===0&&<p className="empty-notice">この天気の新着投稿はありません</p>}</section>}
-        {notificationTab!=="posts"&&<section><h2>あなたへの反応</h2>
+        <section>{weatherPostGroups.filter(group=>notificationWeather==="all"||group.weather===notificationWeather).map((group,index)=><button className={`notification-row post-notice grouped-post-notice region-post-in ${notificationsRead?"":"unread"}`} style={{animationDelay:`${240+index*90}ms`}} key={`notice-${group.weather}`} onClick={()=>{setWeather(group.weather);setView("timeline")}}><span className="notice-avatar-stack">{group.avatars.map((avatar,index)=><i className={`generated-avatar avatar-${avatar}`} key={`${group.weather}-${index}`}/>)}</span><span className="notification-copy"><strong>{group.name}さんと他{group.others}人の新しい投稿があります</strong><small>{group.time} ・ <b className={group.weather}>{weatherInfo[group.weather].label}</b></small></span><span className="notice-weather-mini"><SearchWeatherMark weather={group.weather}/></span></button>)}{weatherPostGroups.filter(group=>notificationWeather==="all"||group.weather===notificationWeather).length===0&&<p className="empty-notice">この天気の新着投稿はありません</p>}</section>
+        {notificationTab==="all"&&<section><h2>あなたへの反応</h2>
           <button className={`notification-row reaction-notice region-post-in ${notificationsRead?"":"unread"}`} style={{animationDelay:"600ms"}}><span className="notice-avatar generated-avatar avatar-2"/><span className="notification-copy"><strong>デジタル・ノマドさんがいいねしました</strong><p>「帰り道、雲の切れ間から月が…」</p><small>12分前</small></span><Heart fill="currentColor"/></button>
           <button className="notification-row reaction-notice region-post-in" style={{animationDelay:"690ms"}}><span className="notice-avatar generated-avatar avatar-3"/><span className="notification-copy"><strong>ハナコ＠読書垢さんが返信しました</strong><p>その本、私も気になっていました</p><small>1時間前</small></span><MessageCircle fill="currentColor"/></button>
           <button className="notification-row reaction-notice region-post-in" style={{animationDelay:"780ms"}}><span className="notice-avatar generated-avatar avatar-5"/><span className="notification-copy"><strong>フィルム散歩さんがリポストしました</strong><p>「今日は空がすごくきれいだった」</p><small>3時間前</small></span><Repeat2/></button>
