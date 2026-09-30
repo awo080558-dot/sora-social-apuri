@@ -134,7 +134,7 @@ export default function HomePage(){
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
   const [notificationTab,setNotificationTab]=useState<"all"|"posts"|"reactions">("all");
   const [notificationWeather,setNotificationWeather]=useState<"all"|Weather>("all");
-  const [notificationsRead,setNotificationsRead]=useState(false);
+  const notificationsRead=false;
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
@@ -305,7 +305,7 @@ export default function HomePage(){
     </div>}
 
     {view==="notifications"&&<div className="notification-page">
-      <header className="notification-head"><button className="notification-back" onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><span>SORA</span><h1>通知</h1></div><button className="mark-all-read" onClick={()=>setNotificationsRead(true)}>{notificationsRead?"既読":"すべて既読"}</button></header>
+      <header className="notification-head"><button className="notification-back" onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><span>SORA</span><h1>通知</h1></div></header>
       <nav className="notification-tabs" aria-label="通知の種類"><button className={notificationTab==="all"?"active":""} onClick={()=>setNotificationTab("all")}>すべて</button><button className={notificationTab==="posts"?"active":""} onClick={()=>setNotificationTab("posts")}>フィード</button><button className={notificationTab==="reactions"?"active":""} onClick={()=>setNotificationTab("reactions")}>反応</button></nav>
       {notificationTab!=="reactions"&&<section className="notification-forecast">
         <div><span>タイムライン予報</span><strong>晴れの投稿が多めです</strong><small>フォロー中ユーザーの新着投稿を天気で選べます</small></div>
