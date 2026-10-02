@@ -2,14 +2,14 @@
 
 import {
   Bell, ChartNoAxesColumnIncreasing, Cloud, CloudRain, Heart, Home,
-  Mail, MapPin, MessageCircle, Pencil, Repeat2, Search, Send, Settings,
+  Mail, Map, MapPin, MessageCircle, Pencil, Repeat2, Search, Send, Settings,
   Sun, Upload, UserPlus, UserRound, X, Zap
 } from "lucide-react";
 import { type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers";
+type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
@@ -126,17 +126,22 @@ export default function HomePage(){
   const [mapMode,setMapMode]=useState(false);
   const [selectedAccount,setSelectedAccount]=useState<{name:string;handle:string;avatar:string;weather:Weather}|null>(null);
   const forecastStrip=useRef<HTMLDivElement>(null);
+  const searchPage=useRef<HTMLDivElement>(null);
   const [toast,setToast]=useState("");
   const [showSplash,setShowSplash]=useState(true);
   const [activeChat,setActiveChat]=useState<number|null>(null);
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
+  const [notificationTab,setNotificationTab]=useState<"all"|"posts">("all");
+  const notificationsRead=false;
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureDragging=useRef(false);
   const lastWheelSwitch=useRef(0);
+  const wheelTravel=useRef(0);
+  const wheelResetTimer=useRef<number|null>(null);
   const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
   const dragPreviewFeed=useMemo(()=>dragPreviewWeather?posts.filter(p=>p.weather===dragPreviewWeather):[],[dragPreviewWeather]);
   const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
@@ -145,15 +150,37 @@ export default function HomePage(){
   const info=weatherInfo[weather];
   const trendWeather=categoryForecasts[category][trendDay];
   const dailyHeadlines=trendStories[category][trendDay];
+  const weatherPostGroups:{weather:Weather;name:string;others:number;avatars:number[];time:string}[]=[
+    {weather:"sunny",name:"夜更かしの猫",others:3,avatars:[1,2],time:"5分前"},
+    {weather:"cloudy",name:"ニュースを読む人",others:2,avatars:[4,5],time:"18分前"},
+    {weather:"rainy",name:"雨宿り",others:1,avatars:[6,3],time:"36分前"},
+    {weather:"storm",name:"トレンドを追う人",others:2,avatars:[2,4],time:"1時間前"},
+  ];
   const AccountWeatherIcon=selectedAccount?weatherInfo[selectedAccount.weather].icon:Cloud;
+  const shownLikes=(post:Post)=>{
+    const base=Number(post.likes);
+    return Number.isFinite(base)?String(base+(liked.includes(post.id)?1:0)):post.likes;
+  };
   useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
+  useEffect(()=>{
+    if(view!=="search")return;
+    const frame=window.requestAnimationFrame(()=>searchPage.current?.scrollTo({top:0,behavior:"auto"}));
+    return()=>window.cancelAnimationFrame(frame);
+  },[view,mapMode,searchSubmitted]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const changeWeather=(next:Weather)=>{
     if(weather===next)return;
     setWeather(next);
   };
+  const resetWeatherSwipe=()=>{
+    horizontalGesture.current=null;
+    gestureDragging.current=false;
+    setDragOffset(0);
+    setDragPreviewWeather(null);
+  };
   const setWeatherWithSlide=(next:Weather)=>{
+    resetWeatherSwipe();
     if(weather===next)return;
     changeWeather(next);
   };
@@ -175,7 +202,7 @@ export default function HomePage(){
     if(!start)return;
     const dx=e.clientX-start.x;
     const dy=e.clientY-start.y;
-    if(!gestureDragging.current&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.25){
+    if(!gestureDragging.current&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)*1.1){
       gestureDragging.current=true;
       e.currentTarget.setPointerCapture?.(e.pointerId);
     }
@@ -191,19 +218,32 @@ export default function HomePage(){
   const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
-    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>72;
-    horizontalGesture.current=null;
-    gestureDragging.current=false;
-    setDragOffset(0);
-    setDragPreviewWeather(null);
+    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>dragWidth*.38;
+    resetWeatherSwipe();
     if(shouldSwitch)shiftWeather(dx<0?1:-1);
   };
   const wheelWeather=(e:WheelEvent<HTMLDivElement>)=>{
-    if(Math.abs(e.deltaX)<34||Math.abs(e.deltaX)<Math.abs(e.deltaY)*1.25)return;
+    if(Math.abs(e.deltaX)<Math.abs(e.deltaY)*1.25)return;
+    wheelTravel.current+=e.deltaX;
+    if(wheelResetTimer.current!==null)window.clearTimeout(wheelResetTimer.current);
+    wheelResetTimer.current=window.setTimeout(()=>{wheelTravel.current=0},180);
     const now=Date.now();
-    if(now-lastWheelSwitch.current<520)return;
+    if(now-lastWheelSwitch.current<650||Math.abs(wheelTravel.current)<140)return;
     lastWheelSwitch.current=now;
-    shiftWeather(e.deltaX>0?1:-1);
+    const direction=wheelTravel.current>0?1:-1;
+    wheelTravel.current=0;
+    shiftWeather(direction);
+  };
+  useEffect(()=>{
+    if(view!=="timeline")resetWeatherSwipe();
+  },[view]);
+  const openSearchHome=()=>{
+    setKeyboardOpen(false);
+    setQuery("");
+    setSearchSubmitted(false);
+    setTrendSort("top");
+    setMapMode(false);
+    setView("search");
   };
   const openAccount=(account:{name:string;handle:string;avatar:string;weather:Weather})=>{setSelectedAccount(account);setView("userProfile")};
   const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
@@ -225,13 +265,13 @@ export default function HomePage(){
 
   return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
     {view==="timeline"&&<><header className="sora-header">
-      <button aria-label="通知" onClick={()=>notify("新しい通知はありません")}><Bell fill="currentColor"/></button>
+      <button className={`header-tool notification-trigger ${notificationsRead?"":"has-unread"}`} aria-label="通知" onClick={()=>setView("notifications")}><Bell/><i/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
-      <button aria-label="設定" onClick={()=>notify("設定")}><Settings fill="currentColor"/></button>
+      <button className="header-tool" aria-label="設定" onClick={()=>notify("設定")}><Settings/></button>
     </header>
 
     <nav className="weather-tabs" aria-label="タイムラインの感情を選択">
-      {weatherOrder.map(key=>{const Icon=weatherInfo[key].icon;return <button key={key} className={weather===key?"active":""} onClick={()=>{setWeatherWithSlide(key);setView("timeline")}} aria-label={weatherInfo[key].label}><Icon fill={key==="sunny"?"currentColor":"none"}/></button>})}
+      {weatherOrder.map(key=><button key={key} className={weather===key?"active":""} onClick={()=>{setWeatherWithSlide(key);setView("timeline")}} aria-label={weatherInfo[key].label}><SearchWeatherMark weather={key}/></button>)}
     </nav></>}
 
     {view==="timeline"&&dragPreviewWeather&&dragOffset!==0&&<div aria-hidden="true" className={`timeline-area weather-bg ${dragPreviewWeather} weather-adjacent-preview`} style={{transform:`translateX(${dragOffset+(dragOffset>0?-dragWidth:dragWidth)}px)`}}>
@@ -241,30 +281,45 @@ export default function HomePage(){
         <div className="metric-row">
           <button tabIndex={-1}><MessageCircle/><span>{post.replies}</span></button>
           <button tabIndex={-1}><Repeat2/><span>{post.reposts}</span></button>
-          <button tabIndex={-1} className={`like-button ${liked.includes(post.id)?"liked":""}`}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{post.likes}</span></button>
+          <button tabIndex={-1} className={`like-button ${liked.includes(post.id)?"liked":""}`}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button>
           <button tabIndex={-1}><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
           <button tabIndex={-1} className="share"><Upload/></button>
         </div>
       </article>)}
     </div>}
 
-    {view==="timeline"&&<div key={weather} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={endWeatherSwipe} onWheel={wheelWeather}>
-      {feed.map((post,index)=><article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={post.id}>
+    {view==="timeline"&&<div className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={resetWeatherSwipe} onLostPointerCapture={()=>{if(horizontalGesture.current)resetWeatherSwipe()}} onWheel={wheelWeather}>
+      <div className="sky-feed-heading"><span>この空の声</span><i/><small>新しい順</small></div>
+      {feed.map(post=><article className="sora-post" key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
         <div className="metric-row">
           <button onClick={()=>notify("返信")}><MessageCircle/><span>{post.replies}</span></button>
           <button onClick={()=>notify("リポストしました")}><Repeat2/><span>{post.reposts}</span></button>
-          <button className={`like-button ${liked.includes(post.id)?"liked":""}`} aria-pressed={liked.includes(post.id)} aria-label={liked.includes(post.id)?"いいねを取り消す":"いいね"} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{post.likes}</span></button>
+          <button className={`like-button ${liked.includes(post.id)?"liked":""}`} aria-pressed={liked.includes(post.id)} aria-label={liked.includes(post.id)?"いいねを取り消す":"いいね"} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button>
           <button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
           <button className="share" onClick={()=>notify("共有メニュー")}><Upload/></button>
         </div>
       </article>)}
     </div>}
 
-    {view==="search"&&<div className="discover-page reference-discover" onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
-      {!searchSubmitted&&<div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label><button className={`view-toggle ${mapMode?"map-on":""}`} onClick={()=>{setSearchSubmitted(false);setKeyboardOpen(false);setMapMode(v=>!v)}} aria-label="天気と地図を切り替え"><span>{mapMode?"🗾":<i className="toggle-weather-glyph"><Sun/><Cloud/></i>}</span></button></div>}
-      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p><div className="metric-row"><button><MessageCircle/><span>{post.replies}</span></button><button><Repeat2/><span>{post.reposts}</span></button><button className={`like-button ${liked.includes(post.id)?"liked":""}`} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{post.likes}</span></button><button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button><button><Upload/></button></div></article>)}</div>:<>{!mapMode&&<><div className={`category-tabs category-${(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).indexOf(category)}`}>{(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).map(item=><button key={item} className={category===item?"active":""} onClick={()=>setCategory(item)}>{item}</button>)}</div>
+    {view==="notifications"&&<div className="notification-page">
+      <header className="notification-head"><button className="notification-back" onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><span>SORA</span><h1>通知</h1></div></header>
+      <nav className="notification-tabs" aria-label="通知の種類"><button className={notificationTab==="all"?"active":""} onClick={()=>setNotificationTab("all")}>すべて</button><button className={notificationTab==="posts"?"active":""} onClick={()=>setNotificationTab("posts")}>ツイート</button></nav>
+      <div className="notification-feed">
+        <section>{weatherPostGroups.map((group,index)=><button className={`notification-row post-notice grouped-post-notice region-post-in ${notificationsRead?"":"unread"}`} style={{animationDelay:`${240+index*90}ms`}} key={`notice-${group.weather}`} onClick={()=>{setWeather(group.weather);setView("timeline")}}><span className="notice-avatar-stack">{group.avatars.map((avatar,index)=><i className={`generated-avatar avatar-${avatar}`} key={`${group.weather}-${index}`}/>)}</span><span className="notification-copy"><strong>{group.name}さんと他{group.others}人の新しい投稿があります</strong><small>{group.time} ・ <b className={group.weather}>{weatherInfo[group.weather].label}</b></small></span><span className="notice-weather-mini"><SearchWeatherMark weather={group.weather}/></span></button>)}</section>
+        {notificationTab==="all"&&<section><h2>あなたへの反応</h2>
+          <button className={`notification-row reaction-notice region-post-in ${notificationsRead?"":"unread"}`} style={{animationDelay:"600ms"}}><span className="notice-avatar generated-avatar avatar-2"/><span className="notification-copy"><strong>デジタル・ノマドさんがいいねしました</strong><p>「帰り道、雲の切れ間から月が…」</p><small>12分前</small></span><Heart fill="currentColor"/></button>
+          <button className="notification-row reaction-notice region-post-in" style={{animationDelay:"690ms"}}><span className="notice-avatar generated-avatar avatar-3"/><span className="notification-copy"><strong>ハナコ＠読書垢さんが返信しました</strong><p>その本、私も気になっていました</p><small>1時間前</small></span><MessageCircle fill="currentColor"/></button>
+          <button className="notification-row reaction-notice region-post-in" style={{animationDelay:"780ms"}}><span className="notice-avatar generated-avatar avatar-5"/><span className="notification-copy"><strong>フィルム散歩さんがリポストしました</strong><p>「今日は空がすごくきれいだった」</p><small>3時間前</small></span><Repeat2/></button>
+          <button className="notification-row reaction-notice region-post-in" style={{animationDelay:"870ms"}}><span className="notice-avatar generated-avatar avatar-4"/><span className="notification-copy"><strong>朝ごはん記録さんがフォローしました</strong><small>昨日</small></span><UserPlus/></button>
+        </section>}
+      </div>
+    </div>}
+
+    {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
+      {!searchSubmitted&&<div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label><button className={`view-toggle ${mapMode?"map-on":"weather-on"}`} onClick={()=>{setSearchSubmitted(false);setKeyboardOpen(false);setMapMode(v=>!v)}} aria-label={mapMode?"天気予報へ切り替え":"天気マップへ切り替え"}><span>{mapMode?<i className="toggle-map-glyph"><Map/><MapPin/></i>:<i className="toggle-weather-glyph"><Sun/><Cloud/></i>}</span></button></div>}
+      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p><div className="metric-row"><button><MessageCircle/><span>{post.replies}</span></button><button><Repeat2/><span>{post.reposts}</span></button><button className={`like-button ${liked.includes(post.id)?"liked":""}`} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button><button><Upload/></button></div></article>)}</div>:<>{!mapMode&&<><div className={`category-tabs category-${(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).indexOf(category)}`}>{(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).map(item=><button key={item} className={category===item?"active":""} onClick={()=>setCategory(item)}>{item}</button>)}</div>
       <div className="reference-weather-strip" ref={forecastStrip} aria-label="日ごとの天気予報">
         {trendDays.map((date,i)=>{const w=categoryForecasts[category][i];return <button key={date.label} className={`${w} ${trendDay===i?"selected":""}`} onClick={()=>setTrendDay(i)} aria-label={`${date.label} ${weatherInfo[w].label}`}><SearchWeatherMark weather={w}/></button>})}
       </div>
@@ -294,7 +349,7 @@ export default function HomePage(){
     {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row region-post-in" style={{animationDelay:`${i*85}ms`}} key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
 
     <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>
-    <nav className="main-nav"><button className={view==="timeline"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home fill="currentColor"/></button><button className={view==="search"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("search")}}><Search/></button><button className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound fill="currentColor"/></button><button className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
+    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 
