@@ -397,7 +397,7 @@
 .sora-app:has(>.timeline-area)>.weather-tabs .search-rain-drop.drop-two{left:16px;top:23px;animation-delay:.16s}
 .sora-app:has(>.timeline-area)>.weather-tabs .search-rain-drop.drop-three{left:25px;top:20px;animation-delay:.32s}
 .sora-app:has(>.timeline-area)>.weather-tabs button:not(.active) .search-weather-mark,.sora-app:has(>.timeline-area)>.weather-tabs button:not(.active) .search-weather-rain,.sora-app:has(>.timeline-area)>.weather-tabs button:not(.active) .search-weather-mark *{animation:none!important}
-.sora-app:has(>.timeline-area)>.weather-tabs button:not(.active) .search-rain-drop{display:none}
+.sora-app:has(>.timeline-area)>.weather-tabs button:not(.active) .search-rain-drop{display:block}
 .sora-app:has(>.timeline-area)>.weather-tabs button.active .search-weather-sunny{animation:forecast-sun-breathe 3.1s ease-in-out infinite}
 .sora-app:has(>.timeline-area)>.weather-tabs button.active .search-weather-cloudy{animation:forecast-cloud-drift 2.8s ease-in-out infinite}
 .sora-app:has(>.timeline-area)>.weather-tabs button.active .search-weather-storm{animation:forecast-bolt-flash 2.15s ease-in-out infinite}
