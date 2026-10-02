@@ -528,6 +528,7 @@
   transform-origin:center center!important;
   transition:transform .2s ease;
 }
+.national-weather-marker .map-weather-icon{transform:scale(1.45)!important}
 
 /* 基本通知を中心に、新着投稿だけ天気で選べる通知画面 */
 .notification-trigger{position:relative}.notification-trigger>i{display:none}.notification-trigger.has-unread>i{display:block;position:absolute;right:5px;top:5px;width:7px;height:7px;border:2px solid #fff;border-radius:50%;background:#e94f63}

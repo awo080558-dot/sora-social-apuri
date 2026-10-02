@@ -45,6 +45,11 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
           });
         },
       }).addTo(map);
+      const nationalTrend=areaTrendWeather("日本");
+      const nationalMarker=L.marker([36.88,138.82],{
+        interactive:false,
+        icon:L.divIcon({className:"pref-weather-marker national-weather-marker",html:`<span class="map-weather-icon ${nationalTrend.key}">${mapWeatherSvg(nationalTrend.key)}</span>`,iconSize:[52,58],iconAnchor:[26,29]}),
+      }).addTo(map);
       const trendMarkers:import("leaflet").Marker[]=[];
       japan.eachLayer(layer=>{
         const featureLayer=layer as import("leaflet").Layer&{feature?:{properties?:{nam_ja?:string}};getBounds?:()=>import("leaflet").LatLngBounds};
@@ -65,6 +70,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
         const iconScale=Math.min(3.2,Math.max(.88,.88+(z-6)*.45));
         map.getContainer().style.setProperty("--map-weather-scale",String(iconScale));
         const visibleBounds=map.getBounds().pad(-.08);
+        nationalMarker.setOpacity(z<6&&visibleBounds.contains(nationalMarker.getLatLng())?1:0);
         trendMarkers.forEach(marker=>marker.setOpacity(z>=6&&visibleBounds.contains(marker.getLatLng())?1:0));
         if(z<=5)setArea("日本");
       };
