@@ -548,3 +548,4 @@
   box-shadow:none!important;
 }
 .sora-app:has(>.timeline-area)>.weather-tabs{border-bottom:0!important}
+.timeline-area.weather-bg:after{display:none!important}
