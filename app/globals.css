@@ -606,6 +606,32 @@
 .reference-discover .category-tabs .category-weather-mark .search-rain-cloud{left:1px;top:1px;width:14px}
 .reference-discover .category-tabs .category-weather-mark .search-rain-drop{display:none}
 
+/* スマホでは端末の表示領域いっぱいに広げる */
+@media (max-width:560px){
+  html,body{width:100%;min-height:100%;overflow-x:hidden;background:#f9f9f9}
+  .sora-stage{
+    width:100%;
+    min-height:100vh;
+    min-height:100dvh;
+    padding:0;
+    place-items:stretch;
+    background:#f9f9f9;
+  }
+  .sora-app{
+    width:100%;
+    max-width:none;
+    height:100vh;
+    height:100dvh;
+    min-height:100vh;
+    min-height:100dvh;
+    border-radius:0;
+    box-shadow:none;
+  }
+  .sora-app>.main-nav{
+    bottom:max(8px,env(safe-area-inset-bottom));
+  }
+}
+
 /* 空模様の設定 */
 .settings-page{flex:1;min-height:0;overflow:hidden;background:linear-gradient(180deg,#eef8ff 0,#f8fbfd 190px,#f4f6f8 100%);color:#12344d;animation:screen-fade-in .38s cubic-bezier(.22,.8,.3,1) both}
 .settings-head{height:76px;padding:9px 16px 0;display:grid;grid-template-columns:40px 1fr;align-items:center;border-bottom:1px solid rgba(126,164,187,.2)}
