@@ -558,6 +558,54 @@
 .sora-app:has(>.timeline-area)>.weather-tabs{border-bottom:0!important}
 .timeline-area.weather-bg:after{display:none!important}
 
+/* ジャンルは全項目を横に送って見られるカルーセル */
+.reference-discover .category-tabs{
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:20px;
+  margin:7px -13px 2px;
+  padding:10px 22px 12px;
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.reference-discover .category-tabs::-webkit-scrollbar{display:none}
+.reference-discover .category-tabs:after{display:none!important}
+.reference-discover .category-tabs button{
+  flex:0 0 auto;
+  min-width:max-content;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:7px 1px 8px;
+  color:#111;
+  font-size:9px;
+  font-weight:700;
+  scroll-snap-align:center;
+}
+.reference-discover .category-tabs button.active:after{
+  display:block;
+  left:0;
+  right:0;
+  bottom:1px;
+  height:2px;
+  border-radius:99px;
+  background:#2878ec;
+}
+.reference-discover .category-tabs .category-weather-mark{
+  width:15px;
+  height:15px;
+  flex-basis:15px;
+}
+.reference-discover .category-tabs .category-weather-mark .search-weather-mark{width:15px;height:15px}
+.reference-discover .category-tabs .category-weather-mark .search-weather-rain{width:16px;height:15px}
+.reference-discover .category-tabs .category-weather-mark .search-rain-cloud{left:1px;top:1px;width:14px}
+.reference-discover .category-tabs .category-weather-mark .search-rain-drop{display:none}
+
 /* 空模様の設定 */
 .settings-page{flex:1;min-height:0;overflow:hidden;background:linear-gradient(180deg,#eef8ff 0,#f8fbfd 190px,#f4f6f8 100%);color:#12344d;animation:screen-fade-in .38s cubic-bezier(.22,.8,.3,1) both}
 .settings-head{height:76px;padding:9px 16px 0;display:grid;grid-template-columns:40px 1fr;align-items:center;border-bottom:1px solid rgba(126,164,187,.2)}

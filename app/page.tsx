@@ -10,7 +10,7 @@ import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
 type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers" | "settings";
-type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
+type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス" | "育児" | "キャリア・教育" | "美容";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
 const weatherInfo = {
@@ -20,6 +20,7 @@ const weatherInfo = {
   storm: { label:"雷雨", icon:Zap, symbol:"⛈️", message:"炎上・強い表現が多い状態です。閲覧には注意してください", color:"#28233e" },
 };
 const weatherOrder:Weather[] = ["sunny","cloudy","rainy","storm"];
+const categories:Category[] = ["エンタメ","スポーツ","テクノロジー","ビジネス","育児","キャリア・教育","美容"];
 
 function SearchWeatherMark({weather}:{weather:Weather}){
   if(weather==="rainy")return <span className="search-weather-mark search-weather-rain"><img className="search-rain-cloud" src="/weather-rain-cloud.png" alt=""/><img className="search-rain-drop drop-one" src="/weather-rain-drop-one.png" alt=""/><img className="search-rain-drop drop-two" src="/weather-rain-drop-two.png" alt=""/><img className="search-rain-drop drop-three" src="/weather-rain-drop-three.png" alt=""/></span>;
@@ -79,6 +80,9 @@ const categoryForecasts:Record<Category,Weather[]> = {
   "スポーツ":["cloudy","sunny","rainy","cloudy","rainy","storm"],
   "テクノロジー":["sunny","sunny","cloudy","rainy","sunny","cloudy"],
   "ビジネス":["rainy","cloudy","storm","rainy","cloudy","sunny"],
+  "育児":["cloudy","sunny","cloudy","rainy","sunny","cloudy"],
+  "キャリア・教育":["sunny","cloudy","sunny","sunny","rainy","cloudy"],
+  "美容":["sunny","sunny","cloudy","rainy","sunny","cloudy"],
 };
 const trendStories:Record<Category,string[][]> = {
   "エンタメ":[
@@ -112,6 +116,30 @@ const trendStories:Record<Category,string[][]> = {
     ["配送遅延が続き各社が受付件数を制限","原材料不足で限定商品の販売を休止","予約システム障害、店舗で長い待ち時間","新店舗の騒音を巡り住民説明会を開催"],
     ["商店街の夜市が復活、百店舗が参加予定","若手社員の提案から生まれた商品がヒット","地方ホテルが長期滞在プランを開始","子育て世代向けの柔軟勤務制度を拡充"],
     ["決算発表後に株価急落、業績予想を下方修正","広告表現を巡り批判、企業が掲載を取り下げ","下請けへの支払い遅延が判明、調査委員会設置","大量閉店の報道を会社が否定、情報が錯綜"],
+  ],
+  "育児":[
+    ["親子で楽しめる週末イベント、地域の公園で開催","保育園の手作り給食が話題、家庭向けレシピも公開","子どもの初めての一歩、家族から祝福の声","読み聞かせ会に多くの親子、笑顔あふれる一日に"],
+    ["雨の日の室内遊び、保育士の工夫が参考になると話題","子育て支援センターが相談時間を延長","親子向け防災教室、身近な備えを学ぶ","離乳食の悩みを共有するオンライン交流会を開催"],
+    ["小学生が地域の清掃活動に参加、住民から感謝","親子で作る簡単朝ごはん、投稿が人気に","子どもの絵を展示する商店街企画がスタート","育児日記を続けるコツ、経験者が紹介"],
+    ["送迎時間の混雑を受け、園が新しいルールを案内","子どもの体調不良が増加、休養を呼びかけ","遊具の一部を点検のため利用停止","育児情報の誤解が拡散、専門家が解説"],
+    ["地域の一時保育枠を拡充、予約方法を改善","父親向け育児講座、参加者同士の交流も","親子写真コンテスト、自然な一枚が大賞","子ども食堂に地元農家が野菜を寄付"],
+    ["子育て投稿への強い批判が増加、冷静な対話を呼びかけ","匿名の育児情報を巡り混乱、自治体が訂正","園への問い合わせが集中、回答に時間","家族写真の無断転載が判明、注意喚起"],
+  ],
+  "キャリア・教育":[
+    ["学生の地域課題プロジェクト、企業が実用化を支援","若手社員の提案制度から新サービス誕生","社会人向け夜間講座、受講者の満足度高く","高校生の研究発表が国際大会で入賞"],
+    ["オンライン面接のポイント、採用担当者が解説","学校図書館の利用時間を延長","職場体験に参加した生徒が成果を発表","学び直し支援制度の対象講座を拡充"],
+    ["大学と企業が共同で新しい実習科目を開設","転職後の研修を支える交流会が好評","資格試験の無料相談会を開催","学生チームのビジネス案が最優秀賞"],
+    ["試験日程の変更を発表、受験者へ確認呼びかけ","採用サイトの不具合が復旧","研修資料の誤記を訂正","学校行事が悪天候で延期"],
+    ["リモート研修に対話型プログラムを導入","若者向けキャリア相談窓口を新設","教員の業務改善案を生徒と共同検討","卒業生による仕事紹介イベントを開催"],
+    ["就職情報の誤投稿が拡散、運営が注意喚起","教育方針を巡る議論が過熱","面接体験談の真偽に疑問、投稿者が説明","学校への中傷が増加、相談窓口を案内"],
+  ],
+  "美容":[
+    ["春色メイクの投稿が人気、自然な仕上がりに注目","美容師が紹介する簡単ヘアアレンジが話題","地域の素材を使った石けん、新商品を発売","肌にやさしい日焼け対策を専門家が解説"],
+    ["朝の時短ケア、利用者の工夫が集まる","季節の変わり目の保湿方法を紹介","セルフネイル講座に初心者が参加","美容室のヘアドネーション活動が広がる"],
+    ["再利用できる化粧品容器、回収店舗を拡大","学生が考案した香りの商品が受賞","パーソナルカラー体験会を開催","睡眠と肌の関係を研究チームが発表"],
+    ["人気商品の欠品が続き、入荷時期を案内","広告写真の加工表現を巡り議論","予約システム障害で一部受付を停止","成分表示の誤りを訂正し交換対応"],
+    ["地域サロンが高齢者向け訪問サービスを開始","髪型の変化を楽しむ投稿に温かな反応","環境配慮型コスメの売上が伸長","メイクを通じた交流イベントを開催"],
+    ["美容法の誤情報が拡散、医師が注意を呼びかけ","商品の効果を巡り批判が集中","無断転載された施術写真、店舗が削除要請","強い表現のレビューが増え運営が対応"],
   ],
 };
 
@@ -359,7 +387,7 @@ export default function HomePage(){
 
     {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
       {!searchSubmitted&&<div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label><button className={`view-toggle ${mapMode?"map-on":"weather-on"}`} onClick={()=>{setSearchSubmitted(false);setKeyboardOpen(false);setMapMode(v=>!v)}} aria-label={mapMode?"天気予報へ切り替え":"天気マップへ切り替え"}><span>{mapMode?<i className="toggle-map-glyph"><Map/><MapPin/></i>:<i className="toggle-weather-glyph"><Sun/><Cloud/></i>}</span></button></div>}
-      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p><div className="metric-row"><button><MessageCircle/><span>{post.replies}</span></button><button><Repeat2/><span>{post.reposts}</span></button><button className={`like-button ${liked.includes(post.id)?"liked":""}`} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button><button><Upload/></button></div></article>)}</div>:<>{!mapMode&&<><div className={`category-tabs category-${(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).indexOf(category)}`}>{(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).map(item=>{const itemWeather=categoryForecasts[item][trendDay];return <button key={item} className={category===item?"active":""} onClick={()=>setCategory(item)} aria-label={`${item} ${weatherInfo[itemWeather].label}`}><span>{item}</span><span className={`category-weather-mark ${itemWeather}`} aria-hidden="true"><SearchWeatherMark weather={itemWeather}/></span></button>})}</div>
+      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p><div className="metric-row"><button><MessageCircle/><span>{post.replies}</span></button><button><Repeat2/><span>{post.reposts}</span></button><button className={`like-button ${liked.includes(post.id)?"liked":""}`} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button><button><Upload/></button></div></article>)}</div>:<>{!mapMode&&<><div className="category-tabs" aria-label="ジャンルを選択">{categories.map(item=>{const itemWeather=categoryForecasts[item][trendDay];return <button key={item} className={category===item?"active":""} onClick={e=>{setCategory(item);e.currentTarget.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"})}} aria-label={`${item} ${weatherInfo[itemWeather].label}`}><span className={`category-weather-mark ${itemWeather}`} aria-hidden="true"><SearchWeatherMark weather={itemWeather}/></span><span>{item}</span></button>})}</div>
       <div className="reference-weather-strip" ref={forecastStrip} aria-label="日ごとの天気予報">
         {trendDays.map((date,i)=>{const w=categoryForecasts[category][i];return <button key={date.label} className={`${w} ${trendDay===i?"selected":""}`} onClick={()=>setTrendDay(i)} aria-label={`${date.label} ${weatherInfo[w].label}`}><SearchWeatherMark weather={w}/></button>})}
       </div>
