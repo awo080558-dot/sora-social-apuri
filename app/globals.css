@@ -506,6 +506,14 @@
   background:#fff;
 }
 .reference-discover.search-weather-bg .category-tabs button,.reference-discover.search-weather-bg .reference-date{color:#111;text-shadow:none;font-weight:700}
+.reference-discover .category-tabs button{display:flex;align-items:center;justify-content:center;gap:4px}
+.reference-discover .category-tabs button>span:first-child{line-height:1;position:relative;z-index:1}
+.reference-discover .category-weather-mark{position:relative;width:18px;height:18px;flex:0 0 18px;display:grid;place-items:center}
+.reference-discover .category-weather-mark .search-weather-mark{width:18px;height:18px;object-fit:contain;filter:none}
+.reference-discover .category-weather-mark .search-weather-rain{display:block;position:relative;width:19px;height:18px}
+.reference-discover .category-weather-mark .search-rain-cloud{position:absolute;left:1px;top:1px;width:17px;height:auto}
+.reference-discover .category-weather-mark .search-rain-drop{position:absolute;width:4px;height:auto;display:block;animation:none!important}
+.reference-discover .category-weather-mark .search-rain-drop.drop-one{left:4px;top:12px}.reference-discover .category-weather-mark .search-rain-drop.drop-two{left:8px;top:13px}.reference-discover .category-weather-mark .search-rain-drop.drop-three{left:13px;top:11px}
 .reference-discover.search-weather-bg .reference-weather-strip button{
   border:1px solid rgba(255,255,255,.42);
   background:rgba(244,250,255,.46);
