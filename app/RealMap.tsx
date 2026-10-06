@@ -21,7 +21,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
   const mapNode=useRef<HTMLDivElement>(null);
   const mapInstance=useRef<import("leaflet").Map|null>(null);
   const [area,setArea]=useState("日本");
-  const [zoom,setZoom]=useState(5);
+  const [zoom,setZoom]=useState(6.5);
 
   useEffect(()=>{
     let active=true;
@@ -32,7 +32,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
         wheelDebounceTime:10,wheelPxPerZoomLevel:42,inertia:true,
         inertiaDeceleration:2400,inertiaMaxSpeed:1200,easeLinearity:.18,
         zoomAnimation:true,fadeAnimation:true,markerZoomAnimation:true,
-      }).setView([37.4,137.2],5);
+      }).setView([36.7,137.2],6.5);
       const boundary=await fetch("/japan-prefectures.geojson").then(response=>response.json());
       const japan=L.geoJSON(boundary,{
         style:{fillColor:"#c9e5c0",fillOpacity:1,color:"#ffffff",weight:.8},
@@ -64,7 +64,6 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
         }).addTo(map);
         trendMarkers.push(marker);
       });
-      map.fitBounds(japan.getBounds(),{padding:[18,18],animate:false});
       const updateTrendMarkers=()=>{
         const z=map.getZoom(); setZoom(z);
         const iconScale=Math.min(3.2,Math.max(.88,.88+(z-6)*.45));
