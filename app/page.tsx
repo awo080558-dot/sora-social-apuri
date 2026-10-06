@@ -9,7 +9,7 @@ import { type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo,
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers";
+type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers" | "settings";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
@@ -25,6 +25,10 @@ function SearchWeatherMark({weather}:{weather:Weather}){
   if(weather==="rainy")return <span className="search-weather-mark search-weather-rain"><img className="search-rain-cloud" src="/weather-rain-cloud.png" alt=""/><img className="search-rain-drop drop-one" src="/weather-rain-drop-one.png" alt=""/><img className="search-rain-drop drop-two" src="/weather-rain-drop-two.png" alt=""/><img className="search-rain-drop drop-three" src="/weather-rain-drop-three.png" alt=""/></span>;
   const src=weather==="sunny"?"/weather-sun.png":weather==="cloudy"?"/weather-cloud.png":"/weather-storm.png";
   return <img className={`search-weather-mark search-weather-${weather}`} src={src} alt=""/>;
+}
+
+function SettingSwitch({checked,onChange,label}:{checked:boolean;onChange:()=>void;label:string}){
+  return <button type="button" className={`setting-switch ${checked?"on":""}`} role="switch" aria-checked={checked} aria-label={label} onClick={onChange}><i/></button>;
 }
 
 const posts:Post[] = [
@@ -133,6 +137,11 @@ export default function HomePage(){
   const [messageDraft,setMessageDraft]=useState("");
   const [sentMessages,setSentMessages]=useState<Record<number,string[]>>({});
   const [notificationTab,setNotificationTab]=useState<"all"|"posts">("all");
+  const [defaultWeather,setDefaultWeather]=useState<Weather>("sunny");
+  const [quietWeathers,setQuietWeathers]=useState<Weather[]>(["storm"]);
+  const [reduceMotion,setReduceMotion]=useState(false);
+  const [postNotifications,setPostNotifications]=useState(true);
+  const [reactionNotifications,setReactionNotifications]=useState(true);
   const notificationsRead=false;
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
@@ -267,7 +276,7 @@ export default function HomePage(){
     {view==="timeline"&&<><header className="sora-header">
       <button className={`header-tool notification-trigger ${notificationsRead?"":"has-unread"}`} aria-label="通知" onClick={()=>setView("notifications")}><Bell/><i/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
-      <button className="header-tool" aria-label="設定" onClick={()=>notify("設定")}><Settings/></button>
+      <button className="header-tool" aria-label="設定" onClick={()=>setView("settings")}><Settings/></button>
     </header>
 
     <nav className="weather-tabs" aria-label="タイムラインの感情を選択">
@@ -317,6 +326,27 @@ export default function HomePage(){
       </div>
     </div>}
 
+    {view==="settings"&&<div className={`settings-page ${reduceMotion?"motion-reduced":""}`}>
+      <header className="settings-head"><button onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><small>SORA</small><h1>空模様の設定</h1></div></header>
+      <section className={`settings-sky-preview ${defaultWeather}`} aria-label={`最初に開く空は${weatherInfo[defaultWeather].label}`}><span className="settings-preview-mark"><SearchWeatherMark weather={defaultWeather}/></span><div><small>最初に開く空</small><strong>{weatherInfo[defaultWeather].label}</strong><p>{weatherInfo[defaultWeather].message}</p></div></section>
+      <div className="settings-scroll">
+        <section className="settings-group"><header><strong>タイムライン</strong><small>見る情報の空模様を整える</small></header>
+          <p className="settings-label">最初に表示する天気</p>
+          <div className="settings-weather-options">{weatherOrder.map(key=><button key={key} className={defaultWeather===key?"active":""} aria-pressed={defaultWeather===key} onClick={()=>{setDefaultWeather(key);setWeather(key)}}><SearchWeatherMark weather={key}/><span>{weatherInfo[key].label}</span></button>)}</div>
+          <p className="settings-label">控えめに表示する天気</p>
+          <div className="settings-quiet-options">{weatherOrder.map(key=><button key={key} className={quietWeathers.includes(key)?"active":""} aria-pressed={quietWeathers.includes(key)} onClick={()=>setQuietWeathers(items=>items.includes(key)?items.filter(item=>item!==key):[...items,key])}><span>{weatherInfo[key].symbol}</span>{weatherInfo[key].label}<i>{quietWeathers.includes(key)?"選択中":""}</i></button>)}</div>
+        </section>
+        <section className="settings-group"><header><strong>表示と動き</strong><small>疲れにくい見え方に調整する</small></header>
+          <div className="settings-row"><span><strong>アニメーションを減らす</strong><small>天気と画面切り替えの動きを穏やかにします</small></span><SettingSwitch checked={reduceMotion} onChange={()=>setReduceMotion(v=>!v)} label="アニメーションを減らす"/></div>
+        </section>
+        <section className="settings-group"><header><strong>通知</strong><small>受け取りたい知らせを選ぶ</small></header>
+          <div className="settings-row"><span><strong>フォロー中の新しい投稿</strong><small>投稿を天気別にまとめて知らせます</small></span><SettingSwitch checked={postNotifications} onChange={()=>setPostNotifications(v=>!v)} label="新しい投稿の通知"/></div>
+          <div className="settings-row"><span><strong>あなたへの反応</strong><small>いいね・返信・リポスト・フォロー</small></span><SettingSwitch checked={reactionNotifications} onChange={()=>setReactionNotifications(v=>!v)} label="あなたへの反応の通知"/></div>
+        </section>
+        <section className="settings-group settings-safety"><header><strong>アカウントと安全</strong><small>公開範囲や見たくない相手を管理する</small></header><button onClick={()=>notify("公開範囲の設定")}>公開範囲 <span>›</span></button><button onClick={()=>notify("ミュート・ブロック")}>ミュート・ブロック <span>›</span></button><button onClick={()=>notify("ログアウト")}>ログアウト <span>›</span></button></section>
+      </div>
+    </div>}
+
     {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
       {!searchSubmitted&&<div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label><button className={`view-toggle ${mapMode?"map-on":"weather-on"}`} onClick={()=>{setSearchSubmitted(false);setKeyboardOpen(false);setMapMode(v=>!v)}} aria-label={mapMode?"天気予報へ切り替え":"天気マップへ切り替え"}><span>{mapMode?<i className="toggle-map-glyph"><Map/><MapPin/></i>:<i className="toggle-weather-glyph"><Sun/><Cloud/></i>}</span></button></div>}
       {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p><div className="metric-row"><button><MessageCircle/><span>{post.replies}</span></button><button><Repeat2/><span>{post.reposts}</span></button><button className={`like-button ${liked.includes(post.id)?"liked":""}`} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button><button><Upload/></button></div></article>)}</div>:<>{!mapMode&&<><div className={`category-tabs category-${(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).indexOf(category)}`}>{(["エンタメ","スポーツ","テクノロジー","ビジネス"] as Category[]).map(item=>{const itemWeather=categoryForecasts[item][trendDay];return <button key={item} className={category===item?"active":""} onClick={()=>setCategory(item)} aria-label={`${item} ${weatherInfo[itemWeather].label}`}><span>{item}</span><span className={`category-weather-mark ${itemWeather}`} aria-hidden="true"><SearchWeatherMark weather={itemWeather}/></span></button>})}</div>
@@ -348,7 +378,7 @@ export default function HomePage(){
 
     {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row region-post-in" style={{animationDelay:`${i*85}ms`}} key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
 
-    <button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>
+    {view!=="settings"&&<button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>}
     <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
