@@ -170,7 +170,17 @@ export default function HomePage(){
     const base=Number(post.likes);
     return Number.isFinite(base)?String(base+(liked.includes(post.id)?1:0)):post.likes;
   };
-  useEffect(()=>{if(view!=="search")return;const item=forecastStrip.current?.children[trendDay] as HTMLElement|undefined;if(item) forecastStrip.current?.scrollTo({left:item.offsetLeft-125,behavior:"smooth"})},[trendDay,category,view]);
+  useEffect(()=>{
+    if(view!=="search"||mapMode)return;
+    const frame=window.requestAnimationFrame(()=>{
+      const strip=forecastStrip.current;
+      const item=strip?.children[trendDay] as HTMLElement|undefined;
+      if(!strip||!item)return;
+      const centeredLeft=item.offsetLeft-(strip.clientWidth-item.offsetWidth)/2;
+      strip.scrollTo({left:Math.max(0,centeredLeft),behavior:"auto"});
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[trendDay,category,view,mapMode]);
   useEffect(()=>{
     if(view!=="search")return;
     const frame=window.requestAnimationFrame(()=>searchPage.current?.scrollTo({top:0,behavior:"auto"}));
