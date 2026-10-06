@@ -21,7 +21,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
   const mapNode=useRef<HTMLDivElement>(null);
   const mapInstance=useRef<import("leaflet").Map|null>(null);
   const [area,setArea]=useState("日本");
-  const [zoom,setZoom]=useState(6);
+  const [zoom,setZoom]=useState(5.5);
 
   useEffect(()=>{
     let active=true;
@@ -32,7 +32,7 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
         wheelDebounceTime:10,wheelPxPerZoomLevel:42,inertia:true,
         inertiaDeceleration:2400,inertiaMaxSpeed:1200,easeLinearity:.18,
         zoomAnimation:true,fadeAnimation:true,markerZoomAnimation:true,
-      }).setView([36.5,137.0],6);
+      }).setView([36.8,137.2],5.5);
       const boundary=await fetch("/japan-prefectures.geojson").then(response=>response.json());
       const japan=L.geoJSON(boundary,{
         style:{fillColor:"#c9e5c0",fillOpacity:1,color:"#ffffff",weight:.8},
