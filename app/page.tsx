@@ -249,7 +249,7 @@ export default function HomePage(){
     if(!start)return;
     const dx=e.clientX-start.x;
     const dy=e.clientY-start.y;
-    if(!gestureDragging.current&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)*1.1){
+    if(!gestureDragging.current&&Math.abs(dx)>6&&Math.abs(dx)>Math.abs(dy)*.8){
       gestureDragging.current=true;
       e.currentTarget.setPointerCapture?.(e.pointerId);
     }
@@ -265,7 +265,8 @@ export default function HomePage(){
   const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
-    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>dragWidth*.38;
+    const switchDistance=Math.min(dragWidth*.28,110);
+    const shouldSwitch=gestureDragging.current&&Math.abs(dx)>switchDistance;
     resetWeatherSwipe();
     if(shouldSwitch)shiftWeather(dx<0?1:-1);
   };
