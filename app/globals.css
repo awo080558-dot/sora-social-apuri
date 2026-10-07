@@ -609,14 +609,24 @@
   background:#2878ec;
 }
 .reference-discover .category-tabs .category-weather-mark{
-  width:15px;
-  height:15px;
-  flex-basis:15px;
+  width:17px;
+  height:18px;
+  flex-basis:17px;
 }
-.reference-discover .category-tabs .category-weather-mark .search-weather-mark{width:15px;height:15px}
-.reference-discover .category-tabs .category-weather-mark .search-weather-rain{width:16px;height:15px}
-.reference-discover .category-tabs .category-weather-mark .search-rain-cloud{left:1px;top:1px;width:14px}
-.reference-discover .category-tabs .category-weather-mark .search-rain-drop{display:none}
+.reference-discover .category-tabs .category-weather-mark .search-weather-mark{width:17px;height:18px}
+.reference-discover .category-tabs .category-weather-mark .search-weather-rain{width:17px;height:18px;overflow:visible}
+.reference-discover .category-tabs .category-weather-mark .search-rain-cloud{left:1px;top:0;width:15px}
+.reference-discover .category-tabs .category-weather-mark .search-rain-drop{
+  display:block!important;
+  width:3px!important;
+  height:auto;
+  opacity:1!important;
+  animation:none!important;
+  transform:none!important;
+}
+.reference-discover .category-tabs .category-weather-mark .search-rain-drop.drop-one{left:4px;top:11px}
+.reference-discover .category-tabs .category-weather-mark .search-rain-drop.drop-two{left:7px;top:12px}
+.reference-discover .category-tabs .category-weather-mark .search-rain-drop.drop-three{left:12px;top:10px}
 
 /* スマホでは端末の表示領域いっぱいに広げる */
 @media (max-width:560px){
