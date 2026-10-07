@@ -23,7 +23,7 @@ const weatherOrder:Weather[] = ["sunny","cloudy","rainy","storm"];
 const categories:Category[] = ["エンタメ","スポーツ","テクノロジー","ビジネス","育児","キャリア・教育","美容"];
 
 function SearchWeatherMark({weather}:{weather:Weather}){
-  if(weather==="rainy")return <span className="search-weather-mark search-weather-rain"><img className="search-rain-cloud" src="/weather-rain-cloud.png" alt=""/><span className="search-rain-drop drop-one"/><span className="search-rain-drop drop-two"/><span className="search-rain-drop drop-three"/></span>;
+  if(weather==="rainy")return <span className="search-weather-mark search-weather-rain"><img className="search-rain-cloud" src="/weather-rain-cloud.png" alt=""/><img className="search-rain-drop drop-one" src="/weather-rain-drop-one.png" alt=""/><img className="search-rain-drop drop-two" src="/weather-rain-drop-two.png" alt=""/><img className="search-rain-drop drop-three" src="/weather-rain-drop-three.png" alt=""/></span>;
   const src=weather==="sunny"?"/weather-sun.png":weather==="cloudy"?"/weather-cloud.png":"/weather-storm.png";
   return <img className={`search-weather-mark search-weather-${weather}`} src={src} alt=""/>;
 }
