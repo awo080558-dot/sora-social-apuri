@@ -654,6 +654,9 @@
     box-shadow:none;
   }
   .sora-app>.main-nav{
+    position:fixed;
+    left:12px;
+    right:12px;
     bottom:max(8px,env(safe-area-inset-bottom));
   }
 }
