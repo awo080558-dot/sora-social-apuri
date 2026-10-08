@@ -174,6 +174,7 @@ export default function HomePage(){
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
+  const appSurface=useRef<HTMLElement|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureAxis=useRef<"pending"|"horizontal"|"vertical">("pending");
   const gestureDragging=useRef(false);
@@ -247,6 +248,7 @@ export default function HomePage(){
     return weatherAtStep(step);
   };
   const startWeatherSwipe=(e:PointerEvent<HTMLElement>)=>{
+    if(e.pointerType!=="mouse")return;
     if((e.target as HTMLElement).closest(".main-nav,.new-post"))return;
     horizontalGesture.current={x:e.clientX,y:e.clientY};
     gestureAxis.current="pending";
@@ -255,6 +257,7 @@ export default function HomePage(){
     setDragPreviewWeather(null);
   };
   const moveWeatherSwipe=(e:PointerEvent<HTMLElement>)=>{
+    if(e.pointerType!=="mouse")return;
     const start=horizontalGesture.current;
     if(!start)return;
     const dx=e.clientX-start.x;
@@ -291,6 +294,7 @@ export default function HomePage(){
     }
   };
   const endWeatherSwipe=(e:PointerEvent<HTMLElement>)=>{
+    if(e.pointerType!=="mouse")return;
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
     const wasDragging=gestureDragging.current;
@@ -318,6 +322,78 @@ export default function HomePage(){
   useEffect(()=>{
     if(view!=="timeline")resetWeatherSwipe();
   },[view]);
+  useEffect(()=>{
+    const surface=appSurface.current;
+    if(!surface||view!=="timeline")return;
+    const beginTouch=(event:globalThis.TouchEvent)=>{
+      if(event.touches.length!==1||(event.target as HTMLElement).closest(".main-nav,.new-post"))return;
+      const touch=event.touches[0];
+      horizontalGesture.current={x:touch.clientX,y:touch.clientY};
+      gestureAxis.current="pending";
+      gestureDragging.current=false;
+      setDragOffset(0);
+      setDragPreviewWeather(null);
+    };
+    const moveTouch=(event:globalThis.TouchEvent)=>{
+      const start=horizontalGesture.current;
+      const touch=event.touches[0];
+      if(!start||!touch||gestureAxis.current==="vertical")return;
+      const dx=touch.clientX-start.x;
+      const dy=touch.clientY-start.y;
+      const absX=Math.abs(dx);
+      const absY=Math.abs(dy);
+      if(gestureAxis.current==="pending"){
+        if(Math.max(absX,absY)<4)return;
+        if(absY>=8&&absY>absX*1.3){
+          gestureAxis.current="vertical";
+          return;
+        }
+        if(absX>=4&&absX>absY*.7){
+          gestureAxis.current="horizontal";
+          gestureDragging.current=true;
+        }else if(Math.max(absX,absY)>=14){
+          gestureAxis.current=absX>=absY?"horizontal":"vertical";
+          gestureDragging.current=gestureAxis.current==="horizontal";
+        }else{
+          return;
+        }
+      }
+      if(gestureAxis.current!=="horizontal")return;
+      event.preventDefault();
+      const width=surface.clientWidth||390;
+      const nextOffset=Math.max(-width,Math.min(width,dx));
+      const index=weatherOrder.indexOf(weather);
+      const nextIndex=index+(nextOffset<0?1:-1);
+      const preview=nextIndex<0||nextIndex>=weatherOrder.length?null:weatherOrder[nextIndex];
+      setDragWidth(width);
+      setDragOffset(preview?nextOffset:0);
+      setDragPreviewWeather(preview);
+    };
+    const finishTouch=(event:globalThis.TouchEvent)=>{
+      const start=horizontalGesture.current;
+      const touch=event.changedTouches[0];
+      const dx=start&&touch?touch.clientX-start.x:0;
+      const wasDragging=gestureAxis.current==="horizontal"&&gestureDragging.current;
+      const width=surface.clientWidth||390;
+      const shouldSwitch=wasDragging&&Math.abs(dx)>Math.max(24,Math.min(width*.07,34));
+      if(wasDragging){
+        suppressSwipeClick.current=true;
+        window.setTimeout(()=>{suppressSwipeClick.current=false},100);
+      }
+      resetWeatherSwipe();
+      if(shouldSwitch)shiftWeather(dx<0?1:-1);
+    };
+    surface.addEventListener("touchstart",beginTouch,{passive:true});
+    surface.addEventListener("touchmove",moveTouch,{passive:false});
+    surface.addEventListener("touchend",finishTouch,{passive:true});
+    surface.addEventListener("touchcancel",resetWeatherSwipe,{passive:true});
+    return()=>{
+      surface.removeEventListener("touchstart",beginTouch);
+      surface.removeEventListener("touchmove",moveTouch);
+      surface.removeEventListener("touchend",finishTouch);
+      surface.removeEventListener("touchcancel",resetWeatherSwipe);
+    };
+  },[view,weather]);
   const openSearchHome=()=>{
     setKeyboardOpen(false);
     setQuery("");
@@ -344,7 +420,7 @@ export default function HomePage(){
   ];
   const sendMessage=(e:FormEvent)=>{e.preventDefault();if(activeChat===null||!messageDraft.trim())return;setSentMessages(v=>({...v,[activeChat]:[...(v[activeChat]||[]),messageDraft.trim()]}));setMessageDraft("")};
 
-  return <main className="sora-stage"><section className={`sora-app theme-${weather} ${view==="timeline"?"timeline-swipe-enabled":""}`} onPointerDown={view==="timeline"?startWeatherSwipe:undefined} onPointerMove={view==="timeline"?moveWeatherSwipe:undefined} onPointerUp={view==="timeline"?endWeatherSwipe:undefined} onPointerCancel={view==="timeline"?resetWeatherSwipe:undefined} onLostPointerCapture={()=>{if(horizontalGesture.current)resetWeatherSwipe()}} onClickCapture={e=>{if(suppressSwipeClick.current){e.preventDefault();e.stopPropagation();suppressSwipeClick.current=false}}}>
+  return <main className="sora-stage"><section ref={appSurface} className={`sora-app theme-${weather} ${view==="timeline"?"timeline-swipe-enabled":""}`} onPointerDown={view==="timeline"?startWeatherSwipe:undefined} onPointerMove={view==="timeline"?moveWeatherSwipe:undefined} onPointerUp={view==="timeline"?endWeatherSwipe:undefined} onPointerCancel={e=>{if(view==="timeline"&&e.pointerType==="mouse")resetWeatherSwipe()}} onLostPointerCapture={e=>{if(e.pointerType==="mouse"&&horizontalGesture.current)resetWeatherSwipe()}} onClickCapture={e=>{if(suppressSwipeClick.current){e.preventDefault();e.stopPropagation();suppressSwipeClick.current=false}}}>
     {view==="timeline"&&<><header className="sora-header">
       <button className={`header-tool notification-trigger ${notificationsRead?"":"has-unread"}`} aria-label="通知" onClick={()=>setView("notifications")}><Bell/><i/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>

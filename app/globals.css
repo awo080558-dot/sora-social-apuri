@@ -206,11 +206,11 @@
 /* 天気切り替えは横流れではなく、画面全体を自然に馴染ませる */
 .timeline-area.weather-bg{
   animation:weather-soft-change .26s ease-out both;
-  touch-action:pan-y;
+  touch-action:auto;
   overscroll-behavior-x:contain;
 }
 .sora-app.timeline-swipe-enabled{
-  touch-action:pan-y;
+  touch-action:auto;
   overscroll-behavior-x:contain;
 }
 .timeline-area.weather-bg.is-pulling{
@@ -218,7 +218,7 @@
   z-index:3;
   animation:none!important;
   transition:none!important;
-  touch-action:pan-y;
+  touch-action:none;
   cursor:grabbing;
 }
 .timeline-area.weather-bg.weather-adjacent-preview{
