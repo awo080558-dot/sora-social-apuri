@@ -262,14 +262,24 @@ export default function HomePage(){
     const absX=Math.abs(dx);
     const absY=Math.abs(dy);
     if(gestureAxis.current==="pending"){
-      if(Math.max(absX,absY)<8)return;
-      if(absY>absX){
+      if(Math.max(absX,absY)<6)return;
+      if(absY>=10&&absY>absX*1.5){
         gestureAxis.current="vertical";
         return;
       }
-      gestureAxis.current="horizontal";
-      gestureDragging.current=true;
-      e.currentTarget.setPointerCapture?.(e.pointerId);
+      if(absX>=6&&absX>absY*.65){
+        gestureAxis.current="horizontal";
+        gestureDragging.current=true;
+        e.currentTarget.setPointerCapture?.(e.pointerId);
+      }else if(Math.max(absX,absY)>=18){
+        gestureAxis.current=absX>=absY?"horizontal":"vertical";
+        if(gestureAxis.current==="horizontal"){
+          gestureDragging.current=true;
+          e.currentTarget.setPointerCapture?.(e.pointerId);
+        }
+      }else{
+        return;
+      }
     }
     if(gestureAxis.current==="horizontal"&&gestureDragging.current){
       const width=e.currentTarget.clientWidth||390;
@@ -284,7 +294,7 @@ export default function HomePage(){
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
     const wasDragging=gestureDragging.current;
-    const switchDistance=Math.max(38,Math.min(dragWidth*.12,48));
+    const switchDistance=Math.max(28,Math.min(dragWidth*.09,40));
     const shouldSwitch=gestureDragging.current&&Math.abs(dx)>switchDistance;
     if(wasDragging){
       suppressSwipeClick.current=true;
