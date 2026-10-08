@@ -684,3 +684,34 @@
 .settings-page.motion-reduced *,.settings-page.motion-reduced *:before,.settings-page.motion-reduced *:after{animation:none!important;transition-duration:.01ms!important}
 .settings-page~.main-nav{z-index:6}
 @media(prefers-reduced-motion:reduce){.settings-page,.settings-page *{animation:none!important;transition:none!important}}
+
+/* iPhone: every screen shares one navigation geometry. Keep this final so
+   older timeline-specific rules cannot move or resize the bar. */
+@media (max-width:560px){
+  .sora-app>nav.main-nav,
+  .sora-app:has(>.timeline-area)>nav.main-nav{
+    position:fixed!important;
+    top:auto!important;
+    left:12px!important;
+    right:12px!important;
+    bottom:0!important;
+    width:auto!important;
+    height:calc(82px + env(safe-area-inset-bottom,0px))!important;
+    margin:0!important;
+    padding:10px 12px calc(11px + env(safe-area-inset-bottom,0px))!important;
+    border:1px solid rgba(255,255,255,.8)!important;
+    border-radius:28px 28px 0 0!important;
+    transform:none!important;
+  }
+  .sora-app>nav.main-nav button,
+  .sora-app:has(>.timeline-area)>nav.main-nav button{
+    padding:0!important;
+    gap:0!important;
+    align-content:center!important;
+  }
+  .sora-app>nav.main-nav svg,
+  .sora-app:has(>.timeline-area)>nav.main-nav svg{
+    width:23px!important;
+    height:23px!important;
+  }
+}
