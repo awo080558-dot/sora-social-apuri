@@ -657,7 +657,9 @@
     position:fixed;
     left:12px;
     right:12px;
-    bottom:max(8px,env(safe-area-inset-bottom));
+    bottom:0;
+    height:calc(82px + env(safe-area-inset-bottom,0px));
+    padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));
   }
 }
 
