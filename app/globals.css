@@ -209,6 +209,10 @@
   touch-action:pan-y;
   overscroll-behavior-x:contain;
 }
+.sora-app.timeline-swipe-enabled{
+  touch-action:pan-y;
+  overscroll-behavior-x:contain;
+}
 .timeline-area.weather-bg.is-pulling{
   position:relative;
   z-index:3;

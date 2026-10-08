@@ -176,6 +176,7 @@ export default function HomePage(){
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const gestureDragging=useRef(false);
+  const suppressSwipeClick=useRef(false);
   const lastWheelSwitch=useRef(0);
   const wheelTravel=useRef(0);
   const wheelResetTimer=useRef<number|null>(null);
@@ -243,13 +244,19 @@ export default function HomePage(){
   const adjacentWeather=(step:number)=>{
     return weatherAtStep(step);
   };
-  const startWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{horizontalGesture.current={x:e.clientX,y:e.clientY};gestureDragging.current=false;setDragOffset(0);setDragPreviewWeather(null)};
-  const moveWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
+  const startWeatherSwipe=(e:PointerEvent<HTMLElement>)=>{
+    if((e.target as HTMLElement).closest(".main-nav,.new-post"))return;
+    horizontalGesture.current={x:e.clientX,y:e.clientY};
+    gestureDragging.current=false;
+    setDragOffset(0);
+    setDragPreviewWeather(null);
+  };
+  const moveWeatherSwipe=(e:PointerEvent<HTMLElement>)=>{
     const start=horizontalGesture.current;
     if(!start)return;
     const dx=e.clientX-start.x;
     const dy=e.clientY-start.y;
-    if(!gestureDragging.current&&Math.abs(dx)>4&&Math.abs(dx)>Math.abs(dy)*.6){
+    if(!gestureDragging.current&&Math.abs(dx)>3&&Math.abs(dx)>Math.abs(dy)*.45){
       gestureDragging.current=true;
       e.currentTarget.setPointerCapture?.(e.pointerId);
     }
@@ -262,11 +269,16 @@ export default function HomePage(){
       setDragPreviewWeather(preview);
     }
   };
-  const endWeatherSwipe=(e:PointerEvent<HTMLDivElement>)=>{
+  const endWeatherSwipe=(e:PointerEvent<HTMLElement>)=>{
     const start=horizontalGesture.current;
     const dx=start?e.clientX-start.x:0;
-    const switchDistance=Math.min(dragWidth*.16,64);
+    const wasDragging=gestureDragging.current;
+    const switchDistance=Math.max(38,Math.min(dragWidth*.12,48));
     const shouldSwitch=gestureDragging.current&&Math.abs(dx)>switchDistance;
+    if(wasDragging){
+      suppressSwipeClick.current=true;
+      window.setTimeout(()=>{suppressSwipeClick.current=false},80);
+    }
     resetWeatherSwipe();
     if(shouldSwitch)shiftWeather(dx<0?1:-1);
   };
@@ -311,7 +323,7 @@ export default function HomePage(){
   ];
   const sendMessage=(e:FormEvent)=>{e.preventDefault();if(activeChat===null||!messageDraft.trim())return;setSentMessages(v=>({...v,[activeChat]:[...(v[activeChat]||[]),messageDraft.trim()]}));setMessageDraft("")};
 
-  return <main className="sora-stage"><section className={`sora-app theme-${weather}`}>
+  return <main className="sora-stage"><section className={`sora-app theme-${weather} ${view==="timeline"?"timeline-swipe-enabled":""}`} onPointerDown={view==="timeline"?startWeatherSwipe:undefined} onPointerMove={view==="timeline"?moveWeatherSwipe:undefined} onPointerUp={view==="timeline"?endWeatherSwipe:undefined} onPointerCancel={view==="timeline"?resetWeatherSwipe:undefined} onLostPointerCapture={()=>{if(horizontalGesture.current)resetWeatherSwipe()}} onClickCapture={e=>{if(suppressSwipeClick.current){e.preventDefault();e.stopPropagation();suppressSwipeClick.current=false}}}>
     {view==="timeline"&&<><header className="sora-header">
       <button className={`header-tool notification-trigger ${notificationsRead?"":"has-unread"}`} aria-label="通知" onClick={()=>setView("notifications")}><Bell/><i/></button>
       <div className="forecast-mark custom-weather-mark" title={`現在のタイムライン：${info.label}`}><img src="/header-weather-transparent.png" alt="天気タイムライン"/></div>
@@ -336,7 +348,7 @@ export default function HomePage(){
       </article>)}
     </div>}
 
-    {view==="timeline"&&<div className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onPointerDown={startWeatherSwipe} onPointerMove={moveWeatherSwipe} onPointerUp={endWeatherSwipe} onPointerCancel={resetWeatherSwipe} onLostPointerCapture={()=>{if(horizontalGesture.current)resetWeatherSwipe()}} onWheel={wheelWeather}>
+    {view==="timeline"&&<div className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onWheel={wheelWeather}>
       <div className="sky-feed-heading"><span>この空の声</span><i/><small>新しい順</small></div>
       {feed.map(post=><article className="sora-post" key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
