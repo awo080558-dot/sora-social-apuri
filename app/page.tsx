@@ -175,6 +175,7 @@ export default function HomePage(){
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
+  const gestureAxis=useRef<"pending"|"horizontal"|"vertical">("pending");
   const gestureDragging=useRef(false);
   const suppressSwipeClick=useRef(false);
   const lastWheelSwitch=useRef(0);
@@ -223,6 +224,7 @@ export default function HomePage(){
   };
   const resetWeatherSwipe=()=>{
     horizontalGesture.current=null;
+    gestureAxis.current="pending";
     gestureDragging.current=false;
     setDragOffset(0);
     setDragPreviewWeather(null);
@@ -247,6 +249,7 @@ export default function HomePage(){
   const startWeatherSwipe=(e:PointerEvent<HTMLElement>)=>{
     if((e.target as HTMLElement).closest(".main-nav,.new-post"))return;
     horizontalGesture.current={x:e.clientX,y:e.clientY};
+    gestureAxis.current="pending";
     gestureDragging.current=false;
     setDragOffset(0);
     setDragPreviewWeather(null);
@@ -256,11 +259,19 @@ export default function HomePage(){
     if(!start)return;
     const dx=e.clientX-start.x;
     const dy=e.clientY-start.y;
-    if(!gestureDragging.current&&Math.abs(dx)>3&&Math.abs(dx)>Math.abs(dy)*.45){
+    const absX=Math.abs(dx);
+    const absY=Math.abs(dy);
+    if(gestureAxis.current==="pending"){
+      if(Math.max(absX,absY)<8)return;
+      if(absY>absX){
+        gestureAxis.current="vertical";
+        return;
+      }
+      gestureAxis.current="horizontal";
       gestureDragging.current=true;
       e.currentTarget.setPointerCapture?.(e.pointerId);
     }
-    if(gestureDragging.current){
+    if(gestureAxis.current==="horizontal"&&gestureDragging.current){
       const width=e.currentTarget.clientWidth||390;
       setDragWidth(width);
       const nextOffset=Math.max(-width,Math.min(width,dx));
