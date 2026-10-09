@@ -205,6 +205,15 @@
   box-shadow:none;
 }
 
+/* Account feeds intentionally reuse the exact timeline card treatment. */
+.profile-page .timeline-area.weather-bg.account-weather-feed{
+  display:block;
+  min-height:520px;
+  padding:10px 7px 118px;
+  overflow:visible;
+  flex:none;
+}
+
 /* 投稿だけをスクロールし、天気の背景は表示領域に固定する */
 .timeline-area.weather-bg{
   background-attachment:scroll;
