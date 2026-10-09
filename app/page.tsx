@@ -9,7 +9,7 @@ import { type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo,
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers" | "settings";
+type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers" | "followAdd" | "settings";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス" | "育児" | "キャリア・教育" | "美容";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 
@@ -70,6 +70,16 @@ const followers = [
   {name:"しおり",handle:"@shiori_books",weather:"rainy" as Weather,avatar:"📚"},
   {name:"レン",handle:"@ren_music",weather:"cloudy" as Weather,avatar:"🎸"},
   {name:"なつき",handle:"@natsuki_food",weather:"sunny" as Weather,avatar:"🍰"},
+];
+const followAddGroups:{label:string;weathers:Weather[]}[] = [
+  {label:"エンタメ",weathers:["storm","storm","rainy","storm"]},
+  {label:"スポーツ",weathers:["rainy","storm","rainy","storm"]},
+  {label:"テクノロジー",weathers:["rainy","rainy","sunny","cloudy"]},
+  {label:"ビジネス",weathers:["storm","rainy","cloudy","sunny"]},
+  {label:"育児",weathers:["storm","storm","rainy","sunny"]},
+  {label:"キャリア・教育",weathers:["cloudy","rainy","cloudy","storm"]},
+  {label:"美容",weathers:["rainy","cloudy","storm","sunny"]},
+  {label:"フード",weathers:["sunny","cloudy","cloudy","storm"]},
 ];
 const trendDays = [
   {label:"4月18日",short:"18",day:"木"},{label:"4月19日",short:"19",day:"金"},{label:"4月20日",short:"20",day:"土"},
@@ -170,6 +180,7 @@ export default function HomePage(){
   const [reduceMotion,setReduceMotion]=useState(false);
   const [postNotifications,setPostNotifications]=useState(true);
   const [reactionNotifications,setReactionNotifications]=useState(true);
+  const [addedFollows,setAddedFollows]=useState<string[]>([]);
   const notificationsRead=false;
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
@@ -509,13 +520,18 @@ export default function HomePage(){
       {keyboardOpen&&!searchSubmitted&&<div className="phone-keyboard" aria-label="日本語キーボード"><div className="keyboard-keys">{["あ","か","さ","た","な","は","ま","や","ら","小","わ","ー"].map(key=><button key={key} onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+key)}>{key}</button>)}</div><div className="keyboard-actions"><button onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v.slice(0,-1))}>⌫</button><button className="keyboard-space" onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+" ")}>空白</button><button className="keyboard-search" disabled={!query.trim()} onMouseDown={e=>e.preventDefault()} onClick={()=>{if(query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}}>検索</button></div></div>}
     </div>}
 
-    {view==="profile"&&<div className="profile-page"><div className="profile-cover"/><div className="profile-main"><div className="profile-avatar"/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="編集" onClick={()=>notify("プロフィール編集")}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followers")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>100</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>黄昏</h1><span className="profile-handle">@taso_gare</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。</p></div><div className="profile-feed">{[
+    {view==="profile"&&<div className="profile-page"><div className="profile-cover"/><div className="profile-main"><div className="profile-avatar"/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="編集" onClick={()=>notify("プロフィール編集")}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>100</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>黄昏</h1><span className="profile-handle">@taso_gare</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。</p></div><div className="profile-feed">{[
       "上着のポケットに手を入れたら、半年前になくしたと思ってたワイヤレスイヤホンの左耳側が出てきた。\nああ、ここにあったんだ。って思った次の瞬間、そういえば右耳側は先週、駅のホームで落として失くしたんだったと思い出して、もう二度と両耳揃わないんだな、って妙に静かな気持ちで泣きそうになってる。",
       "自炊がめんどくさい人は、お米を炊く炊飯器の中に冷凍餃子とカット野菜と白だしを入れてスイッチを押すと、30分後には『料理を諦めた人間の末路』みたいな激ウマおじやが出来上がります。洗い物は内釜だけ。全人類やって。",
       "旅先の朝、予定を決めずに各駅停車へ。窓から見えた海がきれいだったので、次の駅で降りてみることにした。"
     ].map((body,i)=><article className="profile-post region-post-in" style={{animationDelay:`${i*85}ms`}} key={i}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>黄昏</strong><span>@taso_gare</span></div><time>{i===0?"6時間前":i===1?"12時間前":"1日"}</time></div><p>{body}</p><div className="metric-row"><button><MessageCircle/><span>13.1k</span></button><button><Repeat2/><span>11.2k</span></button><button><Heart/><span>36.3k</span></button><button><ChartNoAxesColumnIncreasing/><span>97.4k</span></button><button><Upload/></button></div></article>)}</div></div>}
 
     {view==="userProfile"&&selectedAccount&&<div className="profile-page other-profile"><div className={`other-cover ${selectedAccount.weather}`}><AccountWeatherIcon className={`account-weather-icon ${selectedAccount.weather}`} fill={selectedAccount.weather==="sunny"||selectedAccount.weather==="storm"?"currentColor":"none"}/></div><div className="other-profile-main"><div className="other-avatar">{selectedAccount.avatar}</div><button className="other-follow" onClick={()=>notify(`${selectedAccount.name}をフォローしました`)}>フォロー</button><h1>{selectedAccount.name}</h1><span>{selectedAccount.handle}</span><p>{weatherInfo[selectedAccount.weather].message}</p><div className="other-counts"><strong>86</strong> フォロー中　 <strong>428</strong> フォロワー</div></div><div className="profile-feed">{posts.filter(p=>p.weather===selectedAccount.weather).slice(0,2).map(p=><article className="profile-post" key={p.id}><div className="post-head"><div className="follower-avatar">{selectedAccount.avatar}</div><div className="identity"><strong>{selectedAccount.name}</strong><span>{selectedAccount.handle}</span></div><time>{p.time}</time></div><p>{p.body}</p><div className="metric-row"><button><MessageCircle/><span>{p.replies}</span></button><button><Repeat2/><span>{p.reposts}</span></button><button><Heart/><span>{p.likes}</span></button><button><ChartNoAxesColumnIncreasing/><span>{p.views}</span></button><button><Upload/></button></div></article>)}</div></div>}
+
+    {view==="followAdd"&&<div className="follow-add-page">
+      <header className="follow-add-head"><button onClick={()=>setView("profile")} aria-label="プロフィールへ戻る">‹</button><h1>フォロー</h1><span/></header>
+      <div className="follow-add-groups">{followAddGroups.map((group,groupIndex)=><section className="follow-add-group" key={group.label}><h2>{group.label}</h2><div className="follow-add-grid">{group.weathers.map((candidateWeather,itemIndex)=>{const candidateId=`${groupIndex}-${itemIndex}`;const isAdded=addedFollows.includes(candidateId);return <button className={`follow-add-person ${isAdded?"followed":""}`} aria-pressed={isAdded} aria-label={`${group.label}のおすすめユーザー${itemIndex+1}${isAdded?"のフォローを解除":"をフォロー"}`} onClick={()=>{setAddedFollows(items=>items.includes(candidateId)?items.filter(id=>id!==candidateId):[...items,candidateId]);notify(isAdded?"フォローを解除しました":"フォローしました")}} key={candidateId}><span className={`follow-add-avatar generated-avatar avatar-${((groupIndex*4+itemIndex)%6)+1}`}/><i className="follow-add-weather"><SearchWeatherMark weather={candidateWeather}/></i></button>})}</div></section>)}</div>
+    </div>}
 
     {(view==="following"||view==="followers")&&<div className="sub-page followers-page follower-directory">
       <button className="follower-back" onClick={()=>setView("profile")} aria-label="プロフィールへ戻る">‹</button>
@@ -527,7 +543,7 @@ export default function HomePage(){
     {view==="messages"&&<div className="dm-page">{activeChat===null?<><header className="dm-header"><h1>メッセージ</h1><button aria-label="新しいメッセージ" onClick={()=>notify("新しいメッセージ")}>＋</button></header><label className="dm-search"><Search/><input placeholder="メッセージを検索"/></label><div className="dm-list">{conversations.map((chat,i)=><button className="dm-row region-post-in" style={{animationDelay:`${i*85}ms`}} key={chat.handle} onClick={()=>setActiveChat(i)}><span className={`dm-avatar generated-avatar avatar-${chat.avatar}`}/><span className="dm-copy"><strong>{chat.name}</strong><small>{chat.handle}</small><p>{chat.preview}</p></span><time>{chat.time}</time></button>)}</div></>:<><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></>}</div>}
 
     {view!=="settings"&&<button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>}
-    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
+    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="followAdd"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 
