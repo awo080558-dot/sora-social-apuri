@@ -501,6 +501,7 @@
 }
 .main-nav button{gap:2px;align-content:center}.main-nav button span{display:block;font-size:7px;font-weight:700;letter-spacing:.04em}.sora-app:has(>.timeline-area)>.main-nav svg{width:23px;height:23px;fill:none}.sora-app:has(>.timeline-area)>.main-nav button.active{color:#2c73be}.sora-app:has(>.timeline-area)>.main-nav button.active svg{filter:drop-shadow(0 3px 5px rgba(44,115,190,.22))}
 .sora-app:has(>.timeline-area)>.new-post{right:20px;bottom:105px;width:70px;height:70px}.sora-app:has(>.timeline-area)>.new-post:before{left:16px;top:18px;width:40px;height:33px;border-radius:18px 18px 17px 17px}.sora-app:has(>.timeline-area)>.new-post:after{left:12px;top:41px;width:22px;height:14px}
+.profile-page:not(.other-profile)+.new-post{display:grid!important;right:20px;bottom:105px;width:70px;height:70px}.profile-page:not(.other-profile)+.new-post:before{left:16px;top:18px;width:40px;height:33px;border-radius:18px 18px 17px 17px}.profile-page:not(.other-profile)+.new-post:after{left:12px;top:41px;width:22px;height:14px}
 
 .theme-cloudy:has(>.timeline-area){--sky-ink:#2f4455}.theme-rainy:has(>.timeline-area){--sky-ink:#173d60}.theme-storm:has(>.timeline-area){--sky-ink:#263149}
 @media(prefers-reduced-motion:reduce){.sora-app:has(>.timeline-area)>.weather-tabs button,.sky-summary-mark .search-rain-drop{transition:none;animation:none}}
