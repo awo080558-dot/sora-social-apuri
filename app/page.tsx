@@ -73,9 +73,9 @@ const followers = [
   {name:"なつき",handle:"@natsuki_food",weather:"sunny" as Weather,avatar:"🍰"},
 ];
 const ownProfilePosts:Post[] = [
-  {id:101,weather:"cloudy",name:"黄昏",handle:"@taso_gare",avatar:"",time:"6時間前",body:"上着のポケットに手を入れたら、半年前になくしたと思ってたワイヤレスイヤホンの左耳側が出てきた。\nああ、ここにあったんだ。って思った次の瞬間、そういえば右耳側は先週、駅のホームで落として失くしたんだったと思い出して、もう二度と両耳揃わないんだな、って妙に静かな気持ちで泣きそうになってる。",replies:"13100",reposts:"11200",likes:"36300",views:"97400"},
-  {id:102,weather:"sunny",name:"黄昏",handle:"@taso_gare",avatar:"",time:"12時間前",body:"自炊がめんどくさい人は、お米を炊く炊飯器の中に冷凍餃子とカット野菜と白だしを入れてスイッチを押すと、30分後には『料理を諦めた人間の末路』みたいな激ウマおじやが出来上がります。洗い物は内釜だけ。全人類やって。",replies:"9800",reposts:"7400",likes:"28100",views:"82300"},
-  {id:103,weather:"sunny",name:"黄昏",handle:"@taso_gare",avatar:"",time:"1日",body:"旅先の朝、予定を決めずに各駅停車へ。窓から見えた海がきれいだったので、次の駅で降りてみることにした。",replies:"4200",reposts:"3100",likes:"19700",views:"56800"},
+  {id:101,weather:"cloudy",name:"黄昏",handle:"@taso_gare",avatar:"",time:"6時間前",body:"上着のポケットに手を入れたら、半年前になくしたと思ってたワイヤレスイヤホンの左耳側が出てきた。\nああ、ここにあったんだ。って思った次の瞬間、そういえば右耳側は先週、駅のホームで落として失くしたんだったと思い出して、もう二度と両耳揃わないんだな、って妙に静かな気持ちで泣きそうになってる。",replies:"13",reposts:"4",likes:"87",views:"524"},
+  {id:102,weather:"sunny",name:"黄昏",handle:"@taso_gare",avatar:"",time:"12時間前",body:"自炊がめんどくさい人は、お米を炊く炊飯器の中に冷凍餃子とカット野菜と白だしを入れてスイッチを押すと、30分後には『料理を諦めた人間の末路』みたいな激ウマおじやが出来上がります。洗い物は内釜だけ。全人類やって。",replies:"8",reposts:"3",likes:"64",views:"391"},
+  {id:103,weather:"sunny",name:"黄昏",handle:"@taso_gare",avatar:"",time:"1日",body:"旅先の朝、予定を決めずに各駅停車へ。窓から見えた海がきれいだったので、次の駅で降りてみることにした。",replies:"5",reposts:"1",likes:"42",views:"278"},
 ];
 const followAddGroups:{label:string;weathers:Weather[]}[] = [
   {label:"エンタメ",weathers:["storm","storm","rainy","storm"]},
