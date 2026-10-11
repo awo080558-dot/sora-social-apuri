@@ -235,18 +235,27 @@ export default function HomePage(){
   const selectedCoverIndex=selectedAccount
     ? [...selectedAccount.handle].reduce((total,character)=>total+character.charCodeAt(0),0)%3+1
     : 1;
+  const compactCount=(value:string|number)=>{
+    const count=typeof value==="number"?value:Number(value);
+    if(!Number.isFinite(count))return String(value);
+    if(count>=1000){
+      const abbreviated=(count/1000).toFixed(1).replace(/\.0$/,'');
+      return `${abbreviated}k`;
+    }
+    return String(count);
+  };
   const shownLikes=(post:Post)=>{
     const base=Number(post.likes);
-    return Number.isFinite(base)?String(base+(liked.includes(post.id)?1:0)):post.likes;
+    return Number.isFinite(base)?compactCount(base+(liked.includes(post.id)?1:0)):post.likes;
   };
   const shownReposts=(post:Post)=>{
     const base=Number(post.reposts);
     const quoted=quotePosts.some(quote=>quote.original.id===post.id);
-    return Number.isFinite(base)?String(base+(reposted.includes(post.id)?1:0)+(quoted?1:0)):post.reposts;
+    return Number.isFinite(base)?compactCount(base+(reposted.includes(post.id)?1:0)+(quoted?1:0)):post.reposts;
   };
   const shownReplies=(post:Post)=>{
     const base=Number(post.replies);
-    return Number.isFinite(base)?String(base+(replied.includes(post.id)?1:0)):post.replies;
+    return Number.isFinite(base)?compactCount(base+(replied.includes(post.id)?1:0)):post.replies;
   };
   const toggleRepost=(post:Post)=>setReposted(items=>{
     const removing=items.includes(post.id);
@@ -273,7 +282,7 @@ export default function HomePage(){
     <button className={replied.includes(post.id)?"replied":""} aria-label="返信" onClick={()=>setReplyTarget(post)}><MessageCircle fill={replied.includes(post.id)?"currentColor":"none"}/><span>{shownReplies(post)}</span></button>
     <button className={reposted.includes(post.id)?"reposted":""} aria-label="リポストメニュー" aria-pressed={reposted.includes(post.id)} onClick={()=>setRepostMenuTarget(post)}><Repeat2/><span>{shownReposts(post)}</span></button>
     <button className={`like-button ${liked.includes(post.id)?"liked":""}`} aria-pressed={liked.includes(post.id)} aria-label={liked.includes(post.id)?"いいねを取り消す":"いいね"} onClick={()=>setLiked(items=>items.includes(post.id)?items.filter(id=>id!==post.id):[...items,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button>
-    <button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
+    <button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{compactCount(post.views)}</span></button>
     <button className="share" aria-label="共有" onClick={()=>notify("共有メニュー")}><Upload/></button>
   </div>;
   useEffect(()=>{
