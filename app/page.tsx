@@ -174,6 +174,10 @@ export default function HomePage(){
   const [view,setView]=useState<View>("timeline");
   const [liked,setLiked]=useState<number[]>([]);
   const [reposted,setReposted]=useState<number[]>([]);
+  const [repostMenuTarget,setRepostMenuTarget]=useState<Post|null>(null);
+  const [quoteTarget,setQuoteTarget]=useState<Post|null>(null);
+  const [quoteDraft,setQuoteDraft]=useState("");
+  const [quotePosts,setQuotePosts]=useState<{id:number;body:string;original:Post}[]>([]);
   const [replied,setReplied]=useState<number[]>([]);
   const [replyTarget,setReplyTarget]=useState<Post|null>(null);
   const [replyDraft,setReplyDraft]=useState("");
@@ -237,7 +241,8 @@ export default function HomePage(){
   };
   const shownReposts=(post:Post)=>{
     const base=Number(post.reposts);
-    return Number.isFinite(base)?String(base+(reposted.includes(post.id)?1:0)):post.reposts;
+    const quoted=quotePosts.some(quote=>quote.original.id===post.id);
+    return Number.isFinite(base)?String(base+(reposted.includes(post.id)?1:0)+(quoted?1:0)):post.reposts;
   };
   const shownReplies=(post:Post)=>{
     const base=Number(post.replies);
@@ -256,9 +261,17 @@ export default function HomePage(){
     setReplyTarget(null);
     notify("返信を送信しました");
   };
+  const submitQuote=(event:FormEvent)=>{
+    event.preventDefault();
+    if(!quoteTarget||!quoteDraft.trim())return;
+    setQuotePosts(items=>[{id:Date.now(),body:quoteDraft.trim(),original:quoteTarget},...items]);
+    setQuoteDraft("");
+    setQuoteTarget(null);
+    notify("引用して投稿しました");
+  };
   const postActions=(post:Post)=><div className="metric-row">
     <button className={replied.includes(post.id)?"replied":""} aria-label="返信" onClick={()=>setReplyTarget(post)}><MessageCircle fill={replied.includes(post.id)?"currentColor":"none"}/><span>{shownReplies(post)}</span></button>
-    <button className={reposted.includes(post.id)?"reposted":""} aria-label={reposted.includes(post.id)?"リポストを取り消す":"リポスト"} aria-pressed={reposted.includes(post.id)} onClick={()=>toggleRepost(post)}><Repeat2/><span>{shownReposts(post)}</span></button>
+    <button className={reposted.includes(post.id)?"reposted":""} aria-label="リポストメニュー" aria-pressed={reposted.includes(post.id)} onClick={()=>setRepostMenuTarget(post)}><Repeat2/><span>{shownReposts(post)}</span></button>
     <button className={`like-button ${liked.includes(post.id)?"liked":""}`} aria-pressed={liked.includes(post.id)} aria-label={liked.includes(post.id)?"いいねを取り消す":"いいね"} onClick={()=>setLiked(items=>items.includes(post.id)?items.filter(id=>id!==post.id):[...items,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button>
     <button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
     <button className="share" aria-label="共有" onClick={()=>notify("共有メニュー")}><Upload/></button>
@@ -565,7 +578,10 @@ export default function HomePage(){
       {keyboardOpen&&!searchSubmitted&&<div className="phone-keyboard" aria-label="日本語キーボード"><div className="keyboard-keys">{["あ","か","さ","た","な","は","ま","や","ら","小","わ","ー"].map(key=><button key={key} onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+key)}>{key}</button>)}</div><div className="keyboard-actions"><button onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v.slice(0,-1))}>⌫</button><button className="keyboard-space" onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+" ")}>空白</button><button className="keyboard-search" disabled={!query.trim()} onMouseDown={e=>e.preventDefault()} onClick={()=>{if(query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}}>検索</button></div></div>}
     </div>}
 
-    {view==="profile"&&<div className="profile-page"><div className="profile-cover"/><div className="profile-main"><div className="profile-avatar"/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="編集" onClick={()=>notify("プロフィール編集")}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>100</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>黄昏</h1><span className="profile-handle">@taso_gare</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。</p></div><div className="profile-feed">{ownProfilePosts.map((post,i)=><article className="profile-post region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}</div></div>}
+    {view==="profile"&&<div className="profile-page"><div className="profile-cover"/><div className="profile-main"><div className="profile-avatar"/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="編集" onClick={()=>notify("プロフィール編集")}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>100</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>黄昏</h1><span className="profile-handle">@taso_gare</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。</p></div><div className="profile-feed">
+      {quotePosts.map(quote=>{const quotedPost:Post={id:quote.id,weather:quote.original.weather,name:"黄昏",handle:"@taso_gare",avatar:"",time:"たった今",body:quote.body,replies:"0",reposts:"0",likes:"0",views:"1"};return <article className="profile-post quote-profile-post region-post-in" key={quote.id}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>黄昏</strong><span>@taso_gare</span></div><time>たった今</time></div><p>{quote.body}</p><div className="quoted-post-card"><strong>{quote.original.name}</strong><span>{quote.original.handle}</span><p>{quote.original.body}</p></div>{postActions(quotedPost)}</article>})}
+      {posts.filter(post=>reposted.includes(post.id)).map(post=><article className="profile-post repost-profile-post region-post-in" key={`repost-${post.id}`}><div className="reposted-by"><Repeat2/>黄昏さんがリポスト</div><div className="post-head"><div className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}
+      {ownProfilePosts.map((post,i)=><article className="profile-post region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}</div></div>}
 
     {view==="userProfile"&&selectedAccount&&<div className="profile-page other-profile"><div className={`other-cover cover-${selectedCoverIndex}`}><button onClick={()=>setView(accountReturnView)} aria-label="前の画面へ戻る">‹</button><span className="other-cover-shade" aria-hidden="true"/></div><div className="other-profile-main"><div className={`other-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><button className="other-follow" onClick={()=>notify(`${selectedAccount.name}をフォローしました`)}>フォロー</button><h1>{selectedAccount.name}</h1><span>{selectedAccount.handle}</span><p>{weatherInfo[selectedAccount.weather].message}</p><div className="other-counts"><strong>86</strong> フォロー中　 <strong>428</strong> フォロワー</div></div><div className={`profile-feed timeline-area weather-bg account-weather-feed ${selectedAccount.weather}`}>{posts.filter(p=>p.weather===selectedAccount.weather).map(p=><article className="sora-post" key={p.id}><div className="post-head"><div className={`photo-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><div className="identity"><strong>{selectedAccount.name}</strong><span>{selectedAccount.handle}</span></div><time>{p.time}</time></div><p>{p.body}</p>{postActions(p)}</article>)}</div></div>}
 
@@ -593,6 +609,8 @@ export default function HomePage(){
   </section>
 
   {composer&&<div className="modal-shade"><form className="post-modal" onSubmit={submit}><header><button type="button" onClick={()=>setComposer(false)}><X/></button><strong>新しい投稿</strong><button disabled={!draft.trim()}>投稿</button></header><textarea autoFocus value={draft} onChange={e=>setDraft(e.target.value)} placeholder="いま、どうしていますか？" maxLength={240}/><div className="analysis-preview"><span>{info.symbol}</span><p>投稿後、AIが感情を分析して適切な天気に分類します。</p></div></form></div>}
+  {repostMenuTarget&&<div className="repost-menu-shade" onClick={()=>setRepostMenuTarget(null)}><div className="repost-menu" role="menu" onClick={event=>event.stopPropagation()}><button role="menuitem" onClick={()=>{toggleRepost(repostMenuTarget);setRepostMenuTarget(null)}}><Repeat2/><span>{reposted.includes(repostMenuTarget.id)?"リポストを取り消す":"リポスト"}</span></button><button role="menuitem" onClick={()=>{setQuoteTarget(repostMenuTarget);setRepostMenuTarget(null)}}><Pencil/><span>引用</span></button><button className="repost-cancel" onClick={()=>setRepostMenuTarget(null)}>キャンセル</button></div></div>}
+  {quoteTarget&&<div className="modal-shade"><form className="post-modal quote-modal" onSubmit={submitQuote}><header><button type="button" aria-label="閉じる" onClick={()=>{setQuoteTarget(null);setQuoteDraft("")}}><X/></button><strong>引用</strong><button disabled={!quoteDraft.trim()}>投稿</button></header><textarea autoFocus value={quoteDraft} onChange={event=>setQuoteDraft(event.target.value)} placeholder="コメントを追加" maxLength={240}/><div className="quoted-post-card quote-compose-card"><strong>{quoteTarget.name}</strong><span>{quoteTarget.handle}</span><p>{quoteTarget.body}</p></div></form></div>}
   {replyTarget&&<div className="modal-shade"><form className="post-modal reply-modal" onSubmit={submitReply}><header><button type="button" aria-label="閉じる" onClick={()=>{setReplyTarget(null);setReplyDraft("")}}><X/></button><strong>返信</strong><button disabled={!replyDraft.trim()}>送信</button></header><div className="reply-target"><strong>{replyTarget.name}</strong><span>{replyTarget.handle}</span><p>{replyTarget.body}</p></div><textarea autoFocus value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder={`${replyTarget.name}さんへ返信`} maxLength={240}/></form></div>}
   {toast&&<div className="sora-toast">{toast}</div>}
   </main>
