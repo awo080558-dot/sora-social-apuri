@@ -72,6 +72,11 @@ const followers = [
   {name:"レン",handle:"@ren_music",weather:"cloudy" as Weather,avatar:"🎸"},
   {name:"なつき",handle:"@natsuki_food",weather:"sunny" as Weather,avatar:"🍰"},
 ];
+const ownProfilePosts:Post[] = [
+  {id:101,weather:"cloudy",name:"黄昏",handle:"@taso_gare",avatar:"",time:"6時間前",body:"上着のポケットに手を入れたら、半年前になくしたと思ってたワイヤレスイヤホンの左耳側が出てきた。\nああ、ここにあったんだ。って思った次の瞬間、そういえば右耳側は先週、駅のホームで落として失くしたんだったと思い出して、もう二度と両耳揃わないんだな、って妙に静かな気持ちで泣きそうになってる。",replies:"13100",reposts:"11200",likes:"36300",views:"97400"},
+  {id:102,weather:"sunny",name:"黄昏",handle:"@taso_gare",avatar:"",time:"12時間前",body:"自炊がめんどくさい人は、お米を炊く炊飯器の中に冷凍餃子とカット野菜と白だしを入れてスイッチを押すと、30分後には『料理を諦めた人間の末路』みたいな激ウマおじやが出来上がります。洗い物は内釜だけ。全人類やって。",replies:"9800",reposts:"7400",likes:"28100",views:"82300"},
+  {id:103,weather:"sunny",name:"黄昏",handle:"@taso_gare",avatar:"",time:"1日",body:"旅先の朝、予定を決めずに各駅停車へ。窓から見えた海がきれいだったので、次の駅で降りてみることにした。",replies:"4200",reposts:"3100",likes:"19700",views:"56800"},
+];
 const followAddGroups:{label:string;weathers:Weather[]}[] = [
   {label:"エンタメ",weathers:["storm","storm","rainy","storm"]},
   {label:"スポーツ",weathers:["rainy","storm","rainy","storm"]},
@@ -168,6 +173,10 @@ export default function HomePage(){
   const [weather,setWeather]=useState<Weather>("sunny");
   const [view,setView]=useState<View>("timeline");
   const [liked,setLiked]=useState<number[]>([]);
+  const [reposted,setReposted]=useState<number[]>([]);
+  const [replied,setReplied]=useState<number[]>([]);
+  const [replyTarget,setReplyTarget]=useState<Post|null>(null);
+  const [replyDraft,setReplyDraft]=useState("");
   const [composer,setComposer]=useState(false);
   const [draft,setDraft]=useState("");
   const [query,setQuery]=useState("");
@@ -226,6 +235,34 @@ export default function HomePage(){
     const base=Number(post.likes);
     return Number.isFinite(base)?String(base+(liked.includes(post.id)?1:0)):post.likes;
   };
+  const shownReposts=(post:Post)=>{
+    const base=Number(post.reposts);
+    return Number.isFinite(base)?String(base+(reposted.includes(post.id)?1:0)):post.reposts;
+  };
+  const shownReplies=(post:Post)=>{
+    const base=Number(post.replies);
+    return Number.isFinite(base)?String(base+(replied.includes(post.id)?1:0)):post.replies;
+  };
+  const toggleRepost=(post:Post)=>setReposted(items=>{
+    const removing=items.includes(post.id);
+    notify(removing?"リポストを取り消しました":"リポストしました");
+    return removing?items.filter(id=>id!==post.id):[...items,post.id];
+  });
+  const submitReply=(event:FormEvent)=>{
+    event.preventDefault();
+    if(!replyTarget||!replyDraft.trim())return;
+    setReplied(items=>items.includes(replyTarget.id)?items:[...items,replyTarget.id]);
+    setReplyDraft("");
+    setReplyTarget(null);
+    notify("返信を送信しました");
+  };
+  const postActions=(post:Post)=><div className="metric-row">
+    <button className={replied.includes(post.id)?"replied":""} aria-label="返信" onClick={()=>setReplyTarget(post)}><MessageCircle fill={replied.includes(post.id)?"currentColor":"none"}/><span>{shownReplies(post)}</span></button>
+    <button className={reposted.includes(post.id)?"reposted":""} aria-label={reposted.includes(post.id)?"リポストを取り消す":"リポスト"} aria-pressed={reposted.includes(post.id)} onClick={()=>toggleRepost(post)}><Repeat2/><span>{shownReposts(post)}</span></button>
+    <button className={`like-button ${liked.includes(post.id)?"liked":""}`} aria-pressed={liked.includes(post.id)} aria-label={liked.includes(post.id)?"いいねを取り消す":"いいね"} onClick={()=>setLiked(items=>items.includes(post.id)?items.filter(id=>id!==post.id):[...items,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button>
+    <button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
+    <button className="share" aria-label="共有" onClick={()=>notify("共有メニュー")}><Upload/></button>
+  </div>;
   useEffect(()=>{
     if(view!=="search"||mapMode)return;
     const frame=window.requestAnimationFrame(()=>{
@@ -475,13 +512,7 @@ export default function HomePage(){
       {feed.map(post=><article className="sora-post" key={post.id}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount(post)} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
         <p>{post.body}</p>
-        <div className="metric-row">
-          <button onClick={()=>notify("返信")}><MessageCircle/><span>{post.replies}</span></button>
-          <button onClick={()=>notify("リポストしました")}><Repeat2/><span>{post.reposts}</span></button>
-          <button className={`like-button ${liked.includes(post.id)?"liked":""}`} aria-pressed={liked.includes(post.id)} aria-label={liked.includes(post.id)?"いいねを取り消す":"いいね"} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button>
-          <button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button>
-          <button className="share" onClick={()=>notify("共有メニュー")}><Upload/></button>
-        </div>
+        {postActions(post)}
       </article>)}
     </div>}
 
@@ -522,7 +553,7 @@ export default function HomePage(){
 
     {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
       {!searchSubmitted&&<div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label><button className={`view-toggle ${mapMode?"map-on":"weather-on"}`} onClick={()=>{setSearchSubmitted(false);setKeyboardOpen(false);setMapMode(v=>!v)}} aria-label={mapMode?"天気予報へ切り替え":"天気マップへ切り替え"}><span>{mapMode?<i className="toggle-map-glyph"><Map/><MapPin/></i>:<i className="toggle-weather-glyph"><Sun/><Cloud/></i>}</span></button></div>}
-      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p><div className="metric-row"><button><MessageCircle/><span>{post.replies}</span></button><button><Repeat2/><span>{post.reposts}</span></button><button className={`like-button ${liked.includes(post.id)?"liked":""}`} onClick={()=>setLiked(v=>v.includes(post.id)?v.filter(id=>id!==post.id):[...v,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{post.views}</span></button><button><Upload/></button></div></article>)}</div>:<>{!mapMode&&<><div className="category-tabs" aria-label="ジャンルを選択">{categories.map(item=>{const itemWeather=categoryForecasts[item][trendDay];return <button key={item} className={category===item?"active":""} onClick={e=>{setCategory(item);const strip=e.currentTarget.parentElement;if(strip){const left=e.currentTarget.offsetLeft-(strip.clientWidth-e.currentTarget.offsetWidth)/2;strip.scrollTo({left:Math.max(0,left),behavior:"smooth"})}}} aria-label={`${item} ${weatherInfo[itemWeather].label}`}><span className={`category-weather-mark ${itemWeather}`} aria-hidden="true"><SearchWeatherMark weather={itemWeather}/></span><span>{item}</span></button>})}</div>
+      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather})}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p>{postActions(post)}</article>)}</div>:<>{!mapMode&&<><div className="category-tabs" aria-label="ジャンルを選択">{categories.map(item=>{const itemWeather=categoryForecasts[item][trendDay];return <button key={item} className={category===item?"active":""} onClick={e=>{setCategory(item);const strip=e.currentTarget.parentElement;if(strip){const left=e.currentTarget.offsetLeft-(strip.clientWidth-e.currentTarget.offsetWidth)/2;strip.scrollTo({left:Math.max(0,left),behavior:"smooth"})}}} aria-label={`${item} ${weatherInfo[itemWeather].label}`}><span className={`category-weather-mark ${itemWeather}`} aria-hidden="true"><SearchWeatherMark weather={itemWeather}/></span><span>{item}</span></button>})}</div>
       <div className="reference-weather-strip" ref={forecastStrip} aria-label="日ごとの天気予報">
         {trendDays.map((date,i)=>{const w=categoryForecasts[category][i];return <button key={date.label} className={`${w} ${trendDay===i?"selected":""}`} onClick={()=>setTrendDay(i)} aria-label={`${date.label} ${weatherInfo[w].label}`}><SearchWeatherMark weather={w}/></button>})}
       </div>
@@ -534,13 +565,9 @@ export default function HomePage(){
       {keyboardOpen&&!searchSubmitted&&<div className="phone-keyboard" aria-label="日本語キーボード"><div className="keyboard-keys">{["あ","か","さ","た","な","は","ま","や","ら","小","わ","ー"].map(key=><button key={key} onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+key)}>{key}</button>)}</div><div className="keyboard-actions"><button onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v.slice(0,-1))}>⌫</button><button className="keyboard-space" onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+" ")}>空白</button><button className="keyboard-search" disabled={!query.trim()} onMouseDown={e=>e.preventDefault()} onClick={()=>{if(query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}}>検索</button></div></div>}
     </div>}
 
-    {view==="profile"&&<div className="profile-page"><div className="profile-cover"/><div className="profile-main"><div className="profile-avatar"/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="編集" onClick={()=>notify("プロフィール編集")}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>100</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>黄昏</h1><span className="profile-handle">@taso_gare</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。</p></div><div className="profile-feed">{[
-      "上着のポケットに手を入れたら、半年前になくしたと思ってたワイヤレスイヤホンの左耳側が出てきた。\nああ、ここにあったんだ。って思った次の瞬間、そういえば右耳側は先週、駅のホームで落として失くしたんだったと思い出して、もう二度と両耳揃わないんだな、って妙に静かな気持ちで泣きそうになってる。",
-      "自炊がめんどくさい人は、お米を炊く炊飯器の中に冷凍餃子とカット野菜と白だしを入れてスイッチを押すと、30分後には『料理を諦めた人間の末路』みたいな激ウマおじやが出来上がります。洗い物は内釜だけ。全人類やって。",
-      "旅先の朝、予定を決めずに各駅停車へ。窓から見えた海がきれいだったので、次の駅で降りてみることにした。"
-    ].map((body,i)=><article className="profile-post region-post-in" style={{animationDelay:`${i*85}ms`}} key={i}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>黄昏</strong><span>@taso_gare</span></div><time>{i===0?"6時間前":i===1?"12時間前":"1日"}</time></div><p>{body}</p><div className="metric-row"><button><MessageCircle/><span>13.1k</span></button><button><Repeat2/><span>11.2k</span></button><button><Heart/><span>36.3k</span></button><button><ChartNoAxesColumnIncreasing/><span>97.4k</span></button><button><Upload/></button></div></article>)}</div></div>}
+    {view==="profile"&&<div className="profile-page"><div className="profile-cover"/><div className="profile-main"><div className="profile-avatar"/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="編集" onClick={()=>notify("プロフィール編集")}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>100</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>黄昏</h1><span className="profile-handle">@taso_gare</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。</p></div><div className="profile-feed">{ownProfilePosts.map((post,i)=><article className="profile-post region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}</div></div>}
 
-    {view==="userProfile"&&selectedAccount&&<div className="profile-page other-profile"><div className={`other-cover cover-${selectedCoverIndex}`}><button onClick={()=>setView(accountReturnView)} aria-label="前の画面へ戻る">‹</button><span className="other-cover-shade" aria-hidden="true"/></div><div className="other-profile-main"><div className={`other-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><button className="other-follow" onClick={()=>notify(`${selectedAccount.name}をフォローしました`)}>フォロー</button><h1>{selectedAccount.name}</h1><span>{selectedAccount.handle}</span><p>{weatherInfo[selectedAccount.weather].message}</p><div className="other-counts"><strong>86</strong> フォロー中　 <strong>428</strong> フォロワー</div></div><div className={`profile-feed timeline-area weather-bg account-weather-feed ${selectedAccount.weather}`}>{posts.filter(p=>p.weather===selectedAccount.weather).map(p=><article className="sora-post" key={p.id}><div className="post-head"><div className={`photo-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><div className="identity"><strong>{selectedAccount.name}</strong><span>{selectedAccount.handle}</span></div><time>{p.time}</time></div><p>{p.body}</p><div className="metric-row"><button onClick={()=>notify("返信")}><MessageCircle/><span>{p.replies}</span></button><button onClick={()=>notify("リポストしました")}><Repeat2/><span>{p.reposts}</span></button><button className={`like-button ${liked.includes(p.id)?"liked":""}`} aria-pressed={liked.includes(p.id)} onClick={()=>setLiked(items=>items.includes(p.id)?items.filter(id=>id!==p.id):[...items,p.id])}><Heart fill={liked.includes(p.id)?"currentColor":"none"}/><span>{shownLikes(p)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{p.views}</span></button><button className="share" onClick={()=>notify("共有メニュー")}><Upload/></button></div></article>)}</div></div>}
+    {view==="userProfile"&&selectedAccount&&<div className="profile-page other-profile"><div className={`other-cover cover-${selectedCoverIndex}`}><button onClick={()=>setView(accountReturnView)} aria-label="前の画面へ戻る">‹</button><span className="other-cover-shade" aria-hidden="true"/></div><div className="other-profile-main"><div className={`other-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><button className="other-follow" onClick={()=>notify(`${selectedAccount.name}をフォローしました`)}>フォロー</button><h1>{selectedAccount.name}</h1><span>{selectedAccount.handle}</span><p>{weatherInfo[selectedAccount.weather].message}</p><div className="other-counts"><strong>86</strong> フォロー中　 <strong>428</strong> フォロワー</div></div><div className={`profile-feed timeline-area weather-bg account-weather-feed ${selectedAccount.weather}`}>{posts.filter(p=>p.weather===selectedAccount.weather).map(p=><article className="sora-post" key={p.id}><div className="post-head"><div className={`photo-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><div className="identity"><strong>{selectedAccount.name}</strong><span>{selectedAccount.handle}</span></div><time>{p.time}</time></div><p>{p.body}</p>{postActions(p)}</article>)}</div></div>}
 
     {view==="followAdd"&&<div className="follow-add-page">
       <header className="follow-add-head"><button onClick={()=>setView("profile")} aria-label="プロフィールへ戻る">‹</button><h1>フォロー</h1><button className="follow-all" aria-pressed={addedFollows.length===followAddAccounts.length} onClick={()=>{const allFollowed=addedFollows.length===followAddAccounts.length;setAddedFollows(allFollowed?[]:followAddAccounts.map((_,index)=>String(index)));notify(allFollowed?"一括フォローを解除しました":"おすすめを一括フォローしました")}}>{addedFollows.length===followAddAccounts.length?"解除":"一括フォロー"}</button></header>
@@ -566,6 +593,7 @@ export default function HomePage(){
   </section>
 
   {composer&&<div className="modal-shade"><form className="post-modal" onSubmit={submit}><header><button type="button" onClick={()=>setComposer(false)}><X/></button><strong>新しい投稿</strong><button disabled={!draft.trim()}>投稿</button></header><textarea autoFocus value={draft} onChange={e=>setDraft(e.target.value)} placeholder="いま、どうしていますか？" maxLength={240}/><div className="analysis-preview"><span>{info.symbol}</span><p>投稿後、AIが感情を分析して適切な天気に分類します。</p></div></form></div>}
+  {replyTarget&&<div className="modal-shade"><form className="post-modal reply-modal" onSubmit={submitReply}><header><button type="button" aria-label="閉じる" onClick={()=>{setReplyTarget(null);setReplyDraft("")}}><X/></button><strong>返信</strong><button disabled={!replyDraft.trim()}>送信</button></header><div className="reply-target"><strong>{replyTarget.name}</strong><span>{replyTarget.handle}</span><p>{replyTarget.body}</p></div><textarea autoFocus value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder={`${replyTarget.name}さんへ返信`} maxLength={240}/></form></div>}
   {toast&&<div className="sora-toast">{toast}</div>}
   </main>
 }
