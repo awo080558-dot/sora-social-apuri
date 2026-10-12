@@ -687,6 +687,14 @@
   }
 }
 
+/* Profile weather mix sits to the lower right of the name and handle. */
+.profile-main .profile-weather{
+  left:auto;
+  right:22px;
+  top:59px;
+  gap:7px;
+}
+
 /* Every screen uses the timeline post card as the single visual source. */
 .unified-post-card{
   position:relative!important;
