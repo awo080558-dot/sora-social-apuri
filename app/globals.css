@@ -690,7 +690,7 @@
 /* Profile weather mix sits to the lower right of the name and handle. */
 .profile-main .profile-weather{
   left:auto;
-  right:22px;
+  right:64px;
   top:59px;
   gap:7px;
 }
