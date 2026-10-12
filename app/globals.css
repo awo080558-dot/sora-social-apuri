@@ -808,6 +808,27 @@
 .settings-page~.main-nav{z-index:6}
 @media(prefers-reduced-motion:reduce){.settings-page,.settings-page *{animation:none!important;transition:none!important}}
 
+/* タイムラインへ戻るときだけ、ページ全体を左から右へ迎え入れる。 */
+@keyframes timeline-page-enter-left{
+  from{opacity:.18;transform:translateX(-52px)}
+  to{opacity:1;transform:translateX(0)}
+}
+.sora-app.timeline-page-enter>.sora-header,
+.sora-app.timeline-page-enter>.weather-tabs,
+.sora-app.timeline-page-enter>.timeline-area:not(.weather-adjacent-preview),
+.sora-app.timeline-page-enter>.new-post{
+  animation:timeline-page-enter-left .42s cubic-bezier(.22,.8,.3,1) backwards;
+  will-change:transform,opacity;
+}
+.sora-app.timeline-page-enter>.weather-tabs{animation-delay:.025s}
+.sora-app.timeline-page-enter>.timeline-area:not(.weather-adjacent-preview){animation-delay:.05s}
+@media(prefers-reduced-motion:reduce){
+  .sora-app.timeline-page-enter>.sora-header,
+  .sora-app.timeline-page-enter>.weather-tabs,
+  .sora-app.timeline-page-enter>.timeline-area:not(.weather-adjacent-preview),
+  .sora-app.timeline-page-enter>.new-post{animation:none!important}
+}
+
 /* iPhone: every screen shares one navigation geometry. Keep this final so
    older timeline-specific rules cannot move or resize the bar. */
 .sora-app>nav.main-nav,
