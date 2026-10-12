@@ -695,6 +695,13 @@
   gap:7px;
 }
 
+.other-follow.following,
+.follow-pill.following{
+  border:1px solid #9aa2aa;
+  background:#fff;
+  color:#111;
+}
+
 /* Every screen uses the timeline post card as the single visual source. */
 .unified-post-card{
   position:relative!important;
