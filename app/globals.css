@@ -843,8 +843,10 @@
 .reference-discover .view-toggle.map-on .toggle-map-glyph{
   display:grid;
   place-items:center;
-  width:25px;
-  height:29px;
+  width:28px;
+  height:28px;
+  font-size:20px;
+  line-height:1;
   filter:none;
 }
 .reference-discover .view-toggle.map-on .toggle-map-glyph img{
