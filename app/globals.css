@@ -829,6 +829,50 @@
   .sora-app.timeline-page-enter>.new-post{animation:none!important}
 }
 
+/* 地図側トグル：天気側と同じ、立体的で透明感のある質感にする。 */
+.reference-discover .view-toggle.map-on{
+  border-color:rgba(255,255,255,.94);
+  background:
+    radial-gradient(ellipse at 76% 116%,rgba(80,178,114,.88) 0 32%,transparent 33%),
+    radial-gradient(ellipse at 38% 120%,rgba(151,221,145,.9) 0 38%,transparent 39%),
+    linear-gradient(118deg,#bcecff 0%,#66c5e8 52%,#4db0d6 100%);
+  box-shadow:
+    inset 0 3px 8px rgba(21,91,125,.25),
+    inset 0 -2px 0 rgba(255,255,255,.72),
+    0 5px 14px rgba(35,92,117,.22);
+}
+.reference-discover .view-toggle.map-on:before{
+  background:
+    radial-gradient(circle at 32% 22%,rgba(255,255,255,.92) 0 9%,transparent 10%),
+    radial-gradient(circle at 38% 30%,#8ce3d4 0 18%,#30a9a5 48%,#08747f 100%);
+  border-color:rgba(238,255,252,.94);
+  box-shadow:
+    0 5px 10px rgba(20,75,91,.35),
+    inset 0 2px 2px rgba(255,255,255,.8),
+    inset 0 -4px 7px rgba(2,76,89,.25);
+}
+.reference-discover .view-toggle.map-on .toggle-map-glyph{
+  filter:drop-shadow(0 2px 2px rgba(0,61,74,.3));
+}
+.reference-discover .view-toggle.map-on .toggle-map-glyph svg:first-child{
+  left:2px;
+  top:3px;
+  width:24px;
+  height:21px;
+  color:#f4fffd;
+  fill:rgba(223,255,247,.18);
+  stroke-width:1.9;
+}
+.reference-discover .view-toggle.map-on .toggle-map-glyph svg:last-child{
+  right:0;
+  top:-1px;
+  width:13px;
+  height:13px;
+  color:#fff0a3;
+  fill:#ffd84f;
+  stroke-width:2.2;
+}
+
 /* iPhone: every screen shares one navigation geometry. Keep this final so
    older timeline-specific rules cannot move or resize the bar. */
 .sora-app>nav.main-nav,
