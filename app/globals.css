@@ -845,16 +845,14 @@
   place-items:center;
   width:25px;
   height:29px;
-  overflow:hidden;
   filter:none;
 }
 .reference-discover .view-toggle.map-on .toggle-map-glyph img{
   display:block;
-  width:43px;
-  max-width:none;
+  width:25px;
   height:29px;
-  object-fit:fill;
-  filter:invert(34%) sepia(19%) saturate(1134%) hue-rotate(139deg) brightness(89%);
+  object-fit:contain;
+  filter:none;
 }
 
 /* iPhone: every screen shares one navigation geometry. Keep this final so
