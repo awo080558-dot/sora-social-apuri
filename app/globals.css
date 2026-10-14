@@ -752,6 +752,12 @@
 .profile-edit-fields small{position:absolute;right:10px;bottom:7px;font-size:7px;color:#8ba0af}
 .profile-bio-field{min-height:112px!important}.profile-handle-input{display:flex;align-items:center;gap:2px}.profile-handle-input b{font-size:12px;font-weight:600;color:#6c8496}.profile-handle-input input{min-width:0}
 
+/* 投稿ごとの返信一覧 */
+.reply-modal{max-height:min(760px,calc(100dvh - 28px));display:flex;flex-direction:column}
+.reply-modal>header{flex:0 0 61px}.reply-thread{min-height:0;flex:1;overflow-y:auto;padding:0 18px;scrollbar-width:none}.reply-thread::-webkit-scrollbar{display:none}
+.reply-thread .reply-target{margin:15px 0 16px}.reply-thread h2{margin:0;padding:0 0 8px;border-bottom:1px solid #e3e9ed;font-size:11px;color:#526a7b}
+.reply-item{padding:12px 0;display:flex;gap:10px;border-bottom:1px solid #e8edf0}.reply-avatar{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background-size:cover;background-position:center;background-repeat:no-repeat}.reply-item>div{min-width:0;flex:1}.reply-item strong{font-size:10px}.reply-item span{margin-left:5px;color:#738795;font-size:8px}.reply-item p{margin:5px 0 0;color:#203b50;font-size:10px;line-height:1.45}.reply-item.own-reply{animation:reply-arrive .3s ease-out both}.reply-compose{position:relative;flex:0 0 auto;padding:11px 17px 18px;border-top:1px solid #dbe4e9;background:#fff}.reply-modal .reply-compose textarea{height:72px;padding:11px 13px 19px;border:1px solid #c7d6df;border-radius:13px;background:#f8fbfd;font-size:11px}.reply-compose small{position:absolute;right:27px;bottom:23px;color:#8ba0ad;font-size:7px}@keyframes reply-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
 /* Profile weather mix sits to the lower right of the name and handle. */
 .profile-main .profile-weather{
   left:auto;

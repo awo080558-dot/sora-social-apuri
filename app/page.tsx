@@ -23,6 +23,10 @@ const initialProfile:ProfileData = {
   avatarUrl:"/tasogare-avatar.png",
   coverUrl:"/tasogare-cover.png",
 };
+const sampleReplies = [
+  {name:"あかり",handle:"@akari_sky",body:"わかります。文章を読んで少し気持ちが落ち着きました。",time:"18分前",avatarClass:2},
+  {name:"まどぎわ",handle:"@window_side",body:"共有してくれてありがとう。無理せず、ゆっくりいきましょう。",time:"42分前",avatarClass:5},
+];
 
 const weatherInfo = {
   sunny: { label:"晴れ", icon:Sun, symbol:"🌤️", message:"明るく前向きな投稿が多いタイムラインです", color:"#f6b900" },
@@ -189,7 +193,7 @@ export default function HomePage(){
   const [quoteTarget,setQuoteTarget]=useState<Post|null>(null);
   const [quoteDraft,setQuoteDraft]=useState("");
   const [quotePosts,setQuotePosts]=useState<{id:number;body:string;original:Post}[]>([]);
-  const [replied,setReplied]=useState<number[]>([]);
+  const [savedReplies,setSavedReplies]=useState<Record<number,{id:number;body:string}[]>>({});
   const [replyTarget,setReplyTarget]=useState<Post|null>(null);
   const [replyDraft,setReplyDraft]=useState("");
   const [composer,setComposer]=useState(false);
@@ -268,7 +272,7 @@ export default function HomePage(){
   };
   const shownReplies=(post:Post)=>{
     const base=Number(post.replies);
-    return Number.isFinite(base)?compactCount(base+(replied.includes(post.id)?1:0)):post.replies;
+    return Number.isFinite(base)?compactCount(base+(savedReplies[post.id]?.length||0)):post.replies;
   };
   const toggleRepost=(post:Post)=>setReposted(items=>{
     const removing=items.includes(post.id);
@@ -278,10 +282,14 @@ export default function HomePage(){
   const submitReply=(event:FormEvent)=>{
     event.preventDefault();
     if(!replyTarget||!replyDraft.trim())return;
-    setReplied(items=>items.includes(replyTarget.id)?items:[...items,replyTarget.id]);
+    const reply={id:Date.now(),body:replyDraft.trim()};
+    setSavedReplies(current=>{
+      const next={...current,[replyTarget.id]:[...(current[replyTarget.id]||[]),reply]};
+      window.localStorage.setItem("sora-replies",JSON.stringify(next));
+      return next;
+    });
     setReplyDraft("");
-    setReplyTarget(null);
-    notify("返信を送信しました");
+    notify("返信を追加しました");
   };
   const submitQuote=(event:FormEvent)=>{
     event.preventDefault();
@@ -292,7 +300,7 @@ export default function HomePage(){
     notify("引用して投稿しました");
   };
   const postActions=(post:Post)=><div className="metric-row">
-    <button className={replied.includes(post.id)?"replied":""} aria-label="返信" onClick={()=>setReplyTarget(post)}><MessageCircle fill={replied.includes(post.id)?"currentColor":"none"}/><span>{shownReplies(post)}</span></button>
+    <button className={(savedReplies[post.id]?.length||0)>0?"replied":""} aria-label="返信とリプライを表示" onClick={()=>setReplyTarget(post)}><MessageCircle fill={(savedReplies[post.id]?.length||0)>0?"currentColor":"none"}/><span>{shownReplies(post)}</span></button>
     <button className={reposted.includes(post.id)?"reposted":""} aria-label="リポストメニュー" aria-pressed={reposted.includes(post.id)} onClick={()=>setRepostMenuTarget(post)}><Repeat2/><span>{shownReposts(post)}</span></button>
     <button className={`like-button ${liked.includes(post.id)?"liked":""}`} aria-pressed={liked.includes(post.id)} aria-label={liked.includes(post.id)?"いいねを取り消す":"いいね"} onClick={()=>setLiked(items=>items.includes(post.id)?items.filter(id=>id!==post.id):[...items,post.id])}><Heart fill={liked.includes(post.id)?"currentColor":"none"}/><span>{shownLikes(post)}</span></button>
     <button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{compactCount(post.views)}</span></button>
@@ -324,6 +332,16 @@ export default function HomePage(){
       setProfileDraft(restored);
     }catch{
       window.localStorage.removeItem("sora-profile");
+    }
+  },[]);
+  useEffect(()=>{
+    const saved=window.localStorage.getItem("sora-replies");
+    if(!saved)return;
+    try{
+      const restored=JSON.parse(saved) as Record<number,{id:number;body:string}[]>;
+      setSavedReplies(restored);
+    }catch{
+      window.localStorage.removeItem("sora-replies");
     }
   },[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
@@ -693,7 +711,7 @@ export default function HomePage(){
   {composer&&<div className="modal-shade"><form className="post-modal" onSubmit={submit}><header><button type="button" onClick={()=>setComposer(false)}><X/></button><strong>新しい投稿</strong><button disabled={!draft.trim()}>投稿</button></header><textarea autoFocus value={draft} onChange={e=>setDraft(e.target.value)} placeholder="いま、どうしていますか？" maxLength={240}/><div className="analysis-preview"><span>{info.symbol}</span><p>投稿後、AIが感情を分析して適切な天気に分類します。</p></div></form></div>}
   {repostMenuTarget&&<div className="repost-menu-shade" onClick={()=>setRepostMenuTarget(null)}><div className="repost-menu" role="menu" onClick={event=>event.stopPropagation()}><button role="menuitem" onClick={()=>{toggleRepost(repostMenuTarget);setRepostMenuTarget(null)}}><Repeat2/><span>{reposted.includes(repostMenuTarget.id)?"リポストを取り消す":"リポスト"}</span></button><button role="menuitem" onClick={()=>{setQuoteTarget(repostMenuTarget);setRepostMenuTarget(null)}}><Pencil/><span>引用</span></button><button className="repost-cancel" onClick={()=>setRepostMenuTarget(null)}>キャンセル</button></div></div>}
   {quoteTarget&&<div className="modal-shade"><form className="post-modal quote-modal" onSubmit={submitQuote}><header><button type="button" aria-label="閉じる" onClick={()=>{setQuoteTarget(null);setQuoteDraft("")}}><X/></button><strong>引用</strong><button disabled={!quoteDraft.trim()}>投稿</button></header><textarea autoFocus value={quoteDraft} onChange={event=>setQuoteDraft(event.target.value)} placeholder="コメントを追加" maxLength={240}/><div className="quoted-post-card quote-compose-card"><strong>{quoteTarget.name}</strong><span>{quoteTarget.handle}</span><p>{quoteTarget.body}</p></div></form></div>}
-  {replyTarget&&<div className="modal-shade"><form className="post-modal reply-modal" onSubmit={submitReply}><header><button type="button" aria-label="閉じる" onClick={()=>{setReplyTarget(null);setReplyDraft("")}}><X/></button><strong>返信</strong><button disabled={!replyDraft.trim()}>送信</button></header><div className="reply-target"><strong>{replyTarget.name}</strong><span>{replyTarget.handle}</span><p>{replyTarget.body}</p></div><textarea autoFocus value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder={`${replyTarget.name}さんへ返信`} maxLength={240}/></form></div>}
+  {replyTarget&&<div className="modal-shade"><form className="post-modal reply-modal" onSubmit={submitReply}><header><button type="button" aria-label="閉じる" onClick={()=>{setReplyTarget(null);setReplyDraft("")}}><X/></button><strong>返信</strong><button disabled={!replyDraft.trim()}>送信</button></header><div className="reply-thread"><div className="reply-target"><strong>{replyTarget.name}</strong><span>{replyTarget.handle}</span><p>{replyTarget.body}</p></div><h2>リプライ</h2>{sampleReplies.map(reply=><article className="reply-item" key={`${replyTarget.id}-${reply.handle}`}><span className={`reply-avatar generated-avatar avatar-${reply.avatarClass}`}/><div><strong>{reply.name}</strong><span>{reply.handle}・{reply.time}</span><p>{reply.body}</p></div></article>)}{(savedReplies[replyTarget.id]||[]).map(reply=><article className="reply-item own-reply" key={reply.id}><span className="reply-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div><strong>{profile.name}</strong><span>{profile.handle}・たった今</span><p>{reply.body}</p></div></article>)}</div><div className="reply-compose"><textarea autoFocus value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder={`${replyTarget.name}さんへ返信`} maxLength={240}/><small>{replyDraft.length}/240</small></div></form></div>}
   {toast&&<div className="sora-toast">{toast}</div>}
   </main>
 }
