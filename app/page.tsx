@@ -229,6 +229,7 @@ export default function HomePage(){
   const [replyTarget,setReplyTarget]=useState<Post|null>(null);
   const [replyContextWeather,setReplyContextWeather]=useState<Weather|null>(null);
   const [replyDraft,setReplyDraft]=useState("");
+  const [replyClosing,setReplyClosing]=useState(false);
   const [composer,setComposer]=useState(false);
   const [draft,setDraft]=useState("");
   const [query,setQuery]=useState("");
@@ -325,9 +326,16 @@ export default function HomePage(){
     notify("返信を追加しました");
   };
   const openReplyThread=(post:Post)=>{
+    setReplyClosing(false);
     setReplyTarget(post);
     setReplyDraft("");
     setReplyContextWeather(view==="timeline"?weather:null);
+  };
+  const closeReplyThread=()=>{
+    if(replyClosing)return;
+    if(reduceMotion){setReplyTarget(null);setReplyDraft("");return;}
+    setReplyClosing(true);
+    window.setTimeout(()=>{setReplyTarget(null);setReplyDraft("");setReplyClosing(false)},340);
   };
   const openReplyFromCard=(event:MouseEvent<HTMLElement>,post:Post)=>{
     if((event.target as HTMLElement).closest("button,a,input,textarea,label,.photo-avatar,.profile-post-avatar,.other-avatar"))return;
@@ -781,8 +789,8 @@ export default function HomePage(){
   {composer&&<div className="modal-shade"><form className="post-modal" onSubmit={submit}><header><button type="button" onClick={()=>setComposer(false)}><X/></button><strong>新しい投稿</strong><button disabled={!draft.trim()}>投稿</button></header><textarea autoFocus value={draft} onChange={e=>setDraft(e.target.value)} placeholder="いま、どうしていますか？" maxLength={240}/><div className="analysis-preview"><span>{info.symbol}</span><p>投稿後、AIが感情を分析して適切な天気に分類します。</p></div></form></div>}
   {repostMenuTarget&&<div className="repost-menu-shade" onClick={()=>setRepostMenuTarget(null)}><div className="repost-menu" role="menu" onClick={event=>event.stopPropagation()}><button role="menuitem" onClick={()=>{toggleRepost(repostMenuTarget);setRepostMenuTarget(null)}}><Repeat2/><span>{reposted.includes(repostMenuTarget.id)?"リポストを取り消す":"リポスト"}</span></button><button role="menuitem" onClick={()=>{setQuoteTarget(repostMenuTarget);setRepostMenuTarget(null)}}><Pencil/><span>引用</span></button><button className="repost-cancel" onClick={()=>setRepostMenuTarget(null)}>キャンセル</button></div></div>}
   {quoteTarget&&<div className="modal-shade"><form className="post-modal quote-modal" onSubmit={submitQuote}><header><button type="button" aria-label="閉じる" onClick={()=>{setQuoteTarget(null);setQuoteDraft("")}}><X/></button><strong>引用</strong><button disabled={!quoteDraft.trim()}>投稿</button></header><textarea autoFocus value={quoteDraft} onChange={event=>setQuoteDraft(event.target.value)} placeholder="コメントを追加" maxLength={240}/><div className="quoted-post-card quote-compose-card"><strong>{quoteTarget.name}</strong><span>{quoteTarget.handle}</span><p>{quoteTarget.body}</p></div></form></div>}
-  {replyTarget&&<section className={`reply-page ${replyContextWeather?`reply-weather ${replyContextWeather}`:"reply-white"}`}>
-    <header className="reply-page-header"><button type="button" aria-label="前の画面へ戻る" onClick={()=>{setReplyTarget(null);setReplyDraft("")}}>‹</button><h1>投稿</h1><button type="button" aria-label="その他"><MoreHorizontal/></button></header>
+  {replyTarget&&<section className={`reply-page ${replyClosing?"is-closing":""} ${replyContextWeather?`reply-weather ${replyContextWeather}`:"reply-white"}`}>
+    <header className="reply-page-header"><button type="button" aria-label="前の画面へ戻る" onClick={closeReplyThread}>‹</button><h1>投稿</h1><button type="button" aria-label="その他"><MoreHorizontal/></button></header>
     <div className="reply-page-scroll">
       <article className="reply-origin-post"><div className="post-head"><span className={`reply-origin-avatar ${replyTarget.handle===profile.handle?"":`generated-avatar avatar-${((replyTarget.id-1)%6)+1}`}`} style={replyTarget.handle===profile.handle?{backgroundImage:`url("${profile.avatarUrl}")`}:undefined}/><div className="identity"><strong>{replyTarget.handle===profile.handle?profile.name:replyTarget.name}</strong><span>{replyTarget.handle===profile.handle?profile.handle:replyTarget.handle}</span></div><time>{replyTarget.time}</time></div><p>{replyTarget.body}</p><div className="reply-origin-actions"><button><MessageCircle/><span>{shownReplies(replyTarget)}</span></button><button><Repeat2/><span>{shownReposts(replyTarget)}</span></button><button><Heart fill={liked.includes(replyTarget.id)?"currentColor":"none"}/><span>{shownLikes(replyTarget)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{compactCount(replyTarget.views)}</span></button><button aria-label="ブックマーク"><Bookmark/></button><button aria-label="共有"><Upload/></button></div></article>
       <div className="reply-filter"><button>関連性⌄</button><button>引用を見る ›</button></div>
