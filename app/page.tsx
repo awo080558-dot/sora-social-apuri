@@ -193,6 +193,7 @@ export default function HomePage(){
   const [quoteTarget,setQuoteTarget]=useState<Post|null>(null);
   const [quoteDraft,setQuoteDraft]=useState("");
   const [quotePosts,setQuotePosts]=useState<{id:number;body:string;original:Post}[]>([]);
+  const [profilePosts,setProfilePosts]=useState<Post[]>([]);
   const [savedReplies,setSavedReplies]=useState<Record<number,{id:number;body:string}[]>>({});
   const [replyTarget,setReplyTarget]=useState<Post|null>(null);
   const [replyContextWeather,setReplyContextWeather]=useState<Weather|null>(null);
@@ -352,6 +353,15 @@ export default function HomePage(){
       setSavedReplies(restored);
     }catch{
       window.localStorage.removeItem("sora-replies");
+    }
+  },[]);
+  useEffect(()=>{
+    const saved=window.localStorage.getItem("sora-profile-posts");
+    if(!saved)return;
+    try{
+      setProfilePosts(JSON.parse(saved) as Post[]);
+    }catch{
+      window.localStorage.removeItem("sora-profile-posts");
     }
   },[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
@@ -576,7 +586,20 @@ export default function HomePage(){
   const recommendedHandles=followAddAccounts.map(([,handle])=>handle);
   const allRecommendationsFollowed=recommendedHandles.every(handle=>isFollowing(handle));
   const followingCount=100+followedHandles.length-initialFollowingHandles.length;
-  const submit=(e:FormEvent)=>{e.preventDefault();if(!draft.trim())return;setDraft("");setComposer(false);notify("投稿しました（感情を分析中）")};
+  const submit=(e:FormEvent)=>{
+    e.preventDefault();
+    const body=draft.trim();
+    if(!body)return;
+    const newPost:Post={id:Date.now(),weather,name:profile.name,handle:profile.handle,avatar:"",time:"たった今",body,replies:"0",reposts:"0",likes:"0",views:"1"};
+    setProfilePosts(current=>{
+      const next=[newPost,...current];
+      window.localStorage.setItem("sora-profile-posts",JSON.stringify(next));
+      return next;
+    });
+    setDraft("");
+    setComposer(false);
+    notify("プロフィールに投稿しました");
+  };
   const conversations=[
     {name:"夜更かしの猫",handle:"@digi_walker_01",preview:"写真ありがとう！月きれいだったね",time:"12分",avatar:1,messages:["今日の帰り、月がすごくきれいだったよ","見た！写真ありがとう。雲の間から見える感じよかったね"]},
     {name:"ハナコ＠読書垢",handle:"@flower_book_log",preview:"その本、読み終わったら感想聞きたい",time:"1時間",avatar:3,messages:["この前話してた本、やっと買えた！","いいな。その本、読み終わったら感想聞きたい"]},
@@ -677,6 +700,7 @@ export default function HomePage(){
     </div>}
 
     {view==="profile"&&<div className="profile-page"><div className="profile-cover" style={{backgroundImage:`url("${profile.coverUrl}")`}}/><div className="profile-main"><div className="profile-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="プロフィールを編集" onClick={openProfileEdit}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>{followingCount}</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>{profile.name}</h1><span className="profile-handle">{profile.handle}</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>{profile.bio}</p></div><div className="profile-feed">
+      {profilePosts.map((post,i)=><article className="profile-post unified-post-card region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id} onClick={event=>openReplyFromCard(event,post)}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}
       {quotePosts.map(quote=>{const quotedPost:Post={id:quote.id,weather:quote.original.weather,name:profile.name,handle:profile.handle,avatar:"",time:"たった今",body:quote.body,replies:"0",reposts:"0",likes:"0",views:"1"};return <article className="profile-post unified-post-card quote-profile-post region-post-in" key={quote.id} onClick={event=>openReplyFromCard(event,quotedPost)}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>たった今</time></div><p>{quote.body}</p><div className="quoted-post-card"><strong>{quote.original.name}</strong><span>{quote.original.handle}</span><p>{quote.original.body}</p></div>{postActions(quotedPost)}</article>})}
       {posts.filter(post=>reposted.includes(post.id)).map(post=><article className="profile-post unified-post-card repost-profile-post region-post-in" key={`repost-${post.id}`} onClick={event=>openReplyFromCard(event,post)}><div className="reposted-by"><Repeat2/>黄昏さんがリポスト</div><div className="post-head"><div className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}
       {ownProfilePosts.map((post,i)=>{const ownPost={...post,name:profile.name,handle:profile.handle};return <article className="profile-post unified-post-card region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id} onClick={event=>openReplyFromCard(event,ownPost)}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(ownPost)}</article>})}</div></div>}
