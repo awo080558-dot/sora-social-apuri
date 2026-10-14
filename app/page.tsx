@@ -14,6 +14,7 @@ type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジ
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 type Account = {name:string;handle:string;avatar:string;weather:Weather;avatarClass?:number};
 type ProfileData = {name:string;handle:string;bio:string;location:string;avatarUrl:string;coverUrl:string};
+type ThreadReply = {name:string;handle:string;body:string;time:string;avatarClass:number};
 
 const initialProfile:ProfileData = {
   name:"黄昏",
@@ -23,10 +24,40 @@ const initialProfile:ProfileData = {
   avatarUrl:"/tasogare-avatar.png",
   coverUrl:"/tasogare-cover.png",
 };
-const sampleReplies = [
-  {name:"あかり",handle:"@akari_sky",body:"わかります。文章を読んで少し気持ちが落ち着きました。",time:"18分前",avatarClass:2},
-  {name:"まどぎわ",handle:"@window_side",body:"共有してくれてありがとう。無理せず、ゆっくりいきましょう。",time:"42分前",avatarClass:5},
-];
+const replyThreads:Record<number,ThreadReply[]> = {
+  1:[{name:"月灯り",handle:"@moon_light",body:"雲の切れ間から見える月、いつもより特別に感じますね。",time:"4時間前",avatarClass:2},{name:"写真散歩",handle:"@photo_walk",body:"少しブレた写真も、その瞬間の空気が残っていて好きです。",time:"3時間前",avatarClass:5}],
+  2:[{name:"しろ",handle:"@shiro_days",body:"おじいちゃん、スタンプ選びのセンスが最高です（笑）",time:"4時間前",avatarClass:4},{name:"朝のメモ",handle:"@morning_note",body:"写真まで送れるようになるの、本当に覚えるのが早いですね。",time:"3時間前",avatarClass:1}],
+  3:[{name:"栞",handle:"@book_marker",body:"店員さんのおすすめで選ぶ本って、普段と違う出会いがありますよね。",time:"4時間前",avatarClass:3},{name:"週末読書",handle:"@weekend_books",body:"3冊とも気になります。週末の楽しみが増えましたね。",time:"2時間前",avatarClass:6}],
+  4:[{name:"余白",handle:"@blank_time",body:"早めに切り上げる判断、大事だと思います。",time:"1時間前",avatarClass:2},{name:"夕方の机",handle:"@evening_desk",body:"今日はゆっくり休んでください。",time:"48分前",avatarClass:4}],
+  5:[{name:"一次資料",handle:"@source_note",body:"見出しだけで判断せず本文まで読む姿勢、大切ですね。",time:"2時間前",avatarClass:3},{name:"ことば",handle:"@context_reader",body:"引用部分だけでなく、前後の文脈も確認したいです。",time:"1時間前",avatarClass:6}],
+  6:[{name:"あかり",handle:"@akari_sky",body:"今日はスマホを置いて休むのがよさそうですね。",time:"46分前",avatarClass:2},{name:"まどぎわ",handle:"@window_side",body:"温かい飲み物を飲んで、ゆっくり眠れますように。",time:"31分前",avatarClass:5}],
+  7:[{name:"静かな時間",handle:"@quiet_hours",body:"今すぐ返さなくても大丈夫だと思います。",time:"3時間前",avatarClass:1},{name:"ひと呼吸",handle:"@one_breath",body:"少し離れて、気持ちが落ち着いてからでいいですよ。",time:"2時間前",avatarClass:4}],
+  8:[{name:"元動画確認",handle:"@full_clip",body:"切り抜きだけで判断する前に、本編を確認したいですね。",time:"15分前",avatarClass:3},{name:"慎重派",handle:"@wait_context",body:"前後を見ると意味が変わること、本当に多いです。",time:"11分前",avatarClass:6}],
+  9:[{name:"ログアウト中",handle:"@offline_today",body:"荒れている時は離れるのが一番ですね。",time:"19分前",avatarClass:2},{name:"深呼吸",handle:"@slow_breath",body:"見続けるほど疲れるので、今日はここまでにしましょう。",time:"12分前",avatarClass:5}],
+  10:[{name:"朝ごはん部",handle:"@breakfast_club",body:"きれいな目玉焼きで始まる朝、いいですね。",time:"20分前",avatarClass:1}],
+  11:[{name:"猫を撮る人",handle:"@cat_camera",body:"毎日同じ時間に来る猫、会いに行きたくなります。",time:"52分前",avatarClass:4},{name:"花屋の前",handle:"@flowers_and_cat",body:"店先の鉢で丸くなっている姿、絶対かわいいです。",time:"37分前",avatarClass:2}],
+  12:[{name:"台所メモ",handle:"@kitchen_note",body:"余り野菜のスープ、同じ味にできないところも家庭料理らしくて好きです。",time:"2時間前",avatarClass:5},{name:"おかわり",handle:"@second_bowl",body:"家族がおかわりしてくれたなら大成功ですね。",time:"1時間前",avatarClass:3}],
+  13:[{name:"川沿いラン",handle:"@river_run",body:"5km完走おめでとうございます。風が気持ちいい季節ですね。",time:"5時間前",avatarClass:6},{name:"ゆっくり走る",handle:"@slow_runner",body:"速さより最後まで走れたことがすごいです。",time:"4時間前",avatarClass:1}],
+  14:[{name:"予定の余白",handle:"@open_schedule",body:"予定を減らすのも大切な調整ですね。",time:"36分前",avatarClass:4},{name:"来週で大丈夫",handle:"@next_week",body:"無理せず動ける日に会うほうが、きっと楽しめます。",time:"22分前",avatarClass:2}],
+  15:[{name:"下書きのまま",handle:"@draft_note",body:"書き直しているうちに、何を伝えたいか分からなくなることあります。",time:"1時間前",avatarClass:3},{name:"ゆっくり返信",handle:"@reply_later",body:"時間を置いてから送るので十分だと思います。",time:"48分前",avatarClass:5}],
+  16:[{name:"駅のホーム",handle:"@platform_note",body:"手袋を拾って渡す場面、見ている側まで少し温かくなりますね。",time:"3時間前",avatarClass:1},{name:"通勤中",handle:"@on_the_train",body:"混雑の中でも、こういう小さな親切があると救われます。",time:"2時間前",avatarClass:6}],
+  17:[{name:"曖昧な日",handle:"@in_between",body:"うれしいと悲しいの間にある気持ち、確かに名前がほしいです。",time:"6時間前",avatarClass:4},{name:"ことばの余白",handle:"@word_space",body:"言い切れないまま残しておくのも、その日の記録かもしれません。",time:"5時間前",avatarClass:2}],
+  18:[{name:"夜の休憩",handle:"@night_break",body:"焦っている時のお茶休憩、思っている以上に効きます。",time:"21分前",avatarClass:5},{name:"机を離れる",handle:"@leave_desk",body:"一度席を立ってから、できるところだけ進めましょう。",time:"12分前",avatarClass:3}],
+  19:[{name:"予定のない日",handle:"@empty_plan",body:"楽しみにしていた分、残念な気持ちはすぐ消えないですよね。",time:"48分前",avatarClass:6},{name:"青空待ち",handle:"@wait_sky",body:"今日は残念なままでも大丈夫だと思います。",time:"35分前",avatarClass:1}],
+  20:[{name:"夜更かし",handle:"@late_night",body:"寝ようとするほど考えが止まらなくなるの、よく分かります。",time:"2時間前",avatarClass:2},{name:"明日の自分へ",handle:"@tomorrow_me",body:"明日のことは明日に任せて、今夜は目を閉じられますように。",time:"1時間前",avatarClass:4}],
+  21:[{name:"できたこと",handle:"@done_today",body:"洗濯できた、それだけでも今日は十分です。",time:"4時間前",avatarClass:3},{name:"比べない日",handle:"@my_own_pace",body:"一つ数えて終わる考え方、真似したいです。",time:"3時間前",avatarClass:5}],
+  22:[{name:"公式待ち",handle:"@official_first",body:"条件が省かれると、まったく違う印象になりますね。",time:"7分前",avatarClass:1},{name:"拡散前確認",handle:"@check_before_share",body:"リンク先まで確認してから共有するようにします。",time:"5分前",avatarClass:6}],
+  23:[{name:"本編視聴済み",handle:"@watched_full",body:"本編まで見ると、切り抜きとは受け取り方が変わりました。",time:"10分前",avatarClass:4},{name:"決めつけない",handle:"@no_assumption",body:"見ていない部分まで想像で批判するのは避けたいですね。",time:"6分前",avatarClass:2}],
+  24:[{name:"続報待ち",handle:"@wait_update",body:"情報が落ち着くまで公式の発表を待つのがよさそうです。",time:"24分前",avatarClass:5},{name:"静観中",handle:"@watch_quietly",body:"追い続けると混乱するので、いったん離れます。",time:"16分前",avatarClass:3}],
+  101:[{name:"片耳イヤホン",handle:"@one_earbud",body:"見つかったのに揃わないの、うれしいような切ないような気持ちですね。",time:"5時間前",avatarClass:2},{name:"落とし物",handle:"@lost_and_found",body:"左右が別々のタイミングでなくなるの、妙に物語があります。",time:"4時間前",avatarClass:5}],
+  102:[{name:"炊飯器レシピ",handle:"@ricecooker_recipe",body:"冷凍餃子を入れる発想はなかったです。今度やってみます。",time:"11時間前",avatarClass:1},{name:"洗い物ゼロ",handle:"@easy_kitchen",body:"内釜だけで済むのが最高ですね。白だしの量も知りたいです。",time:"10時間前",avatarClass:4}],
+  103:[{name:"各駅停車",handle:"@local_train",body:"予定を決めない旅だからこそ出会える景色ですね。",time:"22時間前",avatarClass:3},{name:"海の見える駅",handle:"@sea_station",body:"窓から見えた海で途中下車するの、すてきです。",time:"20時間前",avatarClass:6}],
+};
+
+function repliesForPost(post:Post):ThreadReply[]{
+  if(Number(post.replies)===0)return [];
+  return replyThreads[post.id]||[{name:"空を見上げる人",handle:"@look_up_sky",body:`「${post.body.slice(0,22)}${post.body.length>22?"…":""}」というところが心に残りました。`,time:"少し前",avatarClass:((post.id-1)%6)+1}];
+}
 
 const weatherInfo = {
   sunny: { label:"晴れ", icon:Sun, symbol:"🌤️", message:"明るく前向きな投稿が多いタイムラインです", color:"#f6b900" },
@@ -359,7 +390,10 @@ export default function HomePage(){
     const saved=window.localStorage.getItem("sora-profile-posts");
     if(!saved)return;
     try{
-      setProfilePosts(JSON.parse(saved) as Post[]);
+      const restored=JSON.parse(saved) as Post[];
+      const cleaned=restored.filter(post=>!post.body.startsWith("プロフィール専用の表示確認"));
+      setProfilePosts(cleaned);
+      if(cleaned.length!==restored.length)window.localStorage.setItem("sora-profile-posts",JSON.stringify(cleaned));
     }catch{
       window.localStorage.removeItem("sora-profile-posts");
     }
@@ -751,7 +785,7 @@ export default function HomePage(){
       <article className="reply-origin-post"><div className="post-head"><span className={`reply-origin-avatar ${replyTarget.handle===profile.handle?"":`generated-avatar avatar-${((replyTarget.id-1)%6)+1}`}`} style={replyTarget.handle===profile.handle?{backgroundImage:`url("${profile.avatarUrl}")`}:undefined}/><div className="identity"><strong>{replyTarget.handle===profile.handle?profile.name:replyTarget.name}</strong><span>{replyTarget.handle===profile.handle?profile.handle:replyTarget.handle}</span></div><time>{replyTarget.time}</time></div><p>{replyTarget.body}</p><div className="reply-origin-actions"><button><MessageCircle/><span>{shownReplies(replyTarget)}</span></button><button><Repeat2/><span>{shownReposts(replyTarget)}</span></button><button><Heart fill={liked.includes(replyTarget.id)?"currentColor":"none"}/><span>{shownLikes(replyTarget)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{compactCount(replyTarget.views)}</span></button><button aria-label="ブックマーク"><Bookmark/></button><button aria-label="共有"><Upload/></button></div></article>
       <div className="reply-filter"><button>関連性⌄</button><button>引用を見る ›</button></div>
       <form className="reply-inline-compose" onSubmit={submitReply}><span className="reply-compose-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><textarea autoFocus value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder="返信を投稿" maxLength={240}/><button disabled={!replyDraft.trim()}>返信</button></form>
-      <div className="reply-list">{sampleReplies.map(reply=><article className="reply-row" key={`${replyTarget.id}-${reply.handle}`}><span className={`reply-avatar generated-avatar avatar-${reply.avatarClass}`}/><div className="reply-row-body"><div><strong>{reply.name}</strong><span>{reply.handle}・{reply.time}</span><button aria-label="その他"><MoreHorizontal/></button></div><p>{reply.body}</p><div className="reply-row-actions"><button><MessageCircle/></button><button><Repeat2/></button><button><Heart/></button><button><ChartNoAxesColumnIncreasing/><span>{reply.avatarClass*21}</span></button><button><Bookmark/></button><button><Upload/></button></div></div></article>)}{(savedReplies[replyTarget.id]||[]).map(reply=><article className="reply-row own-reply" key={reply.id}><span className="reply-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="reply-row-body"><div><strong>{profile.name}</strong><span>{profile.handle}・たった今</span><button aria-label="その他"><MoreHorizontal/></button></div><p>{reply.body}</p><div className="reply-row-actions"><button><MessageCircle/></button><button><Repeat2/></button><button><Heart/></button><button><ChartNoAxesColumnIncreasing/><span>1</span></button><button><Bookmark/></button><button><Upload/></button></div></div></article>)}</div>
+      <div className="reply-list">{repliesForPost(replyTarget).map(reply=><article className="reply-row" key={`${replyTarget.id}-${reply.handle}`}><span className={`reply-avatar generated-avatar avatar-${reply.avatarClass}`}/><div className="reply-row-body"><div><strong>{reply.name}</strong><span>{reply.handle}・{reply.time}</span><button aria-label="その他"><MoreHorizontal/></button></div><p>{reply.body}</p><div className="reply-row-actions"><button><MessageCircle/></button><button><Repeat2/></button><button><Heart/></button><button><ChartNoAxesColumnIncreasing/><span>{reply.avatarClass*21}</span></button><button><Bookmark/></button><button><Upload/></button></div></div></article>)}{(savedReplies[replyTarget.id]||[]).map(reply=><article className="reply-row own-reply" key={reply.id}><span className="reply-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="reply-row-body"><div><strong>{profile.name}</strong><span>{profile.handle}・たった今</span><button aria-label="その他"><MoreHorizontal/></button></div><p>{reply.body}</p><div className="reply-row-actions"><button><MessageCircle/></button><button><Repeat2/></button><button><Heart/></button><button><ChartNoAxesColumnIncreasing/><span>1</span></button><button><Bookmark/></button><button><Upload/></button></div></div></article>)}</div>
     </div>
   </section>}
   {toast&&<div className="sora-toast">{toast}</div>}
