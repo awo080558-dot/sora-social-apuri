@@ -1,7 +1,7 @@
 "use client";
 
 import { ChartNoAxesColumnIncreasing, Heart, MessageCircle, Repeat2, Upload } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { prefecturePosts } from "./prefecturePosts";
 
 const areaTrendWeather=(name:string)=>{
@@ -17,7 +17,9 @@ const mapWeatherSvg=(weather:string)=>{
   return '<img class="forecast-map-icon weather-storm" src="/weather-storm.png" alt="">';
 };
 
-export function RealMap({notify}:{notify:(message:string)=>void}){
+type MapReplyPost={id:number;weather:"sunny"|"cloudy"|"rainy"|"storm";name:string;handle:string;avatar:string;time:string;body:string;replies:string;reposts:string;likes:string;views:string};
+
+export function RealMap({notify,onOpenReply}:{notify:(message:string)=>void;onOpenReply:(post:MapReplyPost)=>void}){
   const mapNode=useRef<HTMLDivElement>(null);
   const mapInstance=useRef<import("leaflet").Map|null>(null);
   const [area,setArea]=useState("日本");
@@ -107,10 +109,14 @@ export function RealMap({notify}:{notify:(message:string)=>void}){
     {replies:"11",reposts:"6",likes:"163",views:"891"},
     {replies:"1",reposts:"3",likes:"59",views:"427"},
   ];
+  const openCard=(event:MouseEvent<HTMLElement>,post:MapReplyPost)=>{
+    if((event.target as HTMLElement).closest("button,a,input,textarea,label,.photo-avatar"))return;
+    onOpenReply(post);
+  };
   return <div className="real-map-view">
     <div className="live-area-title"><strong>{area}</strong><span>4月17日　投稿傾向 {areaTrend.label}</span></div>
     <div className="leaflet-map-shell"><div className="leaflet-map" ref={mapNode}/></div>
     <div className="map-scale-note">ズーム {zoom} — 天気は表示範囲の投稿全体の感情傾向です</div>
-    <div className="region-feed" key={area}><div className="region-feed-title"><strong>{area}の投稿</strong><span>{displayedPosts.length}件を表示</span></div>{displayedPosts.map((post,index)=>{const counts=engagement[index];return <article className="sora-post region-post-in" style={{animationDelay:`${index*85}ms`}} key={`${area}-${post.handle}`}><div className="post-head"><div className={`photo-avatar generated-avatar avatar-${(index%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p><div className="metric-row"><button onClick={()=>notify("返信") }><MessageCircle/><span>{counts.replies}</span></button><button onClick={()=>notify("リポストしました")}><Repeat2/><span>{counts.reposts}</span></button><button onClick={()=>notify("いいねしました")}><Heart/><span>{counts.likes}</span></button><button><ChartNoAxesColumnIncreasing/><span>{counts.views}</span></button><button onClick={()=>notify("共有メニューを開きました")}><Upload/></button></div></article>})}</div>
+    <div className="region-feed" key={area}><div className="region-feed-title"><strong>{area}の投稿</strong><span>{displayedPosts.length}件を表示</span></div>{displayedPosts.map((post,index)=>{const counts=engagement[index];const replyPost:MapReplyPost={id:1000+index,weather:areaTrend.key as MapReplyPost["weather"],name:post.name,handle:post.handle,avatar:post.avatar,time:post.time,body:post.body,...counts};return <article className="sora-post unified-post-card region-post-in" style={{animationDelay:`${index*85}ms`}} key={`${area}-${post.handle}`} onClick={event=>openCard(event,replyPost)}><div className="post-head"><div className={`photo-avatar generated-avatar avatar-${(index%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p><div className="metric-row"><button onClick={()=>onOpenReply(replyPost)}><MessageCircle/><span>{counts.replies}</span></button><button onClick={()=>notify("リポストしました")}><Repeat2/><span>{counts.reposts}</span></button><button onClick={()=>notify("いいねしました")}><Heart/><span>{counts.likes}</span></button><button><ChartNoAxesColumnIncreasing/><span>{counts.views}</span></button><button onClick={()=>notify("共有メニューを開きました")}><Upload/></button></div></article>})}</div>
   </div>;
 }
