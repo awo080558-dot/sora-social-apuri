@@ -9,10 +9,20 @@ import { type FormEvent, type PointerEvent, type WheelEvent, useEffect, useMemo,
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "userProfile" | "following" | "followers" | "followAdd" | "settings";
+type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "profileEdit" | "userProfile" | "following" | "followers" | "followAdd" | "settings";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス" | "育児" | "キャリア・教育" | "美容";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 type Account = {name:string;handle:string;avatar:string;weather:Weather;avatarClass?:number};
+type ProfileData = {name:string;handle:string;bio:string;location:string;avatarUrl:string;coverUrl:string};
+
+const initialProfile:ProfileData = {
+  name:"黄昏",
+  handle:"@taso_gare",
+  bio:"どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。",
+  location:"東京都",
+  avatarUrl:"/tasogare-avatar.png",
+  coverUrl:"/tasogare-cover.png",
+};
 
 const weatherInfo = {
   sunny: { label:"晴れ", icon:Sun, symbol:"🌤️", message:"明るく前向きな投稿が多いタイムラインです", color:"#f6b900" },
@@ -207,6 +217,8 @@ export default function HomePage(){
   const [postNotifications,setPostNotifications]=useState(true);
   const [reactionNotifications,setReactionNotifications]=useState(true);
   const [followedHandles,setFollowedHandles]=useState<string[]>(initialFollowingHandles);
+  const [profile,setProfile]=useState<ProfileData>(initialProfile);
+  const [profileDraft,setProfileDraft]=useState<ProfileData>(initialProfile);
   const notificationsRead=false;
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
@@ -303,7 +315,46 @@ export default function HomePage(){
     return()=>window.cancelAnimationFrame(frame);
   },[view,mapMode,searchSubmitted]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
+  useEffect(()=>{
+    const saved=window.localStorage.getItem("sora-profile");
+    if(!saved)return;
+    try{
+      const restored={...initialProfile,...JSON.parse(saved)} as ProfileData;
+      setProfile(restored);
+      setProfileDraft(restored);
+    }catch{
+      window.localStorage.removeItem("sora-profile");
+    }
+  },[]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
+  const openProfileEdit=()=>{
+    setProfileDraft(profile);
+    setView("profileEdit");
+  };
+  const selectProfileImage=(file:File|undefined,field:"avatarUrl"|"coverUrl")=>{
+    if(!file)return;
+    if(!file.type.startsWith("image/")){
+      notify("画像ファイルを選択してください");
+      return;
+    }
+    const reader=new FileReader();
+    reader.onload=()=>setProfileDraft(current=>({...current,[field]:String(reader.result)}));
+    reader.readAsDataURL(file);
+  };
+  const saveProfile=(event:FormEvent)=>{
+    event.preventDefault();
+    const name=profileDraft.name.trim();
+    const rawHandle=profileDraft.handle.trim().replace(/^@+/,"").replace(/\s+/g,"_");
+    if(!name||!rawHandle){
+      notify("名前とユーザーIDを入力してください");
+      return;
+    }
+    const nextProfile={...profileDraft,name,handle:`@${rawHandle}`};
+    setProfile(nextProfile);
+    window.localStorage.setItem("sora-profile",JSON.stringify(nextProfile));
+    setView("profile");
+    notify("プロフィールを更新しました");
+  };
   const changeWeather=(next:Weather)=>{
     if(weather===next)return;
     setWeather(next);
@@ -597,10 +648,22 @@ export default function HomePage(){
       {keyboardOpen&&!searchSubmitted&&<div className="phone-keyboard" aria-label="日本語キーボード"><div className="keyboard-keys">{["あ","か","さ","た","な","は","ま","や","ら","小","わ","ー"].map(key=><button key={key} onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+key)}>{key}</button>)}</div><div className="keyboard-actions"><button onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v.slice(0,-1))}>⌫</button><button className="keyboard-space" onMouseDown={e=>e.preventDefault()} onClick={()=>setQuery(v=>v+" ")}>空白</button><button className="keyboard-search" disabled={!query.trim()} onMouseDown={e=>e.preventDefault()} onClick={()=>{if(query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}}>検索</button></div></div>}
     </div>}
 
-    {view==="profile"&&<div className="profile-page"><div className="profile-cover"/><div className="profile-main"><div className="profile-avatar"/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="編集" onClick={()=>notify("プロフィール編集")}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>{followingCount}</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>黄昏</h1><span className="profile-handle">@taso_gare</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>どこまでも続く青空と、旅先で出会った美味しいコーヒーが好き。☕ 週末はカメラを片手に、各駅停車の旅に出ます。</p></div><div className="profile-feed">
-      {quotePosts.map(quote=>{const quotedPost:Post={id:quote.id,weather:quote.original.weather,name:"黄昏",handle:"@taso_gare",avatar:"",time:"たった今",body:quote.body,replies:"0",reposts:"0",likes:"0",views:"1"};return <article className="profile-post unified-post-card quote-profile-post region-post-in" key={quote.id}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>黄昏</strong><span>@taso_gare</span></div><time>たった今</time></div><p>{quote.body}</p><div className="quoted-post-card"><strong>{quote.original.name}</strong><span>{quote.original.handle}</span><p>{quote.original.body}</p></div>{postActions(quotedPost)}</article>})}
+    {view==="profile"&&<div className="profile-page"><div className="profile-cover" style={{backgroundImage:`url("${profile.coverUrl}")`}}/><div className="profile-main"><div className="profile-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="プロフィールを編集" onClick={openProfileEdit}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>setView("following")}><strong>{followingCount}</strong><span>フォロー中</span></button><button onClick={()=>setView("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>{profile.name}</h1><span className="profile-handle">{profile.handle}</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>{profile.bio}</p></div><div className="profile-feed">
+      {quotePosts.map(quote=>{const quotedPost:Post={id:quote.id,weather:quote.original.weather,name:profile.name,handle:profile.handle,avatar:"",time:"たった今",body:quote.body,replies:"0",reposts:"0",likes:"0",views:"1"};return <article className="profile-post unified-post-card quote-profile-post region-post-in" key={quote.id}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>たった今</time></div><p>{quote.body}</p><div className="quoted-post-card"><strong>{quote.original.name}</strong><span>{quote.original.handle}</span><p>{quote.original.body}</p></div>{postActions(quotedPost)}</article>})}
       {posts.filter(post=>reposted.includes(post.id)).map(post=><article className="profile-post unified-post-card repost-profile-post region-post-in" key={`repost-${post.id}`}><div className="reposted-by"><Repeat2/>黄昏さんがリポスト</div><div className="post-head"><div className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}
-      {ownProfilePosts.map((post,i)=><article className="profile-post unified-post-card region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id}><div className="post-head"><div className="profile-post-avatar"/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}</div></div>}
+      {ownProfilePosts.map((post,i)=><article className="profile-post unified-post-card region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions({...post,name:profile.name,handle:profile.handle})}</article>)}</div></div>}
+
+    {view==="profileEdit"&&<form className="profile-edit-page" onSubmit={saveProfile}>
+      <header className="profile-edit-header"><button type="button" onClick={()=>setView("profile")} aria-label="編集をやめて戻る">‹</button><h1>プロフィールを編集</h1><button type="submit" className="profile-save">保存</button></header>
+      <div className="profile-edit-cover" style={{backgroundImage:`url("${profileDraft.coverUrl}")`}}><label aria-label="ヘッダー画像を変更"><input type="file" accept="image/*" onChange={event=>selectProfileImage(event.target.files?.[0],"coverUrl")}/><span><Pencil/>変更</span></label></div>
+      <div className="profile-edit-avatar" style={{backgroundImage:`url("${profileDraft.avatarUrl}")`}}><label aria-label="プロフィール画像を変更"><input type="file" accept="image/*" onChange={event=>selectProfileImage(event.target.files?.[0],"avatarUrl")}/><span><Pencil/></span></label></div>
+      <div className="profile-edit-fields">
+        <label><span>名前</span><input value={profileDraft.name} maxLength={30} onChange={event=>setProfileDraft(current=>({...current,name:event.target.value}))}/><small>{profileDraft.name.length}/30</small></label>
+        <label><span>ユーザーID</span><div className="profile-handle-input"><b>@</b><input value={profileDraft.handle.replace(/^@/,"")} maxLength={20} onChange={event=>setProfileDraft(current=>({...current,handle:`@${event.target.value.replace(/^@/,"")}`}))}/></div><small>{profileDraft.handle.replace(/^@/,"").length}/20</small></label>
+        <label className="profile-bio-field"><span>自己紹介</span><textarea value={profileDraft.bio} maxLength={160} onChange={event=>setProfileDraft(current=>({...current,bio:event.target.value}))}/><small>{profileDraft.bio.length}/160</small></label>
+        <label><span>場所</span><input value={profileDraft.location} maxLength={30} placeholder="場所を追加" onChange={event=>setProfileDraft(current=>({...current,location:event.target.value}))}/><small>{profileDraft.location.length}/30</small></label>
+      </div>
+    </form>}
 
     {view==="userProfile"&&selectedAccount&&<div className="profile-page other-profile"><div className={`other-cover cover-${selectedCoverIndex}`}><button onClick={()=>setView(accountReturnView)} aria-label="前の画面へ戻る">‹</button><span className="other-cover-shade" aria-hidden="true"/></div><div className="other-profile-main"><div className={`other-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><button className={`other-follow ${isFollowing(selectedAccount.handle)?"following":""}`} aria-pressed={isFollowing(selectedAccount.handle)} onClick={()=>toggleFollow(selectedAccount)}>{isFollowing(selectedAccount.handle)?"フォロー中":"フォローする"}</button><h1>{selectedAccount.name}</h1><span>{selectedAccount.handle}</span><p>{weatherInfo[selectedAccount.weather].message}</p><div className="other-counts"><strong>86</strong> フォロー中　 <strong>{428+(isFollowing(selectedAccount.handle)?1:0)}</strong> フォロワー</div></div><div className="profile-feed timeline-area account-weather-feed">{posts.filter(p=>p.weather===selectedAccount.weather).map(p=><article className="sora-post unified-post-card" key={p.id}><div className="post-head"><div className={`photo-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><div className="identity"><strong>{selectedAccount.name}</strong><span>{selectedAccount.handle}</span></div><time>{p.time}</time></div><p>{p.body}</p>{postActions(p)}</article>)}</div></div>}
 
@@ -622,8 +685,8 @@ export default function HomePage(){
       {activeChat!==null&&<div className="dm-chat-screen"><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></div>}
     </div>}
 
-    {view!=="settings"&&<button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>}
-    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="following"||view==="followers"||view==="followAdd"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
+    {view!=="settings"&&view!=="profileEdit"&&<button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>}
+    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="profileEdit"||view==="following"||view==="followers"||view==="followAdd"||view==="userProfile"?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 

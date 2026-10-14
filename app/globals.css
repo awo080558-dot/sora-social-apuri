@@ -201,7 +201,7 @@
 .new-post{right:18px;width:72px;height:72px;border:0;background:linear-gradient(155deg,rgba(87,139,219,.48) 0%,rgba(139,130,220,.48) 100%);color:#000;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}.new-post svg{display:none}.new-post:before{content:"";position:absolute;z-index:1;left:18px;top:19px;width:39px;height:32px;border-radius:16px 16px 15px 15px;background:#fff;box-shadow:0 3px 9px rgba(18,41,66,.18)}.new-post:after{content:"";position:absolute;z-index:0;left:14px;top:40px;width:21px;height:13px;background:#fff;clip-path:polygon(100% 0,0 100%,100% 64%);filter:drop-shadow(0 3px 5px rgba(18,41,66,.13))}
 
 /* 黄昏のプロフィール画像を全表示箇所で統一 */
-.profile-avatar,.profile-post-avatar{background-image:url('/tasogare-avatar.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.profile-avatar,.profile-post-avatar{background-image:url('/tasogare-avatar.png');background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
 /* タイムラインの投稿カードは外枠を表示しない */
 .timeline-area.weather-bg>.sora-post{
@@ -224,7 +224,7 @@
   background-position:center top;
 }
 .profile-avatar{border:4px solid #fff!important}
-.profile-cover{height:103px!important;margin:0!important;border-radius:0!important;background-image:url('/tasogare-cover.png')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.profile-cover{height:103px!important;margin:0!important;border-radius:0!important;background-image:url('/tasogare-cover.png');background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
 /* 天気切り替えは横流れではなく、画面全体を自然に馴染ませる */
 .timeline-area.weather-bg{
@@ -686,6 +686,71 @@
     padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));
   }
 }
+
+/* プロフィール編集 */
+.profile-edit-page{
+  flex:1;
+  min-height:0;
+  padding:0 0 118px;
+  overflow-y:auto;
+  background:#fff;
+  color:#102f48;
+  scrollbar-width:none;
+}
+.profile-edit-page::-webkit-scrollbar{display:none}
+.profile-edit-header{
+  position:sticky;
+  z-index:5;
+  top:0;
+  height:58px;
+  padding:0 14px;
+  display:grid;
+  grid-template-columns:56px 1fr 64px;
+  align-items:center;
+  border-bottom:1px solid #dce7ee;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.profile-edit-header h1{margin:0;text-align:center;font-size:15px;letter-spacing:.02em}
+.profile-edit-header button{border:0;background:none;color:#102f48;cursor:pointer}
+.profile-edit-header>button:first-child{justify-self:start;padding:0;font-size:35px;font-weight:300;line-height:1}
+.profile-edit-header .profile-save{justify-self:end;padding:7px 13px;border-radius:18px;background:#2479d8;color:#fff;font-size:11px;font-weight:800;box-shadow:0 4px 10px rgba(36,121,216,.2)}
+.profile-edit-cover{
+  position:relative;
+  height:150px;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+.profile-edit-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,28,48,.04),rgba(4,28,48,.28));pointer-events:none}
+.profile-edit-cover label{position:absolute;z-index:2;right:14px;bottom:13px;cursor:pointer}
+.profile-edit-cover input,.profile-edit-avatar input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.profile-edit-cover label>span{height:31px;padding:0 12px;display:flex;align-items:center;gap:5px;border:1px solid rgba(255,255,255,.86);border-radius:18px;background:rgba(10,44,70,.55);color:#fff;font-size:9px;font-weight:800;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.profile-edit-cover svg{width:13px;height:13px}
+.profile-edit-avatar{
+  position:relative;
+  z-index:3;
+  width:88px;
+  height:88px;
+  margin:-44px 0 0 19px;
+  border:4px solid #fff;
+  border-radius:50%;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  box-shadow:0 5px 17px rgba(21,62,91,.18);
+}
+.profile-edit-avatar label{position:absolute;right:-3px;bottom:-2px;width:30px;height:30px;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:#2479d8;color:#fff;cursor:pointer}
+.profile-edit-avatar label span{display:grid;place-items:center}.profile-edit-avatar svg{width:13px;height:13px}
+.profile-edit-fields{padding:20px 18px 6px;display:flex;flex-direction:column;gap:12px}
+.profile-edit-fields>label{position:relative;min-height:61px;padding:9px 12px 7px;border:1px solid #bfd0dc;border-radius:14px;background:#fff;display:flex;flex-direction:column;gap:4px;transition:border-color .2s,box-shadow .2s}
+.profile-edit-fields>label:focus-within{border-color:#2479d8;box-shadow:0 0 0 3px rgba(36,121,216,.1)}
+.profile-edit-fields label>span{font-size:8px;font-weight:800;color:#6c8496}
+.profile-edit-fields input,.profile-edit-fields textarea{width:100%;padding:0;border:0;outline:0;background:transparent;color:#102f48;font:inherit;font-size:12px;line-height:1.45;resize:none}
+.profile-edit-fields textarea{height:75px}
+.profile-edit-fields small{position:absolute;right:10px;bottom:7px;font-size:7px;color:#8ba0af}
+.profile-bio-field{min-height:112px!important}.profile-handle-input{display:flex;align-items:center;gap:2px}.profile-handle-input b{font-size:12px;font-weight:600;color:#6c8496}.profile-handle-input input{min-width:0}
 
 /* Profile weather mix sits to the lower right of the name and handle. */
 .profile-main .profile-weather{
