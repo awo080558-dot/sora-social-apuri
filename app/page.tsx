@@ -381,7 +381,9 @@ export default function HomePage(){
     if(!saved)return;
     try{
       const restored=JSON.parse(saved) as Record<number,{id:number;body:string}[]>;
-      setSavedReplies(restored);
+      const cleaned=Object.fromEntries(Object.entries(restored).map(([postId,replies])=>[postId,replies.filter(reply=>!reply.body.startsWith("表示確認用の返信"))]).filter(([,replies])=>replies.length>0));
+      setSavedReplies(cleaned);
+      if(JSON.stringify(cleaned)!==JSON.stringify(restored))window.localStorage.setItem("sora-replies",JSON.stringify(cleaned));
     }catch{
       window.localStorage.removeItem("sora-replies");
     }
