@@ -687,6 +687,27 @@
   }
 }
 
+/* 返信画面の戻るボタンでも、他タブからタイムラインへ戻る時と同じ動きを再生する。 */
+@keyframes timeline-page-return-left{
+  from{opacity:.18;transform:translateX(-52px)}
+  to{opacity:1;transform:translateX(0)}
+}
+.sora-app.timeline-page-enter.reply-returning>.sora-header,
+.sora-app.timeline-page-enter.reply-returning>.weather-tabs,
+.sora-app.timeline-page-enter.reply-returning>.timeline-area:not(.weather-adjacent-preview),
+.sora-app.timeline-page-enter.reply-returning>.new-post{
+  animation:timeline-page-return-left .42s cubic-bezier(.22,.8,.3,1) backwards;
+  will-change:transform,opacity;
+}
+.sora-app.timeline-page-enter.reply-returning>.weather-tabs{animation-delay:.025s}
+.sora-app.timeline-page-enter.reply-returning>.timeline-area:not(.weather-adjacent-preview){animation-delay:.05s}
+@media(prefers-reduced-motion:reduce){
+  .sora-app.timeline-page-enter.reply-returning>.sora-header,
+  .sora-app.timeline-page-enter.reply-returning>.weather-tabs,
+  .sora-app.timeline-page-enter.reply-returning>.timeline-area:not(.weather-adjacent-preview),
+  .sora-app.timeline-page-enter.reply-returning>.new-post{animation:none!important}
+}
+
 /* 投稿詳細・リプライ。カード本体から開き、開いた画面の空模様を引き継ぐ。 */
 .unified-post-card{cursor:pointer}
 .unified-post-card button,.unified-post-card a{cursor:pointer}
