@@ -856,10 +856,10 @@
 .profile-cover,
 .other-cover{
   height:103px!important;
-  margin:7px 11px 0!important;
+  margin:7px 0 0!important;
   border-radius:10px 10px 0 0!important;
-  -webkit-mask-image:radial-gradient(circle 36px at 49px calc(100% + 5px),transparent 0 35px,#000 36px);
-  mask-image:radial-gradient(circle 36px at 49px calc(100% + 5px),transparent 0 35px,#000 36px);
+  -webkit-mask-image:radial-gradient(circle 36px at 60px calc(100% + 5px),transparent 0 35px,#000 36px);
+  mask-image:radial-gradient(circle 36px at 60px calc(100% + 5px),transparent 0 35px,#000 36px);
 }
 .other-cover>button{
   left:18px;
