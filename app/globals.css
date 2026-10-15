@@ -904,13 +904,13 @@
   width:57px;
 }
 .other-profile-main .other-follow{
-  left:108px;
+  left:103px;
   right:auto;
   top:17px;
-  width:95px;
+  width:72px;
   height:38px;
   min-height:38px;
-  padding:0 12px;
+  padding:0 6px;
   border:0;
   border-radius:22px;
   background:linear-gradient(135deg,#397fff,#5d58ed);
