@@ -244,7 +244,6 @@ export default function HomePage(){
   const [directoryAccount,setDirectoryAccount]=useState<Account|null>(null);
   const forecastStrip=useRef<HTMLDivElement>(null);
   const searchPage=useRef<HTMLDivElement>(null);
-  const replyInput=useRef<HTMLTextAreaElement>(null);
   const [toast,setToast]=useState("");
   const [showSplash,setShowSplash]=useState(true);
   const [activeChat,setActiveChat]=useState<number|null>(null);
@@ -567,7 +566,7 @@ export default function HomePage(){
     const surface=appSurface.current;
     if(!surface||view!=="timeline")return;
     const beginTouch=(event:globalThis.TouchEvent)=>{
-      if(event.touches.length!==1||(event.target as HTMLElement).closest(".main-nav,.new-post,.reply-page,input,textarea,button"))return;
+      if(event.touches.length!==1||(event.target as HTMLElement).closest(".main-nav,.new-post"))return;
       const touch=event.touches[0];
       horizontalGesture.current={x:touch.clientX,y:touch.clientY};
       gestureAxis.current="pending";
@@ -820,7 +819,7 @@ export default function HomePage(){
     <div className="reply-page-scroll">
       <article className="reply-origin-post"><div className="post-head"><span className={`reply-origin-avatar ${replyTarget.handle===profile.handle?"":`generated-avatar avatar-${((replyTarget.id-1)%6)+1}`}`} style={replyTarget.handle===profile.handle?{backgroundImage:`url("${profile.avatarUrl}")`}:undefined}/><div className="identity"><strong>{replyTarget.handle===profile.handle?profile.name:replyTarget.name}</strong><span>{replyTarget.handle===profile.handle?profile.handle:replyTarget.handle}</span></div><time>{replyTarget.time}</time></div><p>{replyTarget.body}</p><div className="reply-origin-actions"><button><MessageCircle/><span>{shownReplies(replyTarget)}</span></button><button><Repeat2/><span>{shownReposts(replyTarget)}</span></button><button><Heart fill={liked.includes(replyTarget.id)?"currentColor":"none"}/><span>{shownLikes(replyTarget)}</span></button><button><ChartNoAxesColumnIncreasing/><span>{compactCount(replyTarget.views)}</span></button><button aria-label="ブックマーク"><Bookmark/></button><button aria-label="共有"><Upload/></button></div></article>
       <div className="reply-filter"><button>関連性⌄</button><button>引用を見る ›</button></div>
-      <form className="reply-inline-compose" onSubmit={submitReply} onClick={event=>{if(!(event.target as HTMLElement).closest("button"))replyInput.current?.focus()}}><span className="reply-compose-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><textarea ref={replyInput} inputMode="text" enterKeyHint="send" autoComplete="off" value={replyDraft} onPointerDown={event=>{event.stopPropagation();replyInput.current?.focus()}} onChange={event=>setReplyDraft(event.target.value)} placeholder="返信を投稿" maxLength={240}/><button disabled={!replyDraft.trim()}>返信</button></form>
+      <form className="reply-inline-compose" onSubmit={submitReply}><span className="reply-compose-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><textarea autoFocus value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder="返信を投稿" maxLength={240}/><button disabled={!replyDraft.trim()}>返信</button></form>
       <div className="reply-list">{repliesForPost(replyTarget).map(reply=><article className="reply-row" key={`${replyTarget.id}-${reply.handle}`}><span className={`reply-avatar generated-avatar avatar-${reply.avatarClass}`}/><div className="reply-row-body"><div><strong>{reply.name}</strong><span>{reply.handle}・{reply.time}</span><button aria-label="その他"><MoreHorizontal/></button></div><p>{reply.body}</p><div className="reply-row-actions"><button><MessageCircle/></button><button><Repeat2/></button><button><Heart/></button><button><ChartNoAxesColumnIncreasing/><span>{reply.avatarClass*21}</span></button><button><Bookmark/></button><button><Upload/></button></div></div></article>)}{(savedReplies[replyTarget.id]||[]).map(reply=><article className="reply-row own-reply" key={reply.id}><span className="reply-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="reply-row-body"><div><strong>{profile.name}</strong><span>{profile.handle}・たった今</span><button aria-label="その他"><MoreHorizontal/></button></div><p>{reply.body}</p><div className="reply-row-actions"><button><MessageCircle/></button><button><Repeat2/></button><button><Heart/></button><button><ChartNoAxesColumnIncreasing/><span>1</span></button><button><Bookmark/></button><button><Upload/></button></div></div></article>)}</div>
     </div>
   </section>}
