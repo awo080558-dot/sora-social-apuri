@@ -852,10 +852,10 @@
 
 /* Match other-user profile controls to the signed-in profile header. */
 .other-profile-main .other-follow{
-  left:108px;
+  left:237px;
   right:auto;
-  top:14px;
-  width:105px;
+  top:48px;
+  width:127px;
   min-height:31px;
   padding:6px 10px;
   white-space:nowrap;
