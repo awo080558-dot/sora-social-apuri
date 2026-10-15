@@ -843,33 +843,65 @@
   gap:7px;
 }
 
+.other-follow,
+.follow-pill,
 .other-follow.following,
 .follow-pill.following{
-  border:1px solid #9aa2aa;
-  background:#fff;
-  color:#111;
+  border:0;
+  background:linear-gradient(135deg,#397fff,#5d58ed);
+  color:#fff;
 }
 
-/* Match other-user profile controls to the signed-in profile header. */
+/* Compact social-profile controls, matching the signed-in profile avatar size. */
+.other-profile-main .other-avatar{
+  top:-25px;
+  left:25px;
+  width:70px;
+  height:70px;
+  font-size:31px;
+}
 .other-profile-main .other-follow{
-  left:237px;
+  left:108px;
   right:auto;
-  top:55px;
-  width:127px;
+  top:14px;
+  width:95px;
   min-height:31px;
   padding:6px 10px;
+  border:0;
+  background:linear-gradient(135deg,#397fff,#5d58ed);
+  color:#fff;
   white-space:nowrap;
+}
+.other-profile-main .other-message{
+  position:absolute;
+  left:211px;
+  top:14px;
+  width:31px;
+  height:31px;
+  padding:0;
+  border:1px solid #d5d5d5;
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.other-profile-main .other-message svg{
+  width:15px;
+  height:15px;
+  stroke-width:1.8;
 }
 .other-profile-main .other-counts{
   position:absolute;
-  left:237px;
+  left:249px;
   top:14px;
-  width:127px;
-  gap:9px;
+  width:124px;
+  gap:6px;
   justify-content:space-between;
 }
 .other-profile-main .other-counts button{
-  width:59px;
+  width:57px;
   padding:0;
   flex-direction:column;
   align-items:center;
