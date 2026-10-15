@@ -853,21 +853,30 @@
 }
 
 /* Compact social-profile controls, matching the signed-in profile avatar size. */
+.profile-main .profile-avatar{
+  border:0!important;
+  box-shadow:none;
+}
 .other-profile-main .other-avatar{
   top:-25px;
   left:25px;
   width:70px;
   height:70px;
+  border:0!important;
+  box-shadow:none;
+  border-radius:50%;
   font-size:31px;
 }
 .other-profile-main .other-follow{
   left:108px;
   right:auto;
-  top:14px;
+  top:10px;
   width:95px;
-  min-height:31px;
-  padding:6px 10px;
+  height:38px;
+  min-height:38px;
+  padding:0 12px;
   border:0;
+  border-radius:22px;
   background:linear-gradient(135deg,#397fff,#5d58ed);
   color:#fff;
   white-space:nowrap;
@@ -875,21 +884,21 @@
 .other-profile-main .other-message{
   position:absolute;
   left:211px;
-  top:14px;
+  top:13px;
   width:31px;
   height:31px;
   padding:0;
-  border:1px solid #d5d5d5;
-  border-radius:50%;
-  background:#fff;
+  border:0;
+  border-radius:0;
+  background:transparent;
   color:#111;
   display:grid;
   place-items:center;
   cursor:pointer;
 }
 .other-profile-main .other-message svg{
-  width:15px;
-  height:15px;
+  width:18px;
+  height:18px;
   stroke-width:1.8;
 }
 .other-profile-main .other-counts{
