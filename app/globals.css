@@ -867,7 +867,10 @@
 }
 .profile-main,
 .other-profile-main{
-  padding:53px 25px 16px;
+  padding:65px 25px 24px;
+}
+.profile-main .profile-weather{
+  top:71px;
 }
 .profile-main .profile-avatar{
   top:-30px;
