@@ -853,10 +853,23 @@
 }
 
 /* Compact social-profile controls, matching the signed-in profile avatar size. */
-.profile-cover,
+.profile-cover{
+  -webkit-mask-image:radial-gradient(circle 37px at 60px calc(100% + 5px),transparent 0 36px,#000 37px);
+  mask-image:radial-gradient(circle 37px at 60px calc(100% + 5px),transparent 0 36px,#000 37px);
+}
 .other-cover{
-  -webkit-mask-image:radial-gradient(circle 41px at 60px calc(100% + 10px),transparent 0 40px,#000 41px);
-  mask-image:radial-gradient(circle 41px at 60px calc(100% + 10px),transparent 0 40px,#000 41px);
+  height:103px;
+  margin:7px 11px 0;
+  border-radius:10px 10px 0 0;
+  -webkit-mask-image:radial-gradient(circle 37px at 49px calc(100% + 5px),transparent 0 36px,#000 37px);
+  mask-image:radial-gradient(circle 37px at 49px calc(100% + 5px),transparent 0 36px,#000 37px);
+}
+.other-cover>button{
+  left:18px;
+  top:34px;
+}
+.other-profile-main{
+  padding:53px 25px 16px;
 }
 .profile-main .profile-avatar{
   border:0!important;
@@ -864,7 +877,7 @@
   z-index:3;
 }
 .other-profile-main .other-avatar{
-  top:-25px;
+  top:-30px;
   left:25px;
   width:70px;
   height:70px;
@@ -877,7 +890,7 @@
 .other-profile-main .other-follow{
   left:108px;
   right:auto;
-  top:10px;
+  top:17px;
   width:95px;
   height:38px;
   min-height:38px;
@@ -891,7 +904,7 @@
 .other-profile-main .other-message{
   position:absolute;
   left:211px;
-  top:13px;
+  top:20px;
   width:31px;
   height:31px;
   padding:0;
@@ -911,7 +924,7 @@
 .other-profile-main .other-counts{
   position:absolute;
   left:249px;
-  top:14px;
+  top:20px;
   width:124px;
   gap:6px;
   justify-content:space-between;
