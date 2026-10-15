@@ -853,9 +853,15 @@
 }
 
 /* Compact social-profile controls, matching the signed-in profile avatar size. */
+.profile-cover,
+.other-cover{
+  -webkit-mask-image:radial-gradient(circle 41px at 60px calc(100% + 10px),transparent 0 40px,#000 41px);
+  mask-image:radial-gradient(circle 41px at 60px calc(100% + 10px),transparent 0 40px,#000 41px);
+}
 .profile-main .profile-avatar{
   border:0!important;
   box-shadow:none;
+  z-index:3;
 }
 .other-profile-main .other-avatar{
   top:-25px;
@@ -865,6 +871,7 @@
   border:0!important;
   box-shadow:none;
   border-radius:50%;
+  z-index:3;
   font-size:31px;
 }
 .other-profile-main .other-follow{
