@@ -867,7 +867,8 @@
 }
 .profile-main,
 .other-profile-main{
-  padding:65px 25px 24px;
+  min-height:0;
+  padding:65px 25px 6px;
 }
 .profile-main .profile-weather{
   top:71px;
@@ -974,8 +975,13 @@
 }
 .other-profile-main>p{
   margin-top:17px;
+  margin-bottom:0;
   font-size:9px;
   line-height:1.4;
+}
+.profile-main>p{
+  margin-bottom:0;
+  padding-bottom:0;
 }
 
 /* Every screen uses the timeline post card as the single visual source. */
