@@ -895,13 +895,15 @@
 .profile-main .profile-counts{
   left:249px;
   right:auto;
-  top:20px;
+  top:17px;
   width:124px;
+  height:38px;
   gap:6px;
   justify-content:space-between;
 }
 .profile-main .profile-counts button{
   width:57px;
+  height:38px;
 }
 .other-profile-main .other-follow{
   left:103px;
@@ -940,13 +942,15 @@
 .other-profile-main .other-counts{
   position:absolute;
   left:249px;
-  top:20px;
+  top:17px;
   width:124px;
+  height:38px;
   gap:6px;
   justify-content:space-between;
 }
 .other-profile-main .other-counts button{
   width:57px;
+  height:38px;
   padding:0;
   flex-direction:column;
   align-items:center;
