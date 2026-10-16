@@ -231,6 +231,8 @@
   animation:weather-soft-change .26s ease-out both;
   touch-action:auto;
   overscroll-behavior-x:contain;
+  overscroll-behavior-y:contain;
+  transition:transform .28s cubic-bezier(.22,.78,.28,1);
 }
 .sora-app.timeline-swipe-enabled{
   touch-action:auto;
@@ -244,6 +246,45 @@
   touch-action:none;
   cursor:grabbing;
 }
+.timeline-area.weather-bg.refresh-pulling,
+.timeline-area.weather-bg.refresh-settling{
+  animation:none!important;
+}
+.timeline-area.weather-bg.refresh-pulling{
+  transition:none!important;
+}
+.timeline-refresh-indicator{
+  position:absolute;
+  z-index:7;
+  top:132px;
+  left:50%;
+  height:36px;
+  min-width:108px;
+  padding:0 13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid rgba(255,255,255,.86);
+  border-radius:999px;
+  background:rgba(244,250,255,.9);
+  color:#245678;
+  box-shadow:0 4px 13px rgba(24,69,101,.2);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .14s ease,transform .2s cubic-bezier(.22,.78,.28,1);
+}
+.timeline-refresh-indicator.visible{opacity:1}
+.timeline-refresh-indicator i{
+  width:14px;
+  height:14px;
+  border:2px solid rgba(47,117,168,.25);
+  border-top-color:#2f75a8;
+  border-radius:50%;
+}
+.timeline-refresh-indicator span{font-size:9px;font-weight:800;white-space:nowrap}
+.timeline-refresh-indicator.refreshing i{animation:timeline-refresh-spin .7s linear infinite}
+@keyframes timeline-refresh-spin{to{transform:rotate(360deg)}}
 .timeline-area.weather-bg.weather-adjacent-preview{
   position:absolute;
   inset:0;

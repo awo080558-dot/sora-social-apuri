@@ -296,8 +296,15 @@ export default function HomePage(){
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
   const [dragPreviewWeather,setDragPreviewWeather]=useState<Weather|null>(null);
+  const [refreshPull,setRefreshPull]=useState(0);
+  const [refreshDragging,setRefreshDragging]=useState(false);
+  const [refreshing,setRefreshing]=useState(false);
   const appSurface=useRef<HTMLElement|null>(null);
+  const timelineScroll=useRef<HTMLDivElement|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
+  const refreshGesture=useRef<{x:number;y:number;latestY:number;startedAt:number;active:boolean}|null>(null);
+  const refreshingRef=useRef(false);
+  const refreshTimers=useRef<number[]>([]);
   const gestureAxis=useRef<"pending"|"horizontal"|"vertical">("pending");
   const gestureDragging=useRef(false);
   const suppressSwipeClick=useRef(false);
@@ -667,6 +674,79 @@ export default function HomePage(){
       surface.removeEventListener("touchcancel",resetWeatherSwipe);
     };
   },[view,weather]);
+  useEffect(()=>{
+    const timeline=timelineScroll.current;
+    if(view!=="timeline"||!timeline)return;
+    const clearRefreshTimers=()=>{
+      refreshTimers.current.forEach(timer=>window.clearTimeout(timer));
+      refreshTimers.current=[];
+    };
+    const beginRefresh=(event:globalThis.TouchEvent)=>{
+      if(refreshingRef.current||event.touches.length!==1||timeline.scrollTop>1)return;
+      if((event.target as HTMLElement).closest("button,.main-nav,.new-post"))return;
+      const touch=event.touches[0];
+      refreshGesture.current={x:touch.clientX,y:touch.clientY,latestY:touch.clientY,startedAt:performance.now(),active:false};
+    };
+    const moveRefresh=(event:globalThis.TouchEvent)=>{
+      const gesture=refreshGesture.current;
+      const touch=event.touches[0];
+      if(!gesture||!touch||timeline.scrollTop>1)return;
+      const dx=touch.clientX-gesture.x;
+      const dy=touch.clientY-gesture.y;
+      gesture.latestY=touch.clientY;
+      if(!gesture.active){
+        if(dy<=4)return;
+        if(Math.abs(dx)>Math.abs(dy)*.9){
+          refreshGesture.current=null;
+          return;
+        }
+        if(Math.abs(dy)>Math.abs(dx)*1.12)gesture.active=true;
+      }
+      if(!gesture.active||dy<=0)return;
+      event.preventDefault();
+      gestureAxis.current="vertical";
+      setRefreshDragging(true);
+      setRefreshPull(Math.min(76,Math.max(0,(dy-4)*.56)));
+    };
+    const finishRefresh=()=>{
+      const gesture=refreshGesture.current;
+      refreshGesture.current=null;
+      if(!gesture)return;
+      const distance=gesture.latestY-gesture.y;
+      const duration=performance.now()-gesture.startedAt;
+      const shouldRefresh=gesture.active&&!refreshingRef.current&&(distance>=58||(distance>=32&&duration<=280));
+      setRefreshDragging(false);
+      if(!shouldRefresh){
+        window.requestAnimationFrame(()=>setRefreshPull(0));
+        return;
+      }
+      clearRefreshTimers();
+      refreshingRef.current=true;
+      setRefreshing(true);
+      setRefreshPull(48);
+      refreshTimers.current.push(window.setTimeout(()=>{
+        setOpeningPosts(createOpeningPosts());
+      },240));
+      refreshTimers.current.push(window.setTimeout(()=>{
+        setRefreshPull(0);
+        refreshingRef.current=false;
+        setRefreshing(false);
+      },720));
+    };
+    timeline.addEventListener("touchstart",beginRefresh,{passive:true});
+    timeline.addEventListener("touchmove",moveRefresh,{passive:false});
+    timeline.addEventListener("touchend",finishRefresh,{passive:true});
+    timeline.addEventListener("touchcancel",finishRefresh,{passive:true});
+    return()=>{
+      timeline.removeEventListener("touchstart",beginRefresh);
+      timeline.removeEventListener("touchmove",moveRefresh);
+      timeline.removeEventListener("touchend",finishRefresh);
+      timeline.removeEventListener("touchcancel",finishRefresh);
+      refreshGesture.current=null;
+      refreshingRef.current=false;
+      clearRefreshTimers();
+    };
+  },[view]);
   const openSearchHome=()=>{
     setKeyboardOpen(false);
     setQuery("");
@@ -742,7 +822,8 @@ export default function HomePage(){
       </article>)}
     </div>}
 
-    {view==="timeline"&&<div className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:undefined} onWheel={wheelWeather}>
+    {view==="timeline"&&<div className={`timeline-refresh-indicator ${refreshPull>0||refreshing?"visible":""} ${refreshing?"refreshing":""}`} style={{transform:`translate(-50%, ${Math.min(refreshPull,48)}px)`}} role="status" aria-live="polite"><i/><span>{refreshing?"更新中":"引っ張って更新"}</span></div>}
+    {view==="timeline"&&<div ref={timelineScroll} className={`timeline-area weather-bg ${weather} ${dragOffset!==0?"is-pulling":""} ${refreshDragging?"refresh-pulling":refreshPull>0?"refresh-settling":""}`} style={dragOffset!==0?{transform:`translateX(${dragOffset}px)`}:refreshPull>0?{transform:`translateY(${refreshPull}px)`}:undefined} onWheel={wheelWeather}>
       <div className="sky-feed-heading"><span>この空の声</span><i/><small>新しい順</small></div>
       {feed.map(post=><article className="sora-post unified-post-card" key={post.id} onClick={event=>openReplyFromCard(event,post)}>
         <div className="post-head"><button className={`photo-avatar account-link generated-avatar avatar-${((post.id-1)%6)+1}`} onClick={()=>openAccount({...post,avatarClass:((post.id-1)%6)+1})} aria-label={`${post.name}のプロフィール`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div>
