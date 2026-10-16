@@ -105,6 +105,39 @@ const posts:Post[] = [
   {id:24,weather:"storm",name:"静観します",handle:"@wait_and_see",avatar:"🧊",time:"31分前",body:"情報が数分ごとに変わっていて、今は何が正しいのか分からない。新しい投稿を追うのをやめて、公式の説明を待つ。",replies:"10",reposts:"5",likes:"76",views:"566"},
 ];
 
+const rotatingPosts:Post[] = [
+  {id:201,weather:"sunny",name:"公園ベンチ",handle:"@park_bench",avatar:"🌿",time:"12分前",body:"昼休みに少し遠回りしたら、公園の桜が一輪だけ咲いていた。小さな春を先に見つけた気分。",replies:"2",reposts:"0",likes:"31",views:"184"},
+  {id:202,weather:"sunny",name:"珈琲と朝",handle:"@coffee_morning",avatar:"☕",time:"45分前",body:"いつもの店で店員さんが名前を覚えてくれていた。たったそれだけなのに、今日はいい日になりそう。",replies:"3",reposts:"1",likes:"48",views:"263"},
+  {id:203,weather:"sunny",name:"放課後の音",handle:"@after_school_sound",avatar:"🎧",time:"2時間前",body:"久しぶりに昔よく聴いていた曲を流したら、帰り道の景色まで懐かしく見えた。",replies:"5",reposts:"2",likes:"76",views:"412"},
+  {id:204,weather:"sunny",name:"小さな焼き菓子",handle:"@tiny_bakes",avatar:"🧁",time:"4時間前",body:"初めて焼いたスコーンが思ったよりふくらんだ。形はばらばらだけど、外はさくさくで満足。",replies:"4",reposts:"1",likes:"63",views:"337"},
+  {id:205,weather:"cloudy",name:"余白のメモ",handle:"@margin_note",avatar:"📝",time:"19分前",body:"やることを書き出したら多すぎたので、今日やらなくていいものに線を引いた。少しだけ呼吸しやすくなった。",replies:"3",reposts:"0",likes:"28",views:"176"},
+  {id:206,weather:"cloudy",name:"窓辺の植物",handle:"@green_window",avatar:"🪴",time:"1時間前",body:"新しい葉が開きそうで開かない。急がなくても育っているんだと思うと、自分も今日はゆっくりでいい気がする。",replies:"4",reposts:"1",likes:"52",views:"301"},
+  {id:207,weather:"cloudy",name:"帰りの電車",handle:"@train_home",avatar:"🚆",time:"3時間前",body:"考え事をしていたら一駅乗り過ごした。戻る電車を待ちながら、予定にない夕焼けを見ている。",replies:"2",reposts:"0",likes:"36",views:"229"},
+  {id:208,weather:"cloudy",name:"積読の横",handle:"@books_waiting",avatar:"📚",time:"6時間前",body:"読みたい本は増えるのに、今日は一ページも進まなかった。本を閉じたまま過ごす夜があってもいい。",replies:"6",reposts:"1",likes:"47",views:"318"},
+  {id:209,weather:"rainy",name:"雨音だけ",handle:"@rain_sound_only",avatar:"🌧️",time:"8分前",body:"通知が来るたびに気持ちが沈むので、今夜は全部オフにした。雨の音だけ聞いていたい。",replies:"4",reposts:"1",likes:"39",views:"247"},
+  {id:210,weather:"rainy",name:"ひとりの帰り道",handle:"@walk_alone",avatar:"☂️",time:"36分前",body:"うまく話せなかったことを何度も思い返している。次に会った時に、少しだけ素直に言えたらいい。",replies:"7",reposts:"2",likes:"58",views:"392"},
+  {id:211,weather:"rainy",name:"閉じたノート",handle:"@closed_notebook",avatar:"📘",time:"2時間前",body:"頑張ろうと思って開いたノートを、何も書かずに閉じた。今日は休む日だったことにする。",replies:"5",reposts:"1",likes:"46",views:"284"},
+  {id:212,weather:"rainy",name:"深呼吸の途中",handle:"@breathing_slow",avatar:"🫧",time:"5時間前",body:"誰かの楽しそうな投稿を見る余裕が今日はない。比べてしまう前に、少しSNSから離れる。",replies:"8",reposts:"2",likes:"71",views:"453"},
+  {id:213,weather:"storm",name:"事実確認中",handle:"@checking_facts",avatar:"🔍",time:"4分前",body:"拡散されている画像は去年の別件だった。怒る前に日付と出典を確認してほしい。誤解したまま人を責める投稿が増えている。",replies:"16",reposts:"12",likes:"104",views:"862"},
+  {id:214,weather:"storm",name:"引用を見る人",handle:"@quote_reader",avatar:"💬",time:"7分前",body:"一部分だけ切り取った引用で議論が加速している。元の文章には直後に補足があるので、そこまで読んでから判断したい。",replies:"19",reposts:"9",likes:"118",views:"917"},
+  {id:215,weather:"storm",name:"更新を待つ",handle:"@wait_for_update",avatar:"⏳",time:"15分前",body:"未確認の情報が次々流れてきている。今は共有せず、関係者からの正式な説明を待つことにする。",replies:"11",reposts:"6",likes:"83",views:"641"},
+  {id:216,weather:"storm",name:"画面を閉じる",handle:"@close_the_feed",avatar:"📵",time:"24分前",body:"強い言葉ばかりが目に入って、冷静に読めなくなってきた。落ち着くまでタイムラインを閉じる。",replies:"9",reposts:"4",likes:"79",views:"598"},
+];
+
+function shuffled<T>(items:T[]):T[]{
+  const result=[...items];
+  for(let index=result.length-1;index>0;index--){
+    const target=Math.floor(Math.random()*(index+1));
+    [result[index],result[target]]=[result[target],result[index]];
+  }
+  return result;
+}
+
+function createOpeningPosts():Post[]{
+  const pool=[...posts,...rotatingPosts];
+  return weatherOrder.flatMap(key=>shuffled(pool.filter(post=>post.weather===key)).slice(0,6));
+}
+
 const followers = [
   {name:"あかり",handle:"@akari_sky",weather:"sunny" as Weather,avatar:"🌸"},
   {name:"ケン",handle:"@travel_ken",weather:"sunny" as Weather,avatar:"🧳"},
@@ -218,6 +251,7 @@ const trendStories:Record<Category,string[][]> = {
 export default function HomePage(){
   const [weather,setWeather]=useState<Weather>("sunny");
   const [view,setView]=useState<View>("timeline");
+  const [openingPosts,setOpeningPosts]=useState<Post[]>(posts);
   const [liked,setLiked]=useState<number[]>([]);
   const [reposted,setReposted]=useState<number[]>([]);
   const [repostMenuTarget,setRepostMenuTarget]=useState<Post|null>(null);
@@ -270,20 +304,18 @@ export default function HomePage(){
   const lastWheelSwitch=useRef(0);
   const wheelTravel=useRef(0);
   const wheelResetTimer=useRef<number|null>(null);
-  const feed=useMemo(()=>posts.filter(p=>p.weather===weather),[weather]);
-  const dragPreviewFeed=useMemo(()=>dragPreviewWeather?posts.filter(p=>p.weather===dragPreviewWeather):[],[dragPreviewWeather]);
-  const exactSearchResults=useMemo(()=>posts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
-  const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:posts.slice(0,6)):[],[query,exactSearchResults]);
+  const feed=useMemo(()=>openingPosts.filter(p=>p.weather===weather),[openingPosts,weather]);
+  const dragPreviewFeed=useMemo(()=>dragPreviewWeather?openingPosts.filter(p=>p.weather===dragPreviewWeather):[],[openingPosts,dragPreviewWeather]);
+  const exactSearchResults=useMemo(()=>openingPosts.filter(p=>`${p.name}${p.handle}${p.body}`.toLowerCase().includes(query.trim().toLowerCase())),[openingPosts,query]);
+  const searchResults=useMemo(()=>query.trim()?(exactSearchResults.length?exactSearchResults:openingPosts.slice(0,6)):[],[openingPosts,query,exactSearchResults]);
   const hasExactSearchResults=exactSearchResults.length>0;
   const info=weatherInfo[weather];
   const trendWeather=categoryForecasts[category][trendDay];
   const dailyHeadlines=trendStories[category][trendDay];
-  const weatherPostGroups:{weather:Weather;name:string;others:number;avatars:number[];time:string}[]=[
-    {weather:"sunny",name:"夜更かしの猫",others:3,avatars:[1,2],time:"5分前"},
-    {weather:"cloudy",name:"ニュースを読む人",others:2,avatars:[4,5],time:"18分前"},
-    {weather:"rainy",name:"雨宿り",others:1,avatars:[6,3],time:"36分前"},
-    {weather:"storm",name:"トレンドを追う人",others:2,avatars:[2,4],time:"1時間前"},
-  ];
+  const weatherPostGroups:{weather:Weather;name:string;others:number;avatars:number[];time:string}[]=weatherOrder.map((key,index)=>{
+    const group=openingPosts.filter(post=>post.weather===key);
+    return {weather:key,name:group[0]?.name||weatherInfo[key].label,others:Math.max(0,group.length-1),avatars:group.slice(0,2).map(post=>((post.id-1)%6)+1),time:group[0]?.time||["5分前","18分前","36分前","1時間前"][index]};
+  });
   const selectedCoverIndex=selectedAccount
     ? [...selectedAccount.handle].reduce((total,character)=>total+character.charCodeAt(0),0)%3+1
     : 1;
@@ -394,6 +426,7 @@ export default function HomePage(){
     const frame=window.requestAnimationFrame(()=>searchPage.current?.scrollTo({top:0,behavior:"auto"}));
     return()=>window.cancelAnimationFrame(frame);
   },[view,mapMode,searchSubmitted]);
+  useEffect(()=>{setOpeningPosts(createOpeningPosts())},[]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   useEffect(()=>{
     const saved=window.localStorage.getItem("sora-profile");
@@ -770,7 +803,7 @@ export default function HomePage(){
     {view==="profile"&&<div className="profile-page"><div className="profile-cover" style={{backgroundImage:`url("${profile.coverUrl}")`}}/><div className="profile-main"><div className="profile-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="profile-tools"><button aria-label="検索"><Search/></button><button aria-label="プロフィールを編集" onClick={openProfileEdit}><Pencil fill="currentColor"/></button><button aria-label="ユーザーを追加" onClick={()=>setView("followAdd")}><UserPlus fill="currentColor"/></button></div><div className="profile-counts"><button onClick={()=>openOwnDirectory("following")}><strong>{followingCount}</strong><span>フォロー中</span></button><button onClick={()=>openOwnDirectory("followers")}><strong>100</strong><span>フォロワー</span></button></div><h1>{profile.name}</h1><span className="profile-handle">{profile.handle}</span><div className="profile-weather"><span><Sun fill="currentColor"/><strong>12%</strong></span><span><Cloud/><strong>10%</strong></span><span><CloudRain/><strong>61%</strong></span><span><Zap fill="currentColor"/><strong>27%</strong></span></div><p>{profile.bio}</p></div><div className="profile-feed">
       {profilePosts.map((post,i)=><article className="profile-post unified-post-card region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id} onClick={event=>openReplyFromCard(event,post)}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}
       {quotePosts.map(quote=>{const quotedPost:Post={id:quote.id,weather:quote.original.weather,name:profile.name,handle:profile.handle,avatar:"",time:"たった今",body:quote.body,replies:"0",reposts:"0",likes:"0",views:"1"};return <article className="profile-post unified-post-card quote-profile-post region-post-in" key={quote.id} onClick={event=>openReplyFromCard(event,quotedPost)}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>たった今</time></div><p>{quote.body}</p><div className="quoted-post-card"><strong>{quote.original.name}</strong><span>{quote.original.handle}</span><p>{quote.original.body}</p></div>{postActions(quotedPost)}</article>})}
-      {posts.filter(post=>reposted.includes(post.id)).map(post=><article className="profile-post unified-post-card repost-profile-post region-post-in" key={`repost-${post.id}`} onClick={event=>openReplyFromCard(event,post)}><div className="reposted-by"><Repeat2/>黄昏さんがリポスト</div><div className="post-head"><div className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}
+      {openingPosts.filter(post=>reposted.includes(post.id)).map(post=><article className="profile-post unified-post-card repost-profile-post region-post-in" key={`repost-${post.id}`} onClick={event=>openReplyFromCard(event,post)}><div className="reposted-by"><Repeat2/>黄昏さんがリポスト</div><div className="post-head"><div className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(post)}</article>)}
       {ownProfilePosts.map((post,i)=>{const ownPost={...post,name:profile.name,handle:profile.handle};return <article className="profile-post unified-post-card region-post-in" style={{animationDelay:`${i*85}ms`}} key={post.id} onClick={event=>openReplyFromCard(event,ownPost)}><div className="post-head"><div className="profile-post-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>{post.time}</time></div><p>{post.body}</p>{postActions(ownPost)}</article>})}</div></div>}
 
     {view==="profileEdit"&&<form className="profile-edit-page" onSubmit={saveProfile}>
@@ -785,7 +818,7 @@ export default function HomePage(){
       </div>
     </form>}
 
-    {view==="userProfile"&&selectedAccount&&(()=>{const stats=accountSocialStats(selectedAccount);return <div className="profile-page other-profile"><div className={`other-cover cover-${selectedCoverIndex}`}><button onClick={()=>setView(accountReturnView)} aria-label="前の画面へ戻る">‹</button><span className="other-cover-shade" aria-hidden="true"/></div><div className="other-profile-main"><div className={`other-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><button className={`other-follow ${isFollowing(selectedAccount.handle)?"following":""}`} aria-pressed={isFollowing(selectedAccount.handle)} onClick={()=>toggleFollow(selectedAccount)}>{isFollowing(selectedAccount.handle)?"フォロー中":"フォローする"}</button><button className="other-message" aria-label={`${selectedAccount.name}にメッセージ`} onClick={()=>{const chatIndex=conversations.findIndex(chat=>chat.handle===selectedAccount.handle);setActiveChat(chatIndex>=0?chatIndex:null);setView("messages")}}><Mail/></button><h1>{selectedAccount.name}</h1><span>{selectedAccount.handle}</span><p>{weatherInfo[selectedAccount.weather].message}</p><div className="other-counts"><button onClick={()=>openAccountDirectory("following")}><strong>{stats.following}</strong><span>フォロー中</span></button><button onClick={()=>openAccountDirectory("followers")}><strong>{stats.followers+(isFollowing(selectedAccount.handle)?1:0)}</strong><span>フォロワー</span></button></div></div><div className="profile-feed timeline-area account-weather-feed">{posts.filter(p=>p.weather===selectedAccount.weather).map(p=><article className="sora-post unified-post-card" key={p.id} onClick={event=>openReplyFromCard(event,p)}><div className="post-head"><div className={`photo-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><div className="identity"><strong>{selectedAccount.name}</strong><span>{selectedAccount.handle}</span></div><time>{p.time}</time></div><p>{p.body}</p>{postActions(p)}</article>)}</div></div>})()}
+    {view==="userProfile"&&selectedAccount&&(()=>{const stats=accountSocialStats(selectedAccount);return <div className="profile-page other-profile"><div className={`other-cover cover-${selectedCoverIndex}`}><button onClick={()=>setView(accountReturnView)} aria-label="前の画面へ戻る">‹</button><span className="other-cover-shade" aria-hidden="true"/></div><div className="other-profile-main"><div className={`other-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><button className={`other-follow ${isFollowing(selectedAccount.handle)?"following":""}`} aria-pressed={isFollowing(selectedAccount.handle)} onClick={()=>toggleFollow(selectedAccount)}>{isFollowing(selectedAccount.handle)?"フォロー中":"フォローする"}</button><button className="other-message" aria-label={`${selectedAccount.name}にメッセージ`} onClick={()=>{const chatIndex=conversations.findIndex(chat=>chat.handle===selectedAccount.handle);setActiveChat(chatIndex>=0?chatIndex:null);setView("messages")}}><Mail/></button><h1>{selectedAccount.name}</h1><span>{selectedAccount.handle}</span><p>{weatherInfo[selectedAccount.weather].message}</p><div className="other-counts"><button onClick={()=>openAccountDirectory("following")}><strong>{stats.following}</strong><span>フォロー中</span></button><button onClick={()=>openAccountDirectory("followers")}><strong>{stats.followers+(isFollowing(selectedAccount.handle)?1:0)}</strong><span>フォロワー</span></button></div></div><div className="profile-feed timeline-area account-weather-feed">{openingPosts.filter(p=>p.weather===selectedAccount.weather).map(p=><article className="sora-post unified-post-card" key={p.id} onClick={event=>openReplyFromCard(event,p)}><div className="post-head"><div className={`photo-avatar ${selectedAccount.avatarClass?`generated-avatar avatar-${selectedAccount.avatarClass}`:""}`}>{selectedAccount.avatarClass?"":selectedAccount.avatar}</div><div className="identity"><strong>{selectedAccount.name}</strong><span>{selectedAccount.handle}</span></div><time>{p.time}</time></div><p>{p.body}</p>{postActions(p)}</article>)}</div></div>})()}
 
     {view==="followAdd"&&<div className="follow-add-page">
       <header className="follow-add-head"><button onClick={()=>setView("profile")} aria-label="プロフィールへ戻る">‹</button><h1>フォロー</h1><button className="follow-all" aria-pressed={allRecommendationsFollowed} onClick={()=>{setFollowedHandles(current=>allRecommendationsFollowed?current.filter(handle=>!recommendedHandles.some(recommended=>recommended===handle)):[...new Set([...current,...recommendedHandles])]);notify(allRecommendationsFollowed?"おすすめのフォローを解除しました":"おすすめを一括フォローしました")}}>{allRecommendationsFollowed?"解除":"一括フォロー"}</button></header>
