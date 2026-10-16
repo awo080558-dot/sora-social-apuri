@@ -1335,3 +1335,38 @@ button[aria-label*="戻る"]:after{
   inset:-10px;
   border-radius:18px;
 }
+
+/* Colored weather badges on following/follower avatars. */
+.follower-weather-badge{
+  right:-7px;
+  bottom:-6px;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  overflow:visible;
+  border:1px solid rgba(220,228,235,.9);
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 6px rgba(31,60,82,.18);
+}
+.follower-weather-badge>.search-weather-mark{
+  display:block;
+  width:27px;
+  height:27px;
+  object-fit:contain;
+  filter:none;
+  animation:none!important;
+}
+.follower-weather-badge>.search-weather-sunny{width:29px;height:29px}
+.follower-weather-badge>.search-weather-rain{
+  position:relative;
+  width:29px;
+  height:29px;
+  overflow:visible;
+}
+.follower-weather-badge .search-rain-cloud{position:absolute;left:2px;top:1px;width:25px;height:auto}
+.follower-weather-badge .search-rain-drop{position:absolute;display:block;width:5px;height:auto;animation:none!important}
+.follower-weather-badge .search-rain-drop.drop-one{left:7px;top:19px}
+.follower-weather-badge .search-rain-drop.drop-two{left:13px;top:21px}
+.follower-weather-badge .search-rain-drop.drop-three{left:20px;top:18px}
