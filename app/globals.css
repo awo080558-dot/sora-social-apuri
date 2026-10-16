@@ -285,6 +285,10 @@
 .timeline-refresh-indicator span{font-size:9px;font-weight:800;white-space:nowrap}
 .timeline-refresh-indicator.refreshing i{animation:timeline-refresh-spin .7s linear infinite}
 @keyframes timeline-refresh-spin{to{transform:rotate(360deg)}}
+.sora-app.theme-sunny:has(>.timeline-area){background-image:url('/weather-sunny-photo.png');background-size:cover;background-position:center top;background-repeat:no-repeat}
+.sora-app.theme-cloudy:has(>.timeline-area){background-image:url('/weather-cloudy-photo.png');background-size:cover;background-position:center top;background-repeat:no-repeat}
+.sora-app.theme-rainy:has(>.timeline-area){background-image:url('/weather-rainy-photo.png');background-size:cover;background-position:center top;background-repeat:no-repeat}
+.sora-app.theme-storm:has(>.timeline-area){background-image:url('/weather-storm-photo.png');background-size:cover;background-position:center top;background-repeat:no-repeat}
 .timeline-area.weather-bg.weather-adjacent-preview{
   position:absolute;
   inset:0;
