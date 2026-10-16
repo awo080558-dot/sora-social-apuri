@@ -829,20 +829,20 @@
   position:sticky;
   z-index:5;
   top:0;
-  height:58px;
-  padding:0 14px;
+  height:64px;
+  padding:0 15px;
   display:grid;
-  grid-template-columns:56px 1fr 64px;
+  grid-template-columns:60px 1fr 70px;
   align-items:center;
   border-bottom:1px solid #dce7ee;
   background:rgba(255,255,255,.94);
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
 }
-.profile-edit-header h1{margin:0;text-align:center;font-size:15px;letter-spacing:.02em}
+.profile-edit-header h1{margin:0;text-align:center;font-size:17px;letter-spacing:.02em}
 .profile-edit-header button{border:0;background:none;color:#102f48;cursor:pointer}
-.profile-edit-header>button:first-child{justify-self:start;padding:0;font-size:35px;font-weight:300;line-height:1}
-.profile-edit-header .profile-save{justify-self:end;padding:7px 13px;border-radius:18px;background:#2479d8;color:#fff;font-size:11px;font-weight:800;box-shadow:0 4px 10px rgba(36,121,216,.2)}
+.profile-edit-header>button:first-child{justify-self:start;padding:0;font-size:39px;font-weight:300;line-height:1}
+.profile-edit-header .profile-save{justify-self:end;padding:8px 15px;border-radius:20px;background:#2479d8;color:#fff;font-size:12px;font-weight:800;box-shadow:0 4px 10px rgba(36,121,216,.2)}
 .profile-edit-cover{
   position:relative;
   height:150px;
