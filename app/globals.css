@@ -1256,3 +1256,20 @@
     height:23px!important;
   }
 }
+
+/* Profile actions: keep every control comfortably tappable on phones. */
+.profile-main .profile-tools{
+  left:103px;
+  top:14px;
+  gap:4px;
+}
+.profile-main .profile-tools button{
+  width:44px;
+  height:44px;
+  padding:0;
+  border-radius:14px;
+}
+.profile-main .profile-tools svg{
+  width:24px;
+  height:24px;
+}
