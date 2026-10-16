@@ -1318,3 +1318,16 @@
   width:20px;
   height:20px;
 }
+
+/* Enlarge every back-button hit area without changing its visible size. */
+button[aria-label*="戻る"]{
+  position:relative;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+button[aria-label*="戻る"]:after{
+  content:"";
+  position:absolute;
+  inset:-10px;
+  border-radius:18px;
+}
