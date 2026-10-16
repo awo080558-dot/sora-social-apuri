@@ -1298,19 +1298,19 @@
   }
 }
 
-/* Profile actions: keep every control comfortably tappable on phones. */
+/* Profile action controls: fixed to the requested compact dimensions. */
 .profile-main .profile-tools{
   left:103px;
   top:14px;
   gap:4px;
 }
 .profile-main .profile-tools button{
-  width:44px;
-  height:44px;
+  width:36px;
+  height:36px;
   padding:0;
   border-radius:14px;
 }
 .profile-main .profile-tools svg{
-  width:24px;
-  height:24px;
+  width:20px;
+  height:20px;
 }
