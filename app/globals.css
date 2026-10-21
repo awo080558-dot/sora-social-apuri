@@ -1615,7 +1615,7 @@ button[aria-label*="戻る"]:after{
   border-radius:14px;
   background:#fff;
   color:#18384d;
-  font-size:13px;
+  font-size:12px;
   line-height:1.55;
   box-shadow:0 3px 10px rgba(31,62,81,.055);
 }
