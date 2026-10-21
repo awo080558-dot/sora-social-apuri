@@ -1460,36 +1460,31 @@ button[aria-label*="戻る"]:after{
   scroll-snap-type:x mandatory;
 }
 .reference-discover .genre-discovery .category-tabs button{
-  width:108px;
-  height:58px;
-  min-width:108px;
-  padding:9px 10px;
+  width:auto;
+  height:46px;
+  min-width:max-content;
+  padding:0 17px 0 7px;
   justify-content:flex-start;
   gap:8px;
   overflow:hidden;
-  border:0;
-  border-radius:13px;
-  color:#fff;
+  border:1px solid #b9d9eb;
+  border-radius:999px;
+  background:#eef9ff;
+  color:#173f58;
   font-size:11px;
   font-weight:900;
   text-align:left;
   scroll-snap-align:start;
-  box-shadow:none;
-  opacity:.7;
-  transform:scale(.96);
+  box-shadow:0 4px 10px rgba(31,86,116,.09);
+  opacity:1;
+  transform:none;
   transition:opacity .2s ease,transform .2s ease,box-shadow .2s ease;
 }
-.reference-discover .genre-discovery .category-tabs button:nth-child(7n+1){background:#da5b49}
-.reference-discover .genre-discovery .category-tabs button:nth-child(7n+2){background:#2875a9}
-.reference-discover .genre-discovery .category-tabs button:nth-child(7n+3){background:#6c55a3}
-.reference-discover .genre-discovery .category-tabs button:nth-child(7n+4){background:#2a8b72}
-.reference-discover .genre-discovery .category-tabs button:nth-child(7n+5){background:#d68d2e}
-.reference-discover .genre-discovery .category-tabs button:nth-child(7n+6){background:#426692}
-.reference-discover .genre-discovery .category-tabs button:nth-child(7n+7){background:#bc567b}
+.reference-discover .genre-discovery .category-tabs button:nth-child(n){background:#eef9ff}
 .reference-discover .genre-discovery .category-tabs button.active{
   opacity:1;
-  transform:scale(1);
-  box-shadow:0 7px 15px rgba(24,54,75,.18);
+  transform:none;
+  box-shadow:0 4px 10px rgba(31,86,116,.09);
 }
 .reference-discover .genre-discovery .category-tabs button.active:after{display:none}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark{
@@ -1506,27 +1501,6 @@ button[aria-label*="戻る"]:after{
 .reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-drop.drop-one{left:6px;top:17px}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-drop.drop-two{left:11px;top:19px}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-drop.drop-three{left:17px;top:16px}
-.related-genre-row{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding:3px 18px 8px;
-  scrollbar-width:none;
-  -webkit-overflow-scrolling:touch;
-}
-.related-genre-row::-webkit-scrollbar{display:none}
-.related-genre-row button{
-  flex:0 0 auto;
-  min-height:32px;
-  padding:0 13px;
-  border:1px solid #d8e0e6;
-  border-radius:999px;
-  background:#fff;
-  color:#405765;
-  font-size:10px;
-  font-weight:750;
-}
-.related-genre-row button.active{border-color:#236fa8;background:#e9f5fb;color:#155478}
 .selected-genre-row{
   min-height:62px;
   display:flex;
@@ -1537,14 +1511,14 @@ button[aria-label*="戻る"]:after{
   animation:selected-genre-in .22s ease-out both;
 }
 .selected-genre-tab{
-  min-width:112px;
-  height:42px;
+  min-width:max-content;
+  height:46px;
   display:flex;
   align-items:center;
   justify-content:flex-start;
   gap:8px;
-  padding:0 14px 0 8px;
-  border:1px solid #bdd9e8;
+  padding:0 17px 0 7px;
+  border:1px solid #b9d9eb;
   border-radius:999px;
   background:#eef8fd;
   color:#174b69;
@@ -1569,11 +1543,11 @@ button[aria-label*="戻る"]:after{
 .selected-genre-tab .search-rain-drop.drop-two{left:11px;top:20px}
 .selected-genre-tab .search-rain-drop.drop-three{left:18px;top:17px}
 .clear-genre{
-  width:42px;
-  height:42px;
+  width:46px;
+  height:46px;
   display:grid;
   place-items:center;
-  flex:0 0 42px;
+  flex:0 0 46px;
   padding:0;
   border:1px solid #d5dde2;
   border-radius:50%;
