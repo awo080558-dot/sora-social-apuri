@@ -55,8 +55,44 @@ const replyThreads:Record<number,ThreadReply[]> = {
 };
 
 function repliesForPost(post:Post):ThreadReply[]{
-  if(Number(post.replies)===0)return [];
-  return replyThreads[post.id]||[{name:"空を見上げる人",handle:"@look_up_sky",body:`「${post.body.slice(0,22)}${post.body.length>22?"…":""}」というところが心に残りました。`,time:"少し前",avatarClass:((post.id-1)%6)+1}];
+  const requested=Number(post.replies);
+  if(!Number.isFinite(requested)||requested<=0)return [];
+  const target=Math.min(50,Math.floor(requested));
+  const prepared=[...(replyThreads[post.id]||[])];
+  if(prepared.length>=target)return prepared.slice(0,target);
+  const excerpt=`「${post.body.slice(0,22)}${post.body.length>22?"…":""}」`;
+  const names=["空を見上げる人","ひと休み","日々の記録","青空メモ","帰り道","小さな発見","窓辺の時間","ことばの栞","朝の光","夜の散歩","雲の向こう","週末ノート","ゆっくり暮らす","風の便り","今日の余白","街角スナップ","深呼吸","あたたかい手","明日へ","静かな午後","気ままな旅","本棚の隅","雨上がり","月明かり"];
+  const bodies=[
+    `${excerpt}というところが心に残りました。`,
+    "読んでいて、その場の空気まで伝わってくるようでした。",
+    "こういう出来事を言葉に残しておくのは素敵ですね。",
+    "同じように感じることがあります。共有してくれてありがとう。",
+    "少し立ち止まって考えるきっかけになりました。",
+    "何気ない一日の中にも、忘れたくない瞬間がありますね。",
+    "文章から気持ちがまっすぐ伝わってきました。",
+    "その後どうなったのかも、また聞いてみたいです。",
+    "自分のペースで大丈夫だと思います。",
+    "読んだあと、少し気持ちがやわらぎました。",
+    "違う見方にも気づけて、とても参考になりました。",
+    "無理をしすぎず、ゆっくり過ごしてください。",
+    "写真がなくても景色を想像できる文章ですね。",
+    "この気持ちを大切にしたいと思いました。",
+    "似た経験があるので、よく分かります。",
+    "次の投稿も楽しみにしています。",
+    "今の自分にも必要な言葉でした。",
+    "丁寧に書かれていて、最後まで読みたくなりました。",
+    "小さな変化に気づけるのは素敵なことですね。",
+    "今日は少しだけ空を見上げてみようと思います。",
+    "焦らなくても、少しずつで十分だと思います。",
+    "読めてよかったです。ありがとうございます。",
+    "この話を身近な人にも伝えたくなりました。",
+    "穏やかな時間が続きますように。",
+  ];
+  for(let index=prepared.length;index<target;index++){
+    const name=names[(post.id+index)%names.length];
+    prepared.push({name,handle:`@reply_${post.id}_${index+1}`,body:bodies[(post.id*3+index)%bodies.length],time:`${index+1}時間前`,avatarClass:((post.id+index)%6)+1});
+  }
+  return prepared;
 }
 
 const weatherInfo = {
@@ -367,8 +403,7 @@ export default function HomePage(){
     return Number.isFinite(base)?compactCount(base+(reposted.includes(post.id)?1:0)+(quoted?1:0)):post.reposts;
   };
   const shownReplies=(post:Post)=>{
-    const base=Number(post.replies);
-    return Number.isFinite(base)?compactCount(base+(savedReplies[post.id]?.length||0)):post.replies;
+    return compactCount(repliesForPost(post).length+(savedReplies[post.id]?.length||0));
   };
   const toggleRepost=(post:Post)=>setReposted(items=>{
     const removing=items.includes(post.id);
