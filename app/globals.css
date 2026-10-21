@@ -773,6 +773,7 @@
   box-shadow:0 18px 50px #0003;
   animation:reply-page-enter .3s cubic-bezier(.22,.8,.3,1) both;
 }
+.sora-app.reply-background-suspended{display:none}
 .reply-page.reply-weather{background-size:cover;background-position:center;background-repeat:no-repeat}
 .reply-page.reply-weather.sunny{background-image:url('/weather-sunny-photo.png')}
 .reply-page.reply-weather.cloudy{background-image:url('/weather-cloudy-photo.png')}
