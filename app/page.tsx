@@ -67,6 +67,15 @@ const weatherInfo = {
 };
 const weatherOrder:Weather[] = ["sunny","cloudy","rainy","storm"];
 const categories:Category[] = ["エンタメ","スポーツ","テクノロジー","ビジネス","育児","キャリア・教育","美容"];
+const relatedGenres:Record<Category,string[]> = {
+  "エンタメ":["映画・ドラマ","音楽","アニメ・漫画","ゲーム","本・舞台"],
+  "スポーツ":["野球","サッカー","バスケットボール","陸上","テニス"],
+  "テクノロジー":["AI","スマートフォン","ガジェット","プログラミング","宇宙・科学"],
+  "ビジネス":["経済","働き方","企業","マーケティング","地域産業"],
+  "育児":["子育て","保育","教育","家族","暮らし"],
+  "キャリア・教育":["就職・転職","資格","学校","学び直し","仕事術"],
+  "美容":["メイク","ヘア","スキンケア","ネイル","ファッション"],
+};
 
 function SearchWeatherMark({weather}:{weather:Weather}){
   if(weather==="rainy")return <span className="search-weather-mark search-weather-rain"><img className="search-rain-cloud" src="/weather-rain-cloud.png" alt=""/><img className="search-rain-drop drop-one" src="/weather-rain-drop-one.png" alt=""/><img className="search-rain-drop drop-two" src="/weather-rain-drop-two-repaired.png" alt=""/><img className="search-rain-drop drop-three" src="/weather-rain-drop-three.png" alt=""/></span>;
@@ -277,6 +286,7 @@ export default function HomePage(){
   const [accountReturnView,setAccountReturnView]=useState<View>("timeline");
   const [directoryAccount,setDirectoryAccount]=useState<Account|null>(null);
   const forecastStrip=useRef<HTMLDivElement>(null);
+  const forecastScrollTimer=useRef<number|null>(null);
   const searchPage=useRef<HTMLDivElement>(null);
   const [toast,setToast]=useState("");
   const [showSplash,setShowSplash]=useState(true);
@@ -417,6 +427,23 @@ export default function HomePage(){
     <button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{compactCount(post.views)}</span></button>
     <button className="share" aria-label="共有" onClick={()=>notify("共有メニュー")}><Upload/></button>
   </div>;
+  const selectCenteredForecast=()=>{
+    const strip=forecastStrip.current;
+    if(!strip)return;
+    const center=strip.scrollLeft+strip.clientWidth/2;
+    const items=Array.from(strip.children) as HTMLElement[];
+    let nearest=trendDay;
+    let distance=Number.POSITIVE_INFINITY;
+    items.forEach((item,index)=>{
+      const nextDistance=Math.abs(item.offsetLeft+item.offsetWidth/2-center);
+      if(nextDistance<distance){distance=nextDistance;nearest=index}
+    });
+    if(nearest!==trendDay)setTrendDay(nearest);
+  };
+  const handleForecastScroll=()=>{
+    if(forecastScrollTimer.current!==null)window.clearTimeout(forecastScrollTimer.current);
+    forecastScrollTimer.current=window.setTimeout(selectCenteredForecast,90);
+  };
   useEffect(()=>{
     if(view!=="search"||mapMode)return;
     const frame=window.requestAnimationFrame(()=>{
@@ -868,11 +895,11 @@ export default function HomePage(){
     </div>}
 
     {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
-      {!searchSubmitted&&<div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label><button className={`view-toggle ${mapMode?"map-on":"weather-on"}`} onClick={()=>{setSearchSubmitted(false);setKeyboardOpen(false);setMapMode(v=>!v)}} aria-label={mapMode?"天気予報へ切り替え":"天気マップへ切り替え"}><span>{mapMode?<i className="toggle-map-glyph" aria-hidden="true"><img src="/japan-toggle-icon.png" alt=""/></i>:<i className="toggle-weather-glyph" aria-hidden="true"><Sun/><Cloud/></i>}</span></button></div>}
-      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post unified-post-card region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`} onClick={event=>openReplyFromCard(event,post)}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather,avatarClass:((post.id-1)%6)+1},"search")}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p>{postActions(post)}</article>)}</div>:<>{!mapMode&&<><div className="category-tabs" aria-label="ジャンルを選択">{categories.map(item=>{const itemWeather=categoryForecasts[item][trendDay];return <button key={item} className={category===item?"active":""} onClick={e=>{setCategory(item);const strip=e.currentTarget.parentElement;if(strip){const left=e.currentTarget.offsetLeft-(strip.clientWidth-e.currentTarget.offsetWidth)/2;strip.scrollTo({left:Math.max(0,left),behavior:"smooth"})}}} aria-label={`${item} ${weatherInfo[itemWeather].label}`}><span className={`category-weather-mark ${itemWeather}`} aria-hidden="true"><SearchWeatherMark weather={itemWeather}/></span><span>{item}</span></button>})}</div>
-      <div className="reference-weather-strip" ref={forecastStrip} aria-label="日ごとの天気予報">
+      {!searchSubmitted&&<><div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label></div><nav className="discover-mode-tabs" aria-label="検索画面の表示"><button className={mapMode?"active":""} onClick={()=>{setKeyboardOpen(false);setMapMode(true)}}>マップ</button><button className={!mapMode?"active":""} onClick={()=>{setKeyboardOpen(false);setMapMode(false)}}>トレンド</button></nav></>}
+      {searchSubmitted?<div className="search-timeline trend-detail"><header className="trend-detail-head"><button className="search-back" onClick={()=>setSearchSubmitted(false)} aria-label="検索画面へ戻る">‹</button><h1>{query.trim()}</h1><p>この話題について投稿された内容をまとめて表示しています。関連する反応や意見をタイムラインで確認できます。</p><nav><button className={trendSort==="top"?"active":""} onClick={()=>setTrendSort("top")}>トップ</button><button className={trendSort==="latest"?"active":""} onClick={()=>setTrendSort("latest")}>最新</button></nav></header>{(trendSort==="latest"?[...searchResults].reverse():searchResults).map((post,i)=><article className="sora-post unified-post-card region-post-in" style={{animationDelay:`${i*75}ms`}} key={`search-${post.id}`} onClick={event=>openReplyFromCard(event,post)}><div className="post-head"><button className="account-link" onClick={()=>openAccount({name:post.name,handle:post.handle,avatar:post.avatar,weather:post.weather,avatarClass:((post.id-1)%6)+1},"search")}><span className={`photo-avatar generated-avatar avatar-${((post.id-1)%6)+1}`}/></button><div className="identity"><strong>{post.name}</strong><span>{post.handle}</span></div><time>{post.time}</time></div><p>{hasExactSearchResults?post.body:i===0?`${query.trim()}について、流れている情報をいくつか確認した。見出しだけでは分からない部分も多いので、元の発表や前後の内容まで読んでから判断したい。`:`${query.trim()}に関する投稿を見かけた。${post.body}`}</p>{postActions(post)}</article>)}</div>:<>{!mapMode&&<><section className="genre-discovery"><header><span>ジャンルを選ぶ</span><strong>{category}</strong></header><div className="category-tabs" aria-label="ジャンルを選択">{categories.map((item,index)=>{const itemWeather=categoryForecasts[item][trendDay];return <button key={item} className={`${category===item?"active":""} genre-${index}`} onClick={e=>{setCategory(item);const strip=e.currentTarget.parentElement;if(strip){const left=e.currentTarget.offsetLeft-(strip.clientWidth-e.currentTarget.offsetWidth)/2;strip.scrollTo({left:Math.max(0,left),behavior:"smooth"})}}} aria-label={`${item} ${weatherInfo[itemWeather].label}`}><span className={`category-weather-mark ${itemWeather}`} aria-hidden="true"><SearchWeatherMark weather={itemWeather}/></span><span>{item}</span></button>})}</div><div className="related-genre-row" aria-label={`${category}の関連ジャンル`}>{relatedGenres[category].map((item,index)=><button key={item} className={index===0?"active":""} onClick={()=>notify(`${item}を選択しました`)}>{item}</button>)}</div></section>
+      <section className="weather-date-section"><header><span>日付と空模様</span><strong>横にスワイプ</strong></header><div className="reference-weather-strip" ref={forecastStrip} onScroll={handleForecastScroll} aria-label="日ごとの天気予報">
         {trendDays.map((date,i)=>{const w=categoryForecasts[category][i];return <button key={date.label} className={`${w} ${trendDay===i?"selected":""}`} onClick={()=>setTrendDay(i)} aria-label={`${date.label} ${weatherInfo[w].label}`}><SearchWeatherMark weather={w}/></button>})}
-      </div>
+      </div></section>
       <strong className="reference-date">{trendDays[trendDay].label}({trendDays[trendDay].day})</strong>
       <div className="reference-dots">{trendDays.map((_,i)=><i key={i} className={trendDay===i?"active":""}/>)}</div>
       <div className="news-list">{dailyHeadlines.map((headline,i)=><button className="region-post-in" style={{animationDelay:`${i*85}ms`}} key={`${category}-${trendDay}-${i}`} onClick={()=>{setQuery(headline);setSearchSubmitted(true);setKeyboardOpen(false)}}>{headline}</button>)}</div>

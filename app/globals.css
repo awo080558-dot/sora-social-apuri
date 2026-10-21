@@ -1370,3 +1370,229 @@ button[aria-label*="戻る"]:after{
 .follower-weather-badge .search-rain-drop.drop-one{left:7px;top:19px}
 .follower-weather-badge .search-rain-drop.drop-two{left:13px;top:21px}
 .follower-weather-badge .search-rain-drop.drop-three{left:20px;top:18px}
+
+/* Search / discovery: sketch-based hierarchy with Spotify-like genre discovery. */
+.reference-discover{
+  padding:0 0 118px;
+  background:#fff!important;
+}
+.reference-discover .discover-top{
+  position:sticky;
+  top:0;
+  z-index:20;
+  margin:0;
+  padding:18px 18px 12px;
+  background:rgba(255,255,255,.96);
+  box-shadow:none;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.reference-discover .discover-top .discover-search{
+  width:100%;
+  height:48px;
+  margin:0;
+  padding:0 16px;
+  border:1px solid #d8dee5;
+  border-radius:999px;
+  background:#f3f5f7;
+  box-shadow:inset 0 1px 2px rgba(20,45,65,.05);
+}
+.reference-discover .discover-top .discover-search>svg{width:22px;height:22px;color:#49606f}
+.reference-discover .discover-top .discover-search input{
+  text-align:left;
+  padding-left:5px;
+  font-size:16px;
+  color:#17364c;
+}
+.discover-mode-tabs{
+  position:sticky;
+  top:78px;
+  z-index:19;
+  height:48px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border-bottom:1px solid #dfe5e9;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.discover-mode-tabs button{
+  position:relative;
+  border:0;
+  background:none;
+  color:#73818b;
+  font-size:13px;
+  font-weight:800;
+}
+.discover-mode-tabs button.active{color:#123c58}
+.discover-mode-tabs button.active:after{
+  content:"";
+  position:absolute;
+  left:26%;
+  right:26%;
+  bottom:-1px;
+  height:3px;
+  border-radius:3px 3px 0 0;
+  background:#2d7fe8;
+}
+.genre-discovery,.weather-date-section{padding:18px 0 4px}
+.genre-discovery>header,.weather-date-section>header{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  padding:0 18px 10px;
+}
+.genre-discovery>header span,.weather-date-section>header span{
+  color:#173b52;
+  font-size:15px;
+  font-weight:900;
+}
+.genre-discovery>header strong,.weather-date-section>header strong{
+  color:#748794;
+  font-size:10px;
+  font-weight:700;
+}
+.reference-discover .genre-discovery .category-tabs{
+  gap:10px;
+  margin:0;
+  padding:0 18px 8px;
+  scroll-padding-inline:18px;
+  scroll-snap-type:x mandatory;
+}
+.reference-discover .genre-discovery .category-tabs button{
+  width:108px;
+  height:58px;
+  min-width:108px;
+  padding:9px 10px;
+  justify-content:flex-start;
+  gap:8px;
+  overflow:hidden;
+  border:0;
+  border-radius:13px;
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+  text-align:left;
+  scroll-snap-align:start;
+  box-shadow:none;
+  opacity:.7;
+  transform:scale(.96);
+  transition:opacity .2s ease,transform .2s ease,box-shadow .2s ease;
+}
+.reference-discover .genre-discovery .category-tabs button:nth-child(7n+1){background:#da5b49}
+.reference-discover .genre-discovery .category-tabs button:nth-child(7n+2){background:#2875a9}
+.reference-discover .genre-discovery .category-tabs button:nth-child(7n+3){background:#6c55a3}
+.reference-discover .genre-discovery .category-tabs button:nth-child(7n+4){background:#2a8b72}
+.reference-discover .genre-discovery .category-tabs button:nth-child(7n+5){background:#d68d2e}
+.reference-discover .genre-discovery .category-tabs button:nth-child(7n+6){background:#426692}
+.reference-discover .genre-discovery .category-tabs button:nth-child(7n+7){background:#bc567b}
+.reference-discover .genre-discovery .category-tabs button.active{
+  opacity:1;
+  transform:scale(1);
+  box-shadow:0 7px 15px rgba(24,54,75,.18);
+}
+.reference-discover .genre-discovery .category-tabs button.active:after{display:none}
+.reference-discover .genre-discovery .category-tabs .category-weather-mark{
+  width:31px;
+  height:31px;
+  flex:0 0 31px;
+  padding:5px;
+  border-radius:50%;
+  background:rgba(255,255,255,.92);
+}
+.reference-discover .genre-discovery .category-tabs .category-weather-mark .search-weather-mark{width:25px;height:25px}
+.reference-discover .genre-discovery .category-tabs .category-weather-mark .search-weather-rain{width:25px;height:27px}
+.reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-cloud{left:2px;top:2px;width:21px}
+.reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-drop.drop-one{left:6px;top:17px}
+.reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-drop.drop-two{left:11px;top:19px}
+.reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-drop.drop-three{left:17px;top:16px}
+.related-genre-row{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:3px 18px 8px;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.related-genre-row::-webkit-scrollbar{display:none}
+.related-genre-row button{
+  flex:0 0 auto;
+  min-height:32px;
+  padding:0 13px;
+  border:1px solid #d8e0e6;
+  border-radius:999px;
+  background:#fff;
+  color:#405765;
+  font-size:10px;
+  font-weight:750;
+}
+.related-genre-row button.active{border-color:#236fa8;background:#e9f5fb;color:#155478}
+.weather-date-section{border-top:7px solid #f5f7f8}
+.weather-date-section .reference-weather-strip{
+  height:157px;
+  margin:0;
+  padding:8px calc(50% - 54px) 13px;
+  gap:14px;
+  scroll-snap-type:x mandatory;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x;
+}
+.reference-discover.search-weather-bg .weather-date-section .reference-weather-strip button{
+  width:108px;
+  height:128px;
+  flex-basis:108px;
+  border:1px solid #e5edf2;
+  border-radius:22px;
+  background:#fff;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  box-shadow:none!important;
+  opacity:.42;
+  filter:saturate(.72);
+  transform:scale(.87);
+  scroll-snap-align:center;
+}
+.reference-discover.search-weather-bg .weather-date-section .reference-weather-strip button.selected{
+  border-color:#b9d7e9;
+  background:linear-gradient(145deg,#fff,#eff9ff);
+  box-shadow:0 7px 18px rgba(35,84,116,.14)!important;
+  opacity:1;
+  filter:none;
+  transform:scale(1);
+}
+.reference-discover .weather-date-section+.reference-date{
+  margin:2px 0 8px;
+  color:#163950;
+  font-size:15px;
+  font-weight:900;
+}
+.reference-discover .reference-dots{gap:8px;margin-bottom:18px}
+.reference-discover .reference-dots i{width:6px;height:6px}
+.reference-discover .reference-dots i.active{width:9px;height:9px;margin-top:-2px;background:#2d7fe8}
+.reference-discover .news-list{
+  display:grid;
+  gap:10px;
+  margin:0;
+  padding:0 14px 12px;
+  border-top:0;
+}
+.reference-discover .news-list button{
+  min-height:72px;
+  padding:15px 16px;
+  border:1px solid #e3e8eb;
+  border-radius:14px;
+  background:#fff;
+  color:#18384d;
+  font-size:11px;
+  line-height:1.55;
+  box-shadow:0 3px 10px rgba(31,62,81,.055);
+}
+.reference-discover .news-list button:active{transform:scale(.985);background:#f7fafc}
+.reference-discover .real-map-view{margin:0}
+
+@media (max-width:420px){
+  .reference-discover .discover-top{padding:14px 14px 10px}
+  .discover-mode-tabs{top:72px}
+  .reference-discover .genre-discovery .category-tabs{padding-inline:14px}
+  .related-genre-row{padding-inline:14px}
+}
