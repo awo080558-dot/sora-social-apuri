@@ -1495,6 +1495,7 @@ button[aria-label*="戻る"]:after{
   border-radius:50%;
   background:rgba(255,255,255,.92);
 }
+.reference-discover .genre-discovery .category-tabs .category-weather-mark.rainy{display:grid;place-items:center;padding:0}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark .search-weather-mark{width:25px;height:25px}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark .search-weather-rain{width:25px;height:27px}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark .search-rain-cloud{left:2px;top:2px;width:21px}
