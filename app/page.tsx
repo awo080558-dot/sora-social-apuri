@@ -496,6 +496,27 @@ export default function HomePage(){
     });
     return()=>window.cancelAnimationFrame(frame);
   },[replyTarget?.id]);
+  useEffect(()=>{
+    if(!replyTarget)return;
+    const body=document.body;
+    const pageY=window.scrollY;
+    const previous={position:body.style.position,top:body.style.top,left:body.style.left,right:body.style.right,width:body.style.width,overflow:body.style.overflow};
+    body.style.position="fixed";
+    body.style.top=`-${pageY}px`;
+    body.style.left="0";
+    body.style.right="0";
+    body.style.width="100%";
+    body.style.overflow="hidden";
+    const keepMainPostVisible=()=>replyPageScroll.current?.scrollTo({top:0,behavior:"auto"});
+    window.visualViewport?.addEventListener("resize",keepMainPostVisible);
+    window.visualViewport?.addEventListener("scroll",keepMainPostVisible);
+    return()=>{
+      window.visualViewport?.removeEventListener("resize",keepMainPostVisible);
+      window.visualViewport?.removeEventListener("scroll",keepMainPostVisible);
+      Object.assign(body.style,previous);
+      window.scrollTo({top:pageY,left:0,behavior:"auto"});
+    };
+  },[Boolean(replyTarget)]);
   useEffect(()=>{setOpeningPosts(createOpeningPosts())},[]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   useEffect(()=>{
@@ -997,7 +1018,7 @@ export default function HomePage(){
       <article className="sora-post unified-post-card reply-origin-card"><div className="post-head"><span className={`photo-avatar ${replyTarget.handle===profile.handle?"":`generated-avatar avatar-${((replyTarget.id-1)%6)+1}`}`} style={replyTarget.handle===profile.handle?{backgroundImage:`url("${profile.avatarUrl}")`}:undefined}/><div className="identity"><strong>{replyTarget.handle===profile.handle?profile.name:replyTarget.name}</strong><span>{replyTarget.handle===profile.handle?profile.handle:replyTarget.handle}</span></div><time>{replyTarget.time}</time></div><p>{replyTarget.body}</p>{postActions(replyTarget)}</article>
       <div className="reply-list">{repliesForPost(replyTarget).map(reply=><article className="sora-post unified-post-card reply-thread-card" key={`${replyTarget.id}-${reply.handle}`}><div className="post-head"><span className={`photo-avatar generated-avatar avatar-${reply.avatarClass}`}/><div className="identity"><strong>{reply.name}</strong><span>{reply.handle}</span></div><time>{reply.time}</time></div><p>{reply.body}</p><div className="metric-row"><button aria-label="返信"><MessageCircle/></button><button aria-label="リポスト"><Repeat2/></button><button aria-label="いいね"><Heart/></button><button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{reply.avatarClass*21}</span></button><button className="share" aria-label="共有"><Upload/></button></div></article>)}{(savedReplies[replyTarget.id]||[]).map(reply=><article className="sora-post unified-post-card reply-thread-card own-reply" key={reply.id}><div className="post-head"><span className="photo-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>たった今</time></div><p>{reply.body}</p><div className="metric-row"><button aria-label="返信"><MessageCircle/></button><button aria-label="リポスト"><Repeat2/></button><button aria-label="いいね"><Heart/></button><button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>1</span></button><button className="share" aria-label="共有"><Upload/></button></div></article>)}</div>
     </div>
-    <form className="reply-inline-compose" onSubmit={submitReply}><span className="reply-compose-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><textarea value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder="返信を投稿" maxLength={240}/><button disabled={!replyDraft.trim()}>返信</button></form>
+    <form className="reply-inline-compose" onSubmit={submitReply}><span className="reply-compose-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><textarea value={replyDraft} onFocus={()=>{replyPageScroll.current?.scrollTo({top:0,behavior:"auto"});window.setTimeout(()=>replyPageScroll.current?.scrollTo({top:0,behavior:"auto"}),300)}} onChange={event=>setReplyDraft(event.target.value)} placeholder="返信を投稿" maxLength={240}/><button disabled={!replyDraft.trim()}>返信</button></form>
   </section>}
   {toast&&<div className="sora-toast">{toast}</div>}
   </main>
