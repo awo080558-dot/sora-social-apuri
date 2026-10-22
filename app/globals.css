@@ -1506,7 +1506,7 @@ button[aria-label*="戻る"]:after{
   min-height:62px;
   display:flex;
   align-items:center;
-  justify-content:flex-end;
+  justify-content:flex-start;
   gap:9px;
   padding:0 18px 8px;
   animation:selected-genre-in .22s ease-out both;
