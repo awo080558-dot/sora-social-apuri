@@ -774,11 +774,11 @@
   animation:reply-page-enter .3s cubic-bezier(.22,.8,.3,1) both;
 }
 .sora-app.reply-background-suspended{display:none}
-.reply-page.reply-weather{background-size:cover;background-position:center;background-repeat:no-repeat}
-.reply-page.reply-weather.sunny{background-image:url('/weather-sunny-photo.png')}
-.reply-page.reply-weather.cloudy{background-image:url('/weather-cloudy-photo.png')}
-.reply-page.reply-weather.rainy{background-image:url('/weather-rainy-photo.png')}
-.reply-page.reply-weather.storm{background-image:url('/weather-storm-photo.png')}
+.reply-page.reply-weather{background:#fff;background-image:none}
+.reply-page.reply-weather.sunny,
+.reply-page.reply-weather.cloudy,
+.reply-page.reply-weather.rainy,
+.reply-page.reply-weather.storm{background-image:none}
 .reply-page-header{
   position:absolute;
   z-index:4;
@@ -793,13 +793,13 @@
   border-bottom:1px solid rgba(112,137,153,.28);
   background:rgba(255,255,255,.94);
 }
-.reply-weather .reply-page-header{background:rgba(233,246,255,.72);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-bottom-color:#ffffffa8}
+.reply-weather .reply-page-header{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:rgba(112,137,153,.28)}
 .reply-page-header button{width:38px;height:38px;padding:0;border:0;border-radius:50%;background:transparent;display:grid;place-items:center;cursor:pointer}
 .reply-page-header button:first-child{font:300 35px/1 Arial;align-content:center}
 .reply-page-header svg{width:21px;height:21px}.reply-page-header h1{margin:0;font-size:15px;text-align:center}
 .reply-page-scroll{height:100%;padding:61px 7px 116px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}.reply-page-scroll::-webkit-scrollbar{display:none}
 .reply-origin-post{padding:15px 14px 11px;border:1px solid rgba(112,137,153,.3);border-radius:17px;background:#fff;overflow:hidden}
-.reply-weather .reply-origin-post{background:rgba(235,247,255,.73);backdrop-filter:blur(8px) saturate(1.18);-webkit-backdrop-filter:blur(8px) saturate(1.18);border-color:#ffffffa5}
+.reply-weather .reply-origin-post{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:rgba(112,137,153,.3)}
 .reply-origin-post .post-head{display:flex;align-items:flex-start}.reply-origin-avatar,.reply-compose-avatar,.reply-avatar{display:block;flex:0 0 auto;border-radius:50%;background-size:cover;background-position:center;background-repeat:no-repeat}
 .reply-origin-avatar{width:45px;height:45px}.reply-origin-post .identity{margin:1px 0 0 10px;gap:3px}.reply-origin-post .identity strong{font-size:11px}.reply-origin-post .identity span,.reply-origin-post time{font-size:8px;color:#55789f}.reply-origin-post time{margin-left:auto;margin-top:2px}
 .reply-origin-post>p{margin:15px 1px 13px;white-space:pre-line;font-size:11px;font-weight:600;line-height:1.55;color:#173653}
