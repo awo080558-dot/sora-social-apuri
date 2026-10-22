@@ -339,6 +339,7 @@ export default function HomePage(){
   const [refreshing,setRefreshing]=useState(false);
   const appSurface=useRef<HTMLElement|null>(null);
   const timelineScroll=useRef<HTMLDivElement|null>(null);
+  const replyPageScroll=useRef<HTMLDivElement|null>(null);
   const horizontalGesture=useRef<{x:number;y:number}|null>(null);
   const refreshGesture=useRef<{x:number;y:number;latestY:number;startedAt:number;active:boolean}|null>(null);
   const refreshingRef=useRef(false);
@@ -487,6 +488,14 @@ export default function HomePage(){
     const frame=window.requestAnimationFrame(()=>searchPage.current?.scrollTo({top:0,behavior:"auto"}));
     return()=>window.cancelAnimationFrame(frame);
   },[view,mapMode,searchSubmitted]);
+  useEffect(()=>{
+    if(!replyTarget)return;
+    const frame=window.requestAnimationFrame(()=>{
+      replyPageScroll.current?.scrollTo({top:0,behavior:"auto"});
+      window.scrollTo({top:0,left:0,behavior:"auto"});
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[replyTarget?.id]);
   useEffect(()=>{setOpeningPosts(createOpeningPosts())},[]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   useEffect(()=>{
@@ -984,11 +993,11 @@ export default function HomePage(){
   {quoteTarget&&<div className="modal-shade"><form className="post-modal quote-modal" onSubmit={submitQuote}><header><button type="button" aria-label="閉じる" onClick={()=>{setQuoteTarget(null);setQuoteDraft("")}}><X/></button><strong>引用</strong><button disabled={!quoteDraft.trim()}>投稿</button></header><textarea autoFocus value={quoteDraft} onChange={event=>setQuoteDraft(event.target.value)} placeholder="コメントを追加" maxLength={240}/><div className="quoted-post-card quote-compose-card"><strong>{quoteTarget.name}</strong><span>{quoteTarget.handle}</span><p>{quoteTarget.body}</p></div></form></div>}
   {replyTarget&&<section className={`reply-page ${replyContextWeather?`reply-weather ${replyContextWeather}`:"reply-white"}`}>
     <header className="reply-page-header"><button type="button" aria-label="前の画面へ戻る" onClick={closeReplyThread}>‹</button><h1>投稿</h1></header>
-    <div className="reply-page-scroll">
+    <div className="reply-page-scroll" ref={replyPageScroll}>
       <article className="sora-post unified-post-card reply-origin-card"><div className="post-head"><span className={`photo-avatar ${replyTarget.handle===profile.handle?"":`generated-avatar avatar-${((replyTarget.id-1)%6)+1}`}`} style={replyTarget.handle===profile.handle?{backgroundImage:`url("${profile.avatarUrl}")`}:undefined}/><div className="identity"><strong>{replyTarget.handle===profile.handle?profile.name:replyTarget.name}</strong><span>{replyTarget.handle===profile.handle?profile.handle:replyTarget.handle}</span></div><time>{replyTarget.time}</time></div><p>{replyTarget.body}</p>{postActions(replyTarget)}</article>
       <div className="reply-list">{repliesForPost(replyTarget).map(reply=><article className="sora-post unified-post-card reply-thread-card" key={`${replyTarget.id}-${reply.handle}`}><div className="post-head"><span className={`photo-avatar generated-avatar avatar-${reply.avatarClass}`}/><div className="identity"><strong>{reply.name}</strong><span>{reply.handle}</span></div><time>{reply.time}</time></div><p>{reply.body}</p><div className="metric-row"><button aria-label="返信"><MessageCircle/></button><button aria-label="リポスト"><Repeat2/></button><button aria-label="いいね"><Heart/></button><button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>{reply.avatarClass*21}</span></button><button className="share" aria-label="共有"><Upload/></button></div></article>)}{(savedReplies[replyTarget.id]||[]).map(reply=><article className="sora-post unified-post-card reply-thread-card own-reply" key={reply.id}><div className="post-head"><span className="photo-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><div className="identity"><strong>{profile.name}</strong><span>{profile.handle}</span></div><time>たった今</time></div><p>{reply.body}</p><div className="metric-row"><button aria-label="返信"><MessageCircle/></button><button aria-label="リポスト"><Repeat2/></button><button aria-label="いいね"><Heart/></button><button aria-label="表示回数"><ChartNoAxesColumnIncreasing/><span>1</span></button><button className="share" aria-label="共有"><Upload/></button></div></article>)}</div>
     </div>
-    <form className="reply-inline-compose" onSubmit={submitReply}><span className="reply-compose-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><textarea autoFocus value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder="返信を投稿" maxLength={240}/><button disabled={!replyDraft.trim()}>返信</button></form>
+    <form className="reply-inline-compose" onSubmit={submitReply}><span className="reply-compose-avatar" style={{backgroundImage:`url("${profile.avatarUrl}")`}}/><textarea value={replyDraft} onChange={event=>setReplyDraft(event.target.value)} placeholder="返信を投稿" maxLength={240}/><button disabled={!replyDraft.trim()}>返信</button></form>
   </section>}
   {toast&&<div className="sora-toast">{toast}</div>}
   </main>
