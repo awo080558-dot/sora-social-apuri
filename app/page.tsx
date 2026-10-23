@@ -932,22 +932,16 @@ export default function HomePage(){
 
     {view==="settings"&&<div className={`settings-page ${reduceMotion?"motion-reduced":""}`}>
       <header className="settings-head"><button onClick={()=>setView("timeline")} aria-label="タイムラインへ戻る">‹</button><div><small>SORA</small><h1>空模様の設定</h1></div></header>
-      <section className={`settings-sky-preview ${defaultWeather}`} aria-label={`最初に開く空は${weatherInfo[defaultWeather].label}`}><span className="settings-preview-mark"><SearchWeatherMark weather={defaultWeather}/></span><div><small>最初に開く空</small><strong>{weatherInfo[defaultWeather].label}</strong><p>{weatherInfo[defaultWeather].message}</p></div></section>
       <div className="settings-scroll">
         <section className="settings-group"><header><strong>タイムライン</strong><small>見る情報の空模様を整える</small></header>
           <p className="settings-label">最初に表示する天気</p>
           <div className="settings-weather-options">{weatherOrder.map(key=><button key={key} className={defaultWeather===key?"active":""} aria-pressed={defaultWeather===key} onClick={()=>{setDefaultWeather(key);setWeather(key)}}><SearchWeatherMark weather={key}/><span>{weatherInfo[key].label}</span></button>)}</div>
-          <p className="settings-label">控えめに表示する天気</p>
-          <div className="settings-quiet-options">{weatherOrder.map(key=><button key={key} className={quietWeathers.includes(key)?"active":""} aria-pressed={quietWeathers.includes(key)} onClick={()=>setQuietWeathers(items=>items.includes(key)?items.filter(item=>item!==key):[...items,key])}><span>{weatherInfo[key].symbol}</span>{weatherInfo[key].label}<i>{quietWeathers.includes(key)?"選択中":""}</i></button>)}</div>
-        </section>
-        <section className="settings-group"><header><strong>表示と動き</strong><small>疲れにくい見え方に調整する</small></header>
-          <div className="settings-row"><span><strong>アニメーションを減らす</strong><small>天気と画面切り替えの動きを穏やかにします</small></span><SettingSwitch checked={reduceMotion} onChange={()=>setReduceMotion(v=>!v)} label="アニメーションを減らす"/></div>
         </section>
         <section className="settings-group"><header><strong>通知</strong><small>受け取りたい知らせを選ぶ</small></header>
           <div className="settings-row"><span><strong>フォロー中の新しい投稿</strong><small>投稿を天気別にまとめて知らせます</small></span><SettingSwitch checked={postNotifications} onChange={()=>setPostNotifications(v=>!v)} label="新しい投稿の通知"/></div>
           <div className="settings-row"><span><strong>あなたへの反応</strong><small>いいね・返信・リポスト・フォロー</small></span><SettingSwitch checked={reactionNotifications} onChange={()=>setReactionNotifications(v=>!v)} label="あなたへの反応の通知"/></div>
         </section>
-        <section className="settings-group settings-safety"><header><strong>アカウントと安全</strong><small>公開範囲や見たくない相手を管理する</small></header><button onClick={()=>notify("公開範囲の設定")}>公開範囲 <span>›</span></button><button onClick={()=>notify("ミュート・ブロック")}>ミュート・ブロック <span>›</span></button><button onClick={()=>notify("ログアウト")}>ログアウト <span>›</span></button></section>
+        <section className="settings-group settings-safety"><header><strong>アカウントと安全</strong><small>公開範囲や見たくない相手を管理する</small></header><button onClick={()=>notify("公開範囲の設定")}>公開範囲 <span>›</span></button><button onClick={()=>notify("ミュート・ブロック")}>ミュート・ブロック <span>›</span></button><button className="settings-logout" onClick={()=>notify("ログアウト")}>ログアウト <span>›</span></button></section>
       </div>
     </div>}
 
