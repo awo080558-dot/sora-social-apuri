@@ -1301,6 +1301,30 @@
   }
 }
 
+/* Shared accent treatment for the selected bottom-navigation item. */
+.sora-app>nav.main-nav button{position:relative}
+.sora-app>nav.main-nav button.active,
+.sora-app:has(>.timeline-area)>nav.main-nav button.active{
+  color:#4e64f3;
+}
+.sora-app>nav.main-nav button.active:after,
+.sora-app:has(>.timeline-area)>nav.main-nav button.active:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:24px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#397fff,#5d58ed);
+  transform:translateX(-50%);
+  box-shadow:0 3px 8px rgba(74,100,244,.28);
+}
+.sora-app>nav.main-nav button.active svg,
+.sora-app:has(>.timeline-area)>nav.main-nav button.active svg{
+  filter:drop-shadow(0 3px 5px rgba(74,100,244,.24));
+}
+
 /* Profile action controls: fixed to the requested compact dimensions. */
 .profile-main .profile-tools{
   left:149px;
@@ -1479,7 +1503,10 @@ button[aria-label*="戻る"]:after{
 .reference-discover .genre-discovery .category-tabs button.active{
   opacity:1;
   transform:none;
-  box-shadow:0 4px 10px rgba(31,86,116,.09);
+  border-color:transparent;
+  background:linear-gradient(135deg,#397fff,#5d58ed)!important;
+  color:#fff;
+  box-shadow:0 7px 16px rgba(74,100,244,.25);
 }
 .reference-discover .genre-discovery .category-tabs button.active:after{display:none}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark{
@@ -1514,13 +1541,13 @@ button[aria-label*="戻る"]:after{
   justify-content:flex-start;
   gap:8px;
   padding:0 17px 0 7px;
-  border:1px solid #b9d9eb;
+  border:1px solid transparent;
   border-radius:999px;
-  background:#eef8fd;
-  color:#174b69;
+  background:linear-gradient(135deg,#397fff,#5d58ed);
+  color:#fff;
   font-size:11px;
   font-weight:900;
-  box-shadow:0 3px 9px rgba(32,76,101,.09);
+  box-shadow:0 7px 16px rgba(74,100,244,.25);
 }
 .selected-genre-tab .category-weather-mark{
   width:30px;
