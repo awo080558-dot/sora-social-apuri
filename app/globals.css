@@ -1707,3 +1707,30 @@ button[aria-label*="戻る"]:after{
   .reference-discover .genre-discovery .category-tabs{padding-inline:14px}
   .related-genre-row{padding-inline:14px}
 }
+
+/* Account creation */
+.settings-create-account{color:#2778da!important}
+.account-create-page{flex:1;min-height:0;overflow:hidden;background:#fff;color:#143750;animation:screen-fade-in .28s ease both}
+.account-create-head{height:76px;padding:9px 16px 0;display:grid;grid-template-columns:40px 1fr;align-items:center;border-bottom:1px solid #e7edf1;background:#fff}
+.account-create-head>button{width:38px;height:48px;padding:0;border:0;background:none;color:#143750;font:300 42px/1 Arial;text-align:left;cursor:pointer}
+.account-create-head small{display:block;font-size:7px;font-weight:900;letter-spacing:.2em;color:#6990a9}
+.account-create-head h1{margin:3px 0 0;font-size:19px;letter-spacing:.02em}
+.account-create-scroll{height:calc(100% - 76px);padding:15px 14px calc(28px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
+.account-create-intro{min-height:104px;padding:15px 17px;display:flex;align-items:center;gap:14px;border-radius:24px;background:linear-gradient(135deg,#eaf8ff,#f3f1ff);border:1px solid #dcecf6}
+.account-create-intro>span{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;border-radius:20px;background:rgba(255,255,255,.82);box-shadow:0 7px 18px rgba(41,99,138,.1)}
+.account-create-intro img{width:50px;height:50px;object-fit:contain}
+.account-create-intro strong{display:block;font-size:16px}.account-create-intro p{margin:5px 0 0;font-size:10px;line-height:1.5;color:#617b8c}
+.account-create-group{margin-top:13px;padding:16px;border:1px solid #e1e9ee;border-radius:22px;background:#fff;box-shadow:0 6px 18px rgba(29,71,100,.055)}
+.account-create-group h2{margin:0 0 13px;font-size:12px}
+.account-create-group label{display:block;margin-top:12px}.account-create-group label:first-of-type{margin-top:0}
+.account-create-group label>span{display:block;margin:0 0 6px;font-size:9px;font-weight:800;color:#49677b}
+.account-create-group input,.account-create-group textarea{width:100%;min-height:45px;padding:0 13px;border:1px solid #dce5ea;border-radius:14px;background:#f9fbfc;color:#143750;font:600 16px/1.4 inherit;outline:none;transition:border-color .18s,box-shadow .18s}
+.account-create-group textarea{min-height:86px;padding-block:11px;resize:none}
+.account-create-group input:focus,.account-create-group textarea:focus{border-color:#4d86ef;box-shadow:0 0 0 3px rgba(77,111,240,.12);background:#fff}
+.account-handle-field{height:45px;display:flex;align-items:center;border:1px solid #dce5ea;border-radius:14px;background:#f9fbfc;overflow:hidden}
+.account-handle-field:focus-within{border-color:#4d86ef;box-shadow:0 0 0 3px rgba(77,111,240,.12);background:#fff}
+.account-handle-field b{padding-left:13px;font-size:15px}.account-handle-field input{height:43px;min-height:0;padding-left:3px;border:0!important;border-radius:0;box-shadow:none!important;background:transparent!important}
+.account-create-error{margin:13px 3px 0;padding:10px 12px;border-radius:12px;background:#fff0f0;color:#c62828;font-size:10px;font-weight:700;line-height:1.45}
+.account-create-submit{width:100%;height:49px;margin-top:15px;border:0;border-radius:17px;background:linear-gradient(135deg,#2787f5,#5e55ef);color:#fff;font-size:13px;font-weight:900;box-shadow:0 9px 20px rgba(62,100,228,.22);cursor:pointer}
+.account-create-submit:disabled{opacity:.55}.account-create-submit:active{transform:scale(.985)}
+.account-create-note{margin:10px 0 0;text-align:center;color:#7b8d98;font-size:8px}

@@ -9,12 +9,27 @@ import { type FormEvent, type MouseEvent, type PointerEvent, type WheelEvent, us
 import { RealMap } from "./RealMap";
 
 type Weather = "sunny" | "cloudy" | "rainy" | "storm";
-type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "profileEdit" | "userProfile" | "following" | "followers" | "followAdd" | "settings";
+type View = "timeline" | "notifications" | "search" | "messages" | "profile" | "profileEdit" | "userProfile" | "following" | "followers" | "followAdd" | "settings" | "accountCreate";
 type Category = "エンタメ" | "スポーツ" | "テクノロジー" | "ビジネス" | "育児" | "キャリア・教育" | "美容";
 type Post = { id:number; weather:Weather; name:string; handle:string; avatar:string; time:string; body:string; replies:string; reposts:string; likes:string; views:string };
 type Account = {name:string;handle:string;avatar:string;weather:Weather;avatarClass?:number};
 type ProfileData = {name:string;handle:string;bio:string;location:string;avatarUrl:string;coverUrl:string};
 type ThreadReply = {name:string;handle:string;body:string;time:string;avatarClass:number};
+type StoredAccount = {id:string;email:string;passwordHash:string;profile:ProfileData;createdAt:string};
+
+const ACCOUNTS_KEY="sora-accounts-v1";
+const SESSION_KEY="sora-session-v1";
+
+async function passwordHash(email:string,password:string){
+  const bytes=new TextEncoder().encode(`sora:${email.trim().toLowerCase()}:${password}`);
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,"0")).join("");
+}
+
+function readAccounts(){
+  try{return JSON.parse(window.localStorage.getItem(ACCOUNTS_KEY)||"[]") as StoredAccount[]}
+  catch{return []}
+}
 
 const initialProfile:ProfileData = {
   name:"黄昏",
@@ -330,6 +345,13 @@ export default function HomePage(){
   const [followedHandles,setFollowedHandles]=useState<string[]>(initialFollowingHandles);
   const [profile,setProfile]=useState<ProfileData>(initialProfile);
   const [profileDraft,setProfileDraft]=useState<ProfileData>(initialProfile);
+  const [currentAccountId,setCurrentAccountId]=useState<string|null>(null);
+  const [newAccountEmail,setNewAccountEmail]=useState("");
+  const [newAccountPassword,setNewAccountPassword]=useState("");
+  const [newAccountPasswordConfirm,setNewAccountPasswordConfirm]=useState("");
+  const [newAccountProfile,setNewAccountProfile]=useState<ProfileData>({...initialProfile,name:"",handle:"@",bio:"",location:""});
+  const [accountCreateError,setAccountCreateError]=useState("");
+  const [accountCreating,setAccountCreating]=useState(false);
   const notificationsRead=false;
   const [dragOffset,setDragOffset]=useState(0);
   const [dragWidth,setDragWidth]=useState(390);
@@ -426,7 +448,7 @@ export default function HomePage(){
     const reply={id:Date.now(),body:replyDraft.trim()};
     setSavedReplies(current=>{
       const next={...current,[replyTarget.id]:[...(current[replyTarget.id]||[]),reply]};
-      window.localStorage.setItem("sora-replies",JSON.stringify(next));
+      window.localStorage.setItem(currentAccountId?`sora-replies:${currentAccountId}`:"sora-replies",JSON.stringify(next));
       return next;
     });
     setReplyDraft("");
@@ -529,10 +551,27 @@ export default function HomePage(){
   useEffect(()=>{setOpeningPosts(createOpeningPosts())},[]);
   useEffect(()=>{const timer=window.setTimeout(()=>setShowSplash(false),1800);return()=>window.clearTimeout(timer)},[]);
   useEffect(()=>{
+    const accounts=readAccounts();
+    const sessionId=window.localStorage.getItem(SESSION_KEY);
+    const activeAccount=accounts.find(account=>account.id===sessionId);
+    if(activeAccount){
+      setCurrentAccountId(activeAccount.id);
+      setProfile(activeAccount.profile);
+      setProfileDraft(activeAccount.profile);
+      return;
+    }
     const saved=window.localStorage.getItem("sora-profile");
-    if(!saved)return;
     try{
-      const restored={...initialProfile,...JSON.parse(saved)} as ProfileData;
+      const restored=saved?{...initialProfile,...JSON.parse(saved)} as ProfileData:initialProfile;
+      const id=crypto.randomUUID();
+      const primary:StoredAccount={id,email:"",passwordHash:"",profile:restored,createdAt:new Date().toISOString()};
+      window.localStorage.setItem(ACCOUNTS_KEY,JSON.stringify([...accounts,primary]));
+      window.localStorage.setItem(SESSION_KEY,id);
+      const legacyPosts=window.localStorage.getItem("sora-profile-posts");
+      const legacyReplies=window.localStorage.getItem("sora-replies");
+      if(legacyPosts)window.localStorage.setItem(`sora-profile-posts:${id}`,legacyPosts);
+      if(legacyReplies)window.localStorage.setItem(`sora-replies:${id}`,legacyReplies);
+      setCurrentAccountId(id);
       setProfile(restored);
       setProfileDraft(restored);
     }catch{
@@ -540,29 +579,33 @@ export default function HomePage(){
     }
   },[]);
   useEffect(()=>{
-    const saved=window.localStorage.getItem("sora-replies");
-    if(!saved)return;
+    const key=currentAccountId?`sora-replies:${currentAccountId}`:"sora-replies";
+    const saved=window.localStorage.getItem(key);
+    if(!saved){setSavedReplies({});return}
     try{
       const restored=JSON.parse(saved) as Record<number,{id:number;body:string}[]>;
       const cleaned=Object.fromEntries(Object.entries(restored).map(([postId,replies])=>[postId,replies.filter(reply=>!reply.body.startsWith("表示確認用の返信"))]).filter(([,replies])=>replies.length>0));
       setSavedReplies(cleaned);
-      if(JSON.stringify(cleaned)!==JSON.stringify(restored))window.localStorage.setItem("sora-replies",JSON.stringify(cleaned));
+      if(JSON.stringify(cleaned)!==JSON.stringify(restored))window.localStorage.setItem(key,JSON.stringify(cleaned));
     }catch{
-      window.localStorage.removeItem("sora-replies");
+      window.localStorage.removeItem(key);
+      setSavedReplies({});
     }
-  },[]);
+  },[currentAccountId]);
   useEffect(()=>{
-    const saved=window.localStorage.getItem("sora-profile-posts");
-    if(!saved)return;
+    const key=currentAccountId?`sora-profile-posts:${currentAccountId}`:"sora-profile-posts";
+    const saved=window.localStorage.getItem(key);
+    if(!saved){setProfilePosts([]);return}
     try{
       const restored=JSON.parse(saved) as Post[];
       const cleaned=restored.filter(post=>!post.body.startsWith("プロフィール専用の表示確認"));
       setProfilePosts(cleaned);
-      if(cleaned.length!==restored.length)window.localStorage.setItem("sora-profile-posts",JSON.stringify(cleaned));
+      if(cleaned.length!==restored.length)window.localStorage.setItem(key,JSON.stringify(cleaned));
     }catch{
-      window.localStorage.removeItem("sora-profile-posts");
+      window.localStorage.removeItem(key);
+      setProfilePosts([]);
     }
-  },[]);
+  },[currentAccountId]);
   const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),1500)};
   const openProfileEdit=()=>{
     setProfileDraft(profile);
@@ -589,6 +632,9 @@ export default function HomePage(){
     const nextProfile={...profileDraft,name,handle:`@${rawHandle}`};
     setProfile(nextProfile);
     window.localStorage.setItem("sora-profile",JSON.stringify(nextProfile));
+    if(currentAccountId){
+      window.localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(readAccounts().map(account=>account.id===currentAccountId?{...account,profile:nextProfile}:account)));
+    }
     setView("profile");
     notify("プロフィールを更新しました");
   };
@@ -867,7 +913,7 @@ export default function HomePage(){
     const newPost:Post={id:Date.now(),weather,name:profile.name,handle:profile.handle,avatar:"",time:"たった今",body,replies:"0",reposts:"0",likes:"0",views:"1"};
     setProfilePosts(current=>{
       const next=[newPost,...current];
-      window.localStorage.setItem("sora-profile-posts",JSON.stringify(next));
+      window.localStorage.setItem(currentAccountId?`sora-profile-posts:${currentAccountId}`:"sora-profile-posts",JSON.stringify(next));
       return next;
     });
     setDraft("");
@@ -889,6 +935,46 @@ export default function HomePage(){
     {name:"ゆるラン日記",handle:"@slow_run_log",preview:"無理せず同じペースで走ろう",time:"2週間",avatar:6,messages:["今週末、川沿いを軽く走らない？","いいね。無理せず同じペースで走ろう"]},
   ];
   const sendMessage=(e:FormEvent)=>{e.preventDefault();if(activeChat===null||!messageDraft.trim())return;setSentMessages(v=>({...v,[activeChat]:[...(v[activeChat]||[]),messageDraft.trim()]}));setMessageDraft("")};
+  const openAccountCreate=()=>{
+    setNewAccountEmail("");
+    setNewAccountPassword("");
+    setNewAccountPasswordConfirm("");
+    setNewAccountProfile({...initialProfile,name:"",handle:"@",bio:"",location:""});
+    setAccountCreateError("");
+    setView("accountCreate");
+  };
+  const createNewAccount=async(event:FormEvent)=>{
+    event.preventDefault();
+    const email=newAccountEmail.trim().toLowerCase();
+    const name=newAccountProfile.name.trim();
+    const rawHandle=newAccountProfile.handle.trim().replace(/^@+/,"").replace(/[^a-zA-Z0-9_]/g,"");
+    const accounts=readAccounts();
+    if(!/^\S+@\S+\.\S+$/.test(email)){setAccountCreateError("正しいメールアドレスを入力してください");return}
+    if(accounts.some(account=>account.email===email)){setAccountCreateError("このメールアドレスは登録済みです");return}
+    if(newAccountPassword.length<8){setAccountCreateError("パスワードは8文字以上で入力してください");return}
+    if(newAccountPassword!==newAccountPasswordConfirm){setAccountCreateError("確認用パスワードが一致しません");return}
+    if(!name){setAccountCreateError("表示名を入力してください");return}
+    if(rawHandle.length<3){setAccountCreateError("ユーザーIDは3文字以上の英数字で入力してください");return}
+    if(accounts.some(account=>account.profile.handle.toLowerCase()===`@${rawHandle.toLowerCase()}`)){setAccountCreateError("このユーザーIDは使用されています");return}
+    setAccountCreating(true);
+    try{
+      const id=crypto.randomUUID();
+      const nextProfile={...newAccountProfile,name,handle:`@${rawHandle}`};
+      const account:StoredAccount={id,email,passwordHash:await passwordHash(email,newAccountPassword),profile:nextProfile,createdAt:new Date().toISOString()};
+      window.localStorage.setItem(ACCOUNTS_KEY,JSON.stringify([...accounts,account]));
+      window.localStorage.setItem(SESSION_KEY,id);
+      window.localStorage.setItem("sora-profile",JSON.stringify(nextProfile));
+      window.localStorage.setItem(`sora-profile-posts:${id}`,"[]");
+      window.localStorage.setItem(`sora-replies:${id}`,"{}");
+      setCurrentAccountId(id);
+      setProfile(nextProfile);
+      setProfileDraft(nextProfile);
+      setProfilePosts([]);
+      setSavedReplies({});
+      setView("profile");
+      notify("新しいアカウントを作成しました");
+    }finally{setAccountCreating(false)}
+  };
 
   return <main className="sora-stage"><section ref={appSurface} aria-hidden={replyTarget?true:undefined} className={`sora-app theme-${weather} ${view==="timeline"?"timeline-swipe-enabled timeline-page-enter":""} ${replyReturning?"reply-returning":""} ${replyTarget?"reply-background-suspended":""}`} onPointerDown={view==="timeline"?startWeatherSwipe:undefined} onPointerMove={view==="timeline"?moveWeatherSwipe:undefined} onPointerUp={view==="timeline"?endWeatherSwipe:undefined} onPointerCancel={e=>{if(view==="timeline"&&e.pointerType==="mouse")resetWeatherSwipe()}} onLostPointerCapture={e=>{if(e.pointerType==="mouse"&&horizontalGesture.current)resetWeatherSwipe()}} onClickCapture={e=>{if(suppressSwipeClick.current){e.preventDefault();e.stopPropagation();suppressSwipeClick.current=false}}}>
     {view==="timeline"&&<><header className="sora-header">
@@ -950,9 +1036,21 @@ export default function HomePage(){
           <div className="settings-row"><span><strong>フォロー中の新しい投稿</strong><small>投稿を天気別にまとめて知らせます</small></span><SettingSwitch checked={postNotifications} onChange={()=>setPostNotifications(v=>!v)} label="新しい投稿の通知"/></div>
           <div className="settings-row"><span><strong>あなたへの反応</strong><small>いいね・返信・リポスト・フォロー</small></span><SettingSwitch checked={reactionNotifications} onChange={()=>setReactionNotifications(v=>!v)} label="あなたへの反応の通知"/></div>
         </section>
-        <section className="settings-group settings-safety"><header><strong>アカウントと安全</strong><small>公開範囲や見たくない相手を管理する</small></header><button onClick={()=>notify("公開範囲の設定")}>公開範囲 <span>›</span></button><button onClick={()=>notify("ミュート・ブロック")}>ミュート・ブロック <span>›</span></button><button className="settings-logout" onClick={()=>notify("ログアウト")}>ログアウト <span>›</span></button></section>
+        <section className="settings-group settings-safety"><header><strong>アカウントと安全</strong><small>アカウントや公開範囲を管理する</small></header><button className="settings-create-account" onClick={openAccountCreate}>新しいアカウントを作成 <span>›</span></button><button onClick={()=>notify("公開範囲の設定")}>公開範囲 <span>›</span></button><button onClick={()=>notify("ミュート・ブロック")}>ミュート・ブロック <span>›</span></button><button className="settings-logout" onClick={()=>notify("ログアウト")}>ログアウト <span>›</span></button></section>
       </div>
     </div>}
+
+    {view==="accountCreate"&&<form className="account-create-page" onSubmit={createNewAccount}>
+      <header className="account-create-head"><button type="button" onClick={()=>setView("settings")} aria-label="設定へ戻る">‹</button><div><small>SORA</small><h1>新しいアカウント</h1></div></header>
+      <div className="account-create-scroll">
+        <section className="account-create-intro"><span><img src="/header-weather-transparent.png" alt=""/></span><div><strong>新しい空をはじめよう</strong><p>ログイン情報とプロフィールを設定します。</p></div></section>
+        <section className="account-create-group"><h2>ログイン情報</h2><label><span>メールアドレス</span><input type="email" autoComplete="email" value={newAccountEmail} onChange={event=>setNewAccountEmail(event.target.value)} placeholder="name@example.com"/></label><label><span>パスワード</span><input type="password" autoComplete="new-password" value={newAccountPassword} onChange={event=>setNewAccountPassword(event.target.value)} placeholder="8文字以上"/></label><label><span>パスワード（確認）</span><input type="password" autoComplete="new-password" value={newAccountPasswordConfirm} onChange={event=>setNewAccountPasswordConfirm(event.target.value)} placeholder="もう一度入力"/></label></section>
+        <section className="account-create-group"><h2>プロフィール</h2><label><span>表示名</span><input value={newAccountProfile.name} maxLength={30} onChange={event=>setNewAccountProfile(current=>({...current,name:event.target.value}))} placeholder="あなたの名前"/></label><label><span>ユーザーID</span><div className="account-handle-field"><b>@</b><input value={newAccountProfile.handle.replace(/^@/,"")} maxLength={20} onChange={event=>setNewAccountProfile(current=>({...current,handle:`@${event.target.value.replace(/^@/,"")}`}))} placeholder="sora_user"/></div></label><label><span>自己紹介（任意）</span><textarea value={newAccountProfile.bio} maxLength={160} onChange={event=>setNewAccountProfile(current=>({...current,bio:event.target.value}))} placeholder="好きなことや投稿したいこと"/></label></section>
+        {accountCreateError&&<p className="account-create-error">{accountCreateError}</p>}
+        <button className="account-create-submit" disabled={accountCreating}>{accountCreating?"作成中…":"アカウントを作成"}</button>
+        <p className="account-create-note">作成後は新しいアカウントのプロフィールに移動します。</p>
+      </div>
+    </form>}
 
     {view==="search"&&<div ref={searchPage} className={`discover-page reference-discover search-weather-bg ${categoryForecasts[category][trendDay]}`} onPointerDown={e=>{if(keyboardOpen&&!(e.target as HTMLElement).closest(".phone-keyboard,.discover-search"))setKeyboardOpen(false)}}>
       {!searchSubmitted&&<><div className="discover-top"><label className="discover-search"><Search/><input value={query} onFocus={()=>setKeyboardOpen(true)} onChange={e=>{setQuery(e.target.value);setSearchSubmitted(false)}} onKeyDown={e=>{if(e.key==="Enter"&&query.trim()){setSearchSubmitted(true);setKeyboardOpen(false)}}} placeholder="検索"/></label></div><nav className="discover-mode-tabs" aria-label="検索画面の表示"><button className={!mapMode?"active":""} onClick={()=>{setKeyboardOpen(false);setMapMode(false)}}>トレンド</button><button className={mapMode?"active":""} onClick={()=>{setKeyboardOpen(false);setMapMode(true)}}>マップ</button></nav></>}
@@ -1007,8 +1105,8 @@ export default function HomePage(){
       {activeChat!==null&&<div className="dm-chat-screen"><header className="dm-chat-head"><button onClick={()=>setActiveChat(null)} aria-label="メッセージ一覧へ戻る">←</button><span className={`dm-avatar generated-avatar avatar-${conversations[activeChat].avatar}`}/><div><strong>{conversations[activeChat].name}</strong><small>{conversations[activeChat].handle}</small></div></header><div className="dm-thread">{conversations[activeChat].messages.map((message,i)=><p className={i%2===0?"mine":"theirs"} key={message}>{message}</p>)}{(sentMessages[activeChat]||[]).map((message,i)=><p className="mine" key={`sent-${i}`}>{message}</p>)}</div><form className="dm-compose" onSubmit={sendMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} placeholder="メッセージを入力"/><button disabled={!messageDraft.trim()} aria-label="送信"><Send fill="currentColor"/></button></form></div>}
     </div>}
 
-    {view!=="settings"&&view!=="profileEdit"&&<button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>}
-    <nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"||(view==="userProfile"&&(accountReturnView==="timeline"||accountReturnView==="notifications"))?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"||(view==="userProfile"&&accountReturnView==="search")?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="profileEdit"||view==="following"||view==="followers"||view==="followAdd"||(view==="userProfile"&&(accountReturnView==="profile"||accountReturnView==="profileEdit"||accountReturnView==="following"||accountReturnView==="followers"||accountReturnView==="followAdd"))?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"||(view==="userProfile"&&accountReturnView==="messages")?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>
+    {view!=="settings"&&view!=="profileEdit"&&view!=="accountCreate"&&<button className="new-post" aria-label="投稿を作成" onClick={()=>setComposer(true)}><MessageCircle fill="currentColor"/></button>}
+    {view!=="accountCreate"&&<nav className="main-nav"><button aria-label="タイムライン" className={view==="timeline"||view==="notifications"||(view==="userProfile"&&(accountReturnView==="timeline"||accountReturnView==="notifications"))?"active":""} onClick={()=>{setKeyboardOpen(false);setView("timeline")}}><Home/></button><button aria-label="検索" className={view==="search"||(view==="userProfile"&&accountReturnView==="search")?"active":""} onClick={openSearchHome}><Search/></button><button aria-label="プロフィール" className={view==="profile"||view==="profileEdit"||view==="following"||view==="followers"||view==="followAdd"||(view==="userProfile"&&(accountReturnView==="profile"||accountReturnView==="profileEdit"||accountReturnView==="following"||accountReturnView==="followers"||accountReturnView==="followAdd"))?"active":""} onClick={()=>{setKeyboardOpen(false);setView("profile")}}><UserRound/></button><button aria-label="メッセージ" className={view==="messages"||(view==="userProfile"&&accountReturnView==="messages")?"active":""} onClick={()=>{setKeyboardOpen(false);setActiveChat(null);setView("messages")}}><Mail/></button></nav>}
     {showSplash&&<div className="app-splash" aria-label="アプリを起動中"><img src="/header-weather-transparent.png" alt=""/></div>}
   </section>
 
