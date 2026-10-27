@@ -1517,6 +1517,12 @@ button[aria-label*="戻る"]:after{
   color:#173f58;
   box-shadow:0 4px 10px rgba(31,86,116,.09);
 }
+.reference-discover .genre-discovery:not(.has-selection) .category-tabs button:not(.active){
+  opacity:.45;
+}
+.reference-discover .genre-discovery:not(.has-selection) .category-tabs button.active{
+  opacity:1;
+}
 .reference-discover .genre-discovery .category-tabs button.active:after{display:none}
 .reference-discover .genre-discovery .category-tabs .category-weather-mark{
   width:31px;
