@@ -1644,7 +1644,7 @@ button[aria-label*="戻る"]:after{
 .clear-genre svg{width:19px;height:19px;stroke-width:2.2}
 .clear-genre:active{transform:scale(.93);background:#f1f4f6}
 @keyframes selected-genre-in{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
-.weather-date-section{border-top:7px solid #f5f7f8}
+.weather-date-section{border-top:0}
 .weather-date-section .reference-weather-strip{
   height:157px;
   margin:0;
