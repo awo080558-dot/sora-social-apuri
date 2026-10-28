@@ -23,18 +23,18 @@ export function RealMap({notify,onOpenReply}:{notify:(message:string)=>void;onOp
   const mapNode=useRef<HTMLDivElement>(null);
   const mapInstance=useRef<import("leaflet").Map|null>(null);
   const [area,setArea]=useState("日本");
-  const [zoom,setZoom]=useState(4.5);
+  const [zoom,setZoom]=useState(4);
 
   useEffect(()=>{
     let active=true;
     import("leaflet").then(async L=>{
       if(!active||!mapNode.current||mapInstance.current)return;
       const map=L.map(mapNode.current,{
-        zoomControl:true,minZoom:4,maxZoom:18,zoomSnap:.5,zoomDelta:1,
+        zoomControl:false,minZoom:3,maxZoom:18,zoomSnap:.5,zoomDelta:1,
         wheelDebounceTime:10,wheelPxPerZoomLevel:42,inertia:true,
         inertiaDeceleration:2400,inertiaMaxSpeed:1200,easeLinearity:.18,
         zoomAnimation:true,fadeAnimation:true,markerZoomAnimation:true,
-      }).setView([37.2,138.2],4.5);
+      }).setView([36.4,137.5],4);
       const boundary=await fetch("/japan-prefectures.geojson").then(response=>response.json());
       const japan=L.geoJSON(boundary,{
         style:{fillColor:"#c9e5c0",fillOpacity:1,color:"#ffffff",weight:.8},
@@ -47,6 +47,12 @@ export function RealMap({notify,onOpenReply}:{notify:(message:string)=>void;onOp
           });
         },
       }).addTo(map);
+      const showWholeJapan=()=>{
+        map.invalidateSize({animate:false});
+        map.fitBounds(japan.getBounds(),{padding:[12,12],animate:false,maxZoom:4.5});
+      };
+      showWholeJapan();
+      requestAnimationFrame(showWholeJapan);
       const nationalTrend=areaTrendWeather("日本");
       const nationalMarker=L.marker([36.88,138.82],{
         interactive:false,
