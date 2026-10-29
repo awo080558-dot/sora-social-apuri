@@ -969,7 +969,7 @@
   left:103px;
   right:auto;
   top:-18px;
-  width:122px;
+  width:80px;
   height:46px;
   padding:4px;
   border-radius:999px;
@@ -1013,8 +1013,9 @@
   white-space:nowrap;
 }
 .other-profile-main .other-message{
-  position:static;
-  flex:0 0 32px;
+  position:absolute;
+  left:185px;
+  top:17px;
   width:32px;
   height:38px;
   padding:0;
