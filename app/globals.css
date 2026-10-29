@@ -1013,8 +1013,9 @@
   white-space:nowrap;
 }
 .other-profile-main .other-message{
-  position:static;
-  flex:0 0 32px;
+  position:absolute;
+  left:103px;
+  top:-14px;
   width:32px;
   height:38px;
   padding:0;
@@ -1024,6 +1025,8 @@
   color:#111;
   display:grid;
   place-items:center;
+  box-shadow:0 0 0 4px #fff;
+  z-index:3;
   cursor:pointer;
 }
 .other-profile-main .other-message svg{
