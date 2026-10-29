@@ -911,11 +911,10 @@
   top:34px;
 }
 .other-cover-weather{
-  position:absolute;
+  position:static;
   z-index:3;
-  left:120px;
-  right:17px;
-  top:76px;
+  flex:1;
+  min-width:0;
   height:18px;
   padding:0;
   border:0;
@@ -1048,8 +1047,17 @@
   font-size:13px;
   line-height:1.1;
 }
-.other-profile-main>span{
+.other-profile-meta{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  height:18px;
+}
+.other-profile-meta>span{
+  flex:0 0 auto;
   font-size:10px;
+  color:#777;
 }
 .other-profile-main>p{
   margin-top:17px;
