@@ -49,8 +49,7 @@ export function RealMap({notify,onOpenReply}:{notify:(message:string)=>void;onOp
       }).addTo(map);
       const showWholeJapan=()=>{
         map.invalidateSize({animate:false});
-        map.fitBounds(japan.getBounds(),{padding:[12,12],animate:false,maxZoom:4.5});
-        map.panBy([0,60],{animate:false});
+        map.setView([37.2,137.5],4.5,{animate:false});
       };
       showWholeJapan();
       requestAnimationFrame(showWholeJapan);
