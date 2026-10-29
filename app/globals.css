@@ -915,8 +915,8 @@
   z-index:3;
   left:120px;
   right:17px;
-  top:73px;
-  height:30px;
+  top:76px;
+  height:18px;
   padding:0;
   border:0;
   border-radius:0;
@@ -974,6 +974,10 @@
 .profile-main .profile-counts button{
   width:57px;
   height:38px;
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
 }
 .other-profile-main .other-follow{
   left:103px;
