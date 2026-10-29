@@ -913,14 +913,14 @@
 .other-cover-weather{
   position:absolute;
   z-index:3;
-  left:67px;
+  left:120px;
   right:17px;
-  top:31px;
-  height:42px;
-  padding:0 10px;
-  border:1px solid rgba(255,255,255,.82);
-  border-radius:22px;
-  background:rgba(255,255,255,.86);
+  top:73px;
+  height:30px;
+  padding:0 9px;
+  border:1px solid #e1e7eb;
+  border-radius:16px;
+  background:#fff;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -929,7 +929,7 @@
   -webkit-backdrop-filter:blur(8px);
 }
 .other-cover-weather span{display:flex;align-items:center;gap:3px}
-.other-cover-weather svg{width:19px;height:19px;stroke-width:2.4}
+.other-cover-weather svg{width:16px;height:16px;stroke-width:2.4}
 .other-cover-weather strong{font-size:10px;line-height:1}
 .profile-main,
 .other-profile-main{
