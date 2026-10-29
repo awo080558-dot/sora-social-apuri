@@ -967,12 +967,16 @@
 .other-profile-actions{
   position:absolute;
   left:103px;
-  right:17px;
-  top:17px;
-  height:38px;
+  right:13px;
+  top:-18px;
+  height:46px;
+  padding:4px;
+  border-radius:999px;
+  background:#fff;
   display:flex;
   align-items:center;
   gap:10px;
+  z-index:3;
 }
 .profile-main .profile-tools{
   top:20px;
