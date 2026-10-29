@@ -967,8 +967,9 @@
 .other-profile-actions{
   position:absolute;
   left:103px;
-  right:13px;
+  right:auto;
   top:-18px;
+  width:122px;
   height:46px;
   padding:4px;
   border-radius:999px;
@@ -1031,8 +1032,9 @@
   stroke-width:1.8;
 }
 .other-profile-main .other-counts{
-  position:static;
-  flex:0 0 124px;
+  position:absolute;
+  left:227px;
+  top:17px;
   width:124px;
   height:38px;
   gap:6px;
