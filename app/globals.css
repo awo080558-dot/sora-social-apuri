@@ -907,8 +907,8 @@
   mask-image:radial-gradient(circle 36px at 60px calc(100% + 5px),transparent 0 35px,#000 36px);
 }
 .other-cover>button{
-  left:18px;
-  top:34px;
+  left:14px;
+  top:14px;
 }
 .other-cover-weather{
   position:static;
