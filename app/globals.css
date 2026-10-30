@@ -1896,3 +1896,14 @@ button[aria-label*="戻る"]:after{
 .other-profile-name-row .other-cover-weather strong{
   font-size:12px;
 }
+.other-profile-actions{
+  width:88px;
+  height:48px;
+}
+.other-profile-main .other-follow{
+  flex-basis:80px;
+  width:80px;
+  height:40px;
+  min-height:40px;
+  font-size:11px;
+}
