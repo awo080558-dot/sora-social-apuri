@@ -1801,3 +1801,34 @@ button[aria-label*="戻る"]:after{
   line-height:1.55;
   padding-bottom:18px;
 }
+
+/* Keep profile identity and social counts consistent on own and other profiles. */
+.profile-main h1,
+.other-profile-name-row h1{
+  font-size:16px;
+}
+.profile-handle,
+.other-profile-meta>span{
+  font-size:14px;
+}
+.profile-main .profile-counts{
+  left:185px;
+  width:180px;
+}
+.profile-main .profile-counts button,
+.other-profile-main .other-counts button{
+  width:87px;
+  font-size:13px;
+  letter-spacing:-.06em;
+}
+.profile-main .profile-counts strong,
+.profile-main .profile-counts span,
+.other-profile-main .other-counts strong,
+.other-profile-main .other-counts span{
+  font-size:13px;
+  line-height:1.2;
+}
+.other-profile-main .other-counts{
+  flex-basis:180px;
+  width:180px;
+}
