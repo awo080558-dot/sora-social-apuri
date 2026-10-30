@@ -1832,3 +1832,27 @@ button[aria-label*="戻る"]:after{
   flex-basis:180px;
   width:180px;
 }
+.profile-name-row{
+  width:100%;
+  height:38px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.profile-name-row h1{
+  flex:1;
+  min-width:0;
+  margin:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.profile-name-row .profile-counts{
+  position:static;
+  flex:0 0 180px;
+  width:180px;
+  height:38px;
+  margin:0;
+  gap:6px;
+  justify-content:space-between;
+}
