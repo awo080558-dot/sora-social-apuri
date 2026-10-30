@@ -1033,8 +1033,8 @@
   cursor:pointer;
 }
 .other-profile-main .other-message svg{
-  width:24px;
-  height:24px;
+  width:22px;
+  height:22px;
   stroke-width:1.8;
 }
 .other-profile-main .other-counts{
@@ -1402,8 +1402,8 @@
   box-shadow:0 0 0 4px #fff;
 }
 .profile-main .profile-tools svg{
-  width:24px;
-  height:24px;
+  width:22px;
+  height:22px;
 }
 
 /* Enlarge every back-button hit area without changing its visible size. */
