@@ -1019,11 +1019,11 @@
   position:absolute;
   left:103px;
   top:-14px;
-  width:32px;
-  height:38px;
+  width:36px;
+  height:36px;
   padding:0;
   border:1px solid #d5d5d5;
-  border-radius:10px;
+  border-radius:14px;
   background:#fff;
   color:#111;
   display:grid;
@@ -1033,8 +1033,8 @@
   cursor:pointer;
 }
 .other-profile-main .other-message svg{
-  width:18px;
-  height:18px;
+  width:20px;
+  height:20px;
   stroke-width:1.8;
 }
 .other-profile-main .other-counts{
