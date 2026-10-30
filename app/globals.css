@@ -1856,3 +1856,43 @@ button[aria-label*="戻る"]:after{
   gap:6px;
   justify-content:space-between;
 }
+
+/* Place weather above social counts, with matching rows on both profiles. */
+.profile-meta,
+.other-profile-meta{
+  width:100%;
+  height:38px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.profile-meta>.profile-handle,
+.other-profile-meta>span{
+  flex:1;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.profile-meta .profile-counts,
+.other-profile-meta .other-counts{
+  position:static;
+  flex:0 0 180px;
+  width:180px;
+  height:38px;
+  margin:0;
+  gap:6px;
+  justify-content:space-between;
+}
+.other-profile-name-row .other-cover-weather{
+  flex:0 0 185px;
+  width:185px;
+  height:38px;
+}
+.other-profile-name-row .other-cover-weather svg{
+  width:20px;
+  height:20px;
+}
+.other-profile-name-row .other-cover-weather strong{
+  font-size:12px;
+}
