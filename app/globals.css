@@ -1018,7 +1018,7 @@
 .other-profile-main .other-message{
   position:absolute;
   left:103px;
-  top:14px;
+  top:-13px;
   width:36px;
   height:36px;
   padding:0;
@@ -1391,14 +1391,15 @@
 /* Profile action controls: fixed to the requested compact dimensions. */
 .profile-main .profile-tools{
   left:103px;
-  top:14px;
-  gap:4px;
+  top:-13px;
+  gap:12px;
 }
 .profile-main .profile-tools button{
   width:36px;
   height:36px;
   padding:0;
   border-radius:14px;
+  box-shadow:0 0 0 4px #fff;
 }
 .profile-main .profile-tools svg{
   width:22px;
