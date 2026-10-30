@@ -1018,7 +1018,7 @@
 .other-profile-main .other-message{
   position:absolute;
   left:103px;
-  top:-14px;
+  top:14px;
   width:36px;
   height:36px;
   padding:0;
