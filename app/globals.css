@@ -999,6 +999,9 @@
   justify-content:center;
   gap:3px;
 }
+.profile-main .profile-counts strong{
+  font-size:13px;
+}
 .other-profile-main .other-follow{
   position:static;
   flex:0 0 72px;
@@ -1054,7 +1057,7 @@
   font-size:8px;
 }
 .other-profile-main .other-counts strong{
-  font-size:12px;
+  font-size:13px;
   line-height:1.2;
 }
 .other-profile-main h1{
